@@ -4,10 +4,5 @@
     "rootDir": ".",
     "outDir": "build",
     "target": "ESNext"
-  },
-  "include": [
-    "src/**/*.ts",
-    "cmd/**/*.ts",
-    "test/**/*.ts"
-  ],
+  }
 }
