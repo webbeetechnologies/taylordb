@@ -1,0 +1,52 @@
+{
+  "name": "@webbeetechnologies/blueprint-nodejs",
+  "version": "1.0.9",
+  "description": "",
+  "main": "build/cmd/index.js",
+  "scripts": {
+    "start": "nodemon -r dotenv/config cmd/index.ts",
+    "test": "jest --config jestconfig.json",
+    "test:watch": "jest --config jestconfig.json --watch --collectCoverage 0",
+    "test:ci": "jest --config jestconfig.json --ci --reporters='default' --reporters='./github-actions-reporter'",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "ci": "rm -rf node_modules && yarn install --immutable && yarn compile",
+    "doc:generate": "typedoc --plugin typedoc-plugin-markdown --out docs src/index.ts",
+    "prepare": "yarn run compile",
+    "pretest": "yarn run compile",
+    "posttest": "yarn run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webbeetechnologies/bamboo-backend-core.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/webbeetechnologies/bamboo-backend-core/issues"
+  },
+  "homepage": "https://github.com/webbeetechnologies/bamboo-backend-core#readme",
+  "devDependencies": {
+    "@types/jest": "^29.2.4",
+    "@types/lodash": "^4.14.191",
+    "@types/node": "^14.11.2",
+    "gts": "^3.1.1",
+    "jest": "^29.3.1",
+    "nodemon": "^2.0.20",
+    "ts-jest": "^29.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "~4.4.0",
+
+    "typedoc": "^0.23.23",
+    "typedoc-plugin-markdown": "^3.14.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "lodash": "^4.17.21"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

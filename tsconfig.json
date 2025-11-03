@@ -1,0 +1,13 @@
+{
+  "extends": "./node_modules/gts/tsconfig-google.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "build",
+    "target": "ESNext"
+  },
+  "include": [
+    "src/**/*.ts",
+    "cmd/**/*.ts",
+    "test/**/*.ts"
+  ],
+}

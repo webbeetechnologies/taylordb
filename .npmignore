@@ -1,0 +1,34 @@
+# sample
+sample
+
+# npm
+node_modules
+
+#ide configuration
+.idea
+.vscode
+
+# istanbul
+coverage
+*.lcov
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# yarn
+yarn-debug.log*
+yarn-error.log*
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# misc
+output.txt
+.eslintcache
+.prettiercache

@@ -1,0 +1,24 @@
+{
+  "transform": {
+    "^.+\\.(t|j)sx?$": "ts-jest"
+  },
+  "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+  "collectCoverage": true,
+  "coverageThreshold": {
+    "global": {
+      "branches": 60,
+      "lines": 60,
+      "functions": 60
+    }
+  },
+  "modulePathIgnorePatterns": ["build"],
+  "setupFilesAfterEnv": ["<rootDir>/setupTests.ts"],
+  "coveragePathIgnorePatterns" : [
+    "node_modules",
+    "db",
+    "tmp",
+    "src/kysely/kysely.mysql.ts",
+    "src/kysely/kysely.postgres.ts"
+  ]
+}
