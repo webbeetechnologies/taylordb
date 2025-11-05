@@ -1,7 +1,12 @@
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
 import {makeRequestFiltersSetTypeName} from './graphql/query-schema-names.js';
 import {InsertQueryBuilder} from './insert-query-builder.js';
-import type {AnyDB, FilterGroup, QueryNode} from './internal-types.js';
+import {
+  AnyDB,
+  FilterGroup,
+  OrderByClause,
+  QueryNode,
+} from './internal-types.js';
 import {SelectionBuilder} from './selection-builder.js';
 import {FilterableQueryBuilder} from './where-query-builder.js';
 
@@ -45,6 +50,21 @@ export class QueryBuilder<
 
   paginate(page: number, limit: number): QueryBuilder<DB, TableName> {
     return this.offset((page - 1) * limit).limit(limit);
+  }
+
+  orderBy(
+    field: keyof DB[TableName],
+    direction: 'asc' | 'desc' = 'asc'
+  ): QueryBuilder<DB, TableName> {
+    const newOrderBy: OrderByClause = {
+      field: field as string,
+      direction,
+    };
+
+    return new QueryBuilder({
+      ...this._node,
+      orderBy: [...(this._node.orderBy || []), newOrderBy],
+    });
   }
 
   compile(): {query: string; variables: Record<string, any>} {
@@ -97,6 +117,7 @@ export class QueryBuilder<
     const mainSelects = buildSelects(this._node.selects);
     const mainFilters = buildFilters(this._node.filters);
     const mainPagination = this._node.pagination;
+    const mainOrderBy = this._node.orderBy;
 
     const args: any = {};
 
@@ -115,6 +136,10 @@ export class QueryBuilder<
 
     if (mainPagination) {
       args.pagination = mainPagination;
+    }
+
+    if (mainOrderBy) {
+      args.sorting = mainOrderBy;
     }
 
     return {

@@ -5,6 +5,11 @@ export type AnyDB = Record<
   Record<string, ColumnType<any, any, any, any>>
 >;
 
+export type OrderByClause = {
+  field: string;
+  direction: 'asc' | 'desc';
+};
+
 export type WhereClause = {
   field: string;
   operator: string;
@@ -21,5 +26,6 @@ export type QueryNode = {
   selects: (string | QueryNode)[];
   filters: FilterGroup;
   pagination?: {limit?: number; offset?: number};
+  orderBy?: OrderByClause[];
   queryType: 'root' | 'link';
 };

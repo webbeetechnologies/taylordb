@@ -4,8 +4,9 @@ import {TaylorDatabase} from './taylorclient.types.js';
 // @ts-ignore
 const qb = createQueryBuilder<TaylorDatabase>();
 
-const query = qb
+const {query, variables} = qb
   .selectFrom('calories')
+  .where('id', '=', 1)
   .select([
     'id',
     qb =>
@@ -28,9 +29,10 @@ const query = qb
     'quantity',
     'unit',
   ])
-  .where('timeOfDay', '=', [1, 2, 3])
-  .where('proteinPer100G', '>', 10)
+  .orderBy('fatsPer100G', 'desc')
   .compile();
+
+console.dir({query, variables}, {depth: null});
 
 qb.selectFrom('calories')
   .select(['mealName'])
