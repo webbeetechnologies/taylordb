@@ -40,7 +40,7 @@ export type Filters = {
       hasAnyOf: number[];
       hasAllOf: number[];
       isExactly: number[];
-      '=': number[];
+      '=': number;
       hasNoneOf: number[];
     };
   };
@@ -106,6 +106,7 @@ export type CollaboratorsTable = {
 };
 
 interface CaloriesTable {
+  id: NumberColumnType;
   timeOfDay: LinkColumnType<SelectTable>;
   proteinPer100G: NumberColumnType;
   carbsPer100G: NumberColumnType;
@@ -117,34 +118,40 @@ interface CaloriesTable {
 }
 
 interface StrengthTable {
+  id: NumberColumnType;
   reps: NumberColumnType;
   weight: NumberColumnType;
   exercise: LinkColumnType<SelectTable>;
 }
 
 interface CardioTable {
+  id: NumberColumnType;
   duration: NumberColumnType;
   distance: NumberColumnType;
   exercise: LinkColumnType<SelectTable>;
 }
 
 interface WeightTable {
+  id: NumberColumnType;
   weight: NumberColumnType;
 }
 
 interface GoalsTable {
+  id: NumberColumnType;
   name: TextColumnType;
   value: TextColumnType;
   description: TextColumnType;
 }
 
 interface SettingsTable {
+  id: NumberColumnType;
   name: TextColumnType;
   value: TextColumnType;
   description: TextColumnType;
 }
 
 interface T1Table {
+  id: NumberColumnType;
   name: TextColumnType;
 }
 

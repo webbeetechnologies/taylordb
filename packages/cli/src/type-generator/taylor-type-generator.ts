@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import {camelCase, upperFirst} from 'lodash';
 import {IndentationText, Project, QuoteKind, SourceFile} from 'ts-morph';
+import {defaultFields} from '../lib/constants';
 import {BambooModelsResponse} from '../lib/types';
 import {TypeMapper} from './type-mapper';
 
@@ -40,7 +41,7 @@ export class TaylorTypeGenerator {
       this.sourceFile.addInterface({
         name: this.getTableName(table.name),
         // @ts-ignore
-        properties: table.fields
+        properties: [...defaultFields, ...table.fields]
           .filter(column => this.typeMapper.map(column))
           .map(column => ({
             name: column.name,

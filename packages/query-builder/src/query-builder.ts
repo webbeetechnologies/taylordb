@@ -1,6 +1,8 @@
-import {jsonToGraphQLQuery} from 'json-to-graphql-query';
+import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
+import {makeRequestFiltersSetTypeName} from './graphql/query-schema-names.js';
 import {InsertQueryBuilder} from './insert-query-builder.js';
 import type {AnyDB, FilterGroup, QueryNode} from './internal-types.js';
+import {SelectionBuilder} from './selection-builder.js';
 import {FilterableQueryBuilder} from './where-query-builder.js';
 
 export class QueryBuilder<
@@ -45,7 +47,24 @@ export class QueryBuilder<
     return this.offset((page - 1) * limit).limit(limit);
   }
 
-  compile() {
+  compile(): {query: string; variables: Record<string, any>} {
+    const context = {
+      variables: {} as Record<string, any>,
+      varDefinitions: {} as Record<string, string>,
+    };
+
+    const query = this._compile(context);
+
+    return {
+      query: jsonToGraphQLQuery({query}, {pretty: true}),
+      variables: context.variables,
+    };
+  }
+
+  _compile(context: {
+    variables: Record<string, any>;
+    varDefinitions: Record<string, string>;
+  }): any {
     const buildFilters = (group: FilterGroup): any => {
       if (group.filters.length === 0) return undefined;
       return {
@@ -65,21 +84,11 @@ export class QueryBuilder<
           acc[field] = true;
         } else {
           const from = field.from;
-          const subSelects = buildSelects(field.selects);
-          const filters = buildFilters(field.filters);
-          const pagination = field.pagination;
+          const subQueryNode = field;
+          const subQueryBuilder = new QueryBuilder(subQueryNode);
+          const compiledSubQuery = subQueryBuilder._compile(context);
 
-          const args = {
-            ...(filters && {filtersSet: filters}),
-            ...(pagination && {pagination}),
-          };
-
-          acc[from] = {
-            ...(Object.keys(args).length > 0 && {__args: args}),
-            ...(field.queryType === 'root'
-              ? Object.keys(subSelects).length > 0 && {records: subSelects}
-              : subSelects),
-          };
+          acc[from] = compiledSubQuery[from];
         }
         return acc;
       }, {} as any);
@@ -89,21 +98,34 @@ export class QueryBuilder<
     const mainFilters = buildFilters(this._node.filters);
     const mainPagination = this._node.pagination;
 
-    const args = {
-      ...(mainFilters && {filtersSet: mainFilters}),
-      ...(mainPagination && {pagination: mainPagination}),
-    };
+    const args: any = {};
 
-    const query = {
-      query: {
-        [this._node.from]: {
-          ...(Object.keys(mainSelects).length > 0 && {records: mainSelects}),
-          ...(Object.keys(args).length > 0 && {__args: args}),
-        },
+    if (mainFilters) {
+      const filtersVarName =
+        Object.keys(context.varDefinitions).length === 0
+          ? 'filtersSet'
+          : `${this._node.from}_filtersSet`;
+
+      args.filtersSet = new EnumType(filtersVarName);
+      context.varDefinitions[filtersVarName] = makeRequestFiltersSetTypeName(
+        this._node.from
+      );
+      context.variables[filtersVarName] = mainFilters;
+    }
+
+    if (mainPagination) {
+      args.pagination = mainPagination;
+    }
+
+    return {
+      __variables: context.varDefinitions,
+      [this._node.from]: {
+        __args: args,
+        ...(this._node.queryType === 'root'
+          ? Object.keys(mainSelects).length > 0 && {records: mainSelects}
+          : mainSelects),
       },
     };
-
-    return jsonToGraphQLQuery(query, {pretty: true});
   }
 }
 

@@ -3,11 +3,11 @@
     "version": "0.1.0",
     "description": "A type-safe query builder for TaylorDB",
     "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "types": "src/index.ts",
     "scripts": {
         "build": "tsc",
         "dev": "tsc -w",
-        "example": "tsx src/example.ts"
+        "example": "tsx sample/fitness-tracker/index.ts"
     },
     "keywords": [
         "query-builder",
