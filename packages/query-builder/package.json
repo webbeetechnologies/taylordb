@@ -1,0 +1,25 @@
+{
+    "name": "@taylordb/query-builder",
+    "version": "0.1.0",
+    "description": "A type-safe query builder for TaylorDB",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc -w",
+        "example": "tsx src/example.ts"
+    },
+    "keywords": [
+        "query-builder",
+        "taylordb"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "json-to-graphql-query": "^2.2.5",
+        "@taylordb/shared": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/node": "^18.0.0"
+    }
+}
