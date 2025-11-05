@@ -1,6 +1,6 @@
-import {Command} from 'commander';
 import chalk from 'chalk';
-import {authApi} from '../lib/api';
+import {Command} from 'commander';
+import {umsApi} from '../lib/api';
 import {clearToken, getToken} from '../lib/auth';
 
 export const logoutCommand = new Command('logout')
@@ -13,7 +13,7 @@ export const logoutCommand = new Command('logout')
     }
 
     try {
-      await authApi.post(
+      await umsApi.post(
         '',
         {
           query: `

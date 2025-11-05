@@ -26,6 +26,7 @@
     "commander": "^8.3.0",
     "conf": "^15.0.2",
     "inquirer": "^12.10.0",
+    "json-to-graphql-query": "^2.3.0",
     "ts-morph": "^13.0.2"
   },
   "devDependencies": {

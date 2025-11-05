@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import {Command} from 'commander';
-import {authApi} from '../lib/api';
+import {umsApi} from '../lib/api';
 import {getToken} from '../lib/auth';
 
 export const meCommand = new Command('me')
@@ -15,7 +15,7 @@ export const meCommand = new Command('me')
     }
 
     try {
-      const response = await authApi.post('', {
+      const response = await umsApi.post('', {
         query: `
           query {
             user {
