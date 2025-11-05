@@ -1,8 +1,22 @@
 {
-  "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "build",
-    "target": "ESNext"
-  }
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "NodeNext",
+    "declaration": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM"],
+    "baseUrl": ".",
+    "paths": {
+      "@taylordb/*": ["packages/*/src"]
+    }
+  },
+  "files": [],
+  "references": [
+    {"path": "packages/cli"},
+    {"path": "packages/shared"},
+    {"path": "packages/query-builder"}
+  ]
 }
