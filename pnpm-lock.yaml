@@ -87,6 +87,9 @@ importers:
       '@taylordb/shared':
         specifier: workspace:*
         version: link:../shared
+      '@webbeetechnologies/dbwand-utilities':
+        specifier: link:../../../bamboo/packages/backend/packages/db-wand/dbwand-utilities
+        version: link:../../../bamboo/packages/backend/packages/db-wand/dbwand-utilities
       json-to-graphql-query:
         specifier: ^2.2.5
         version: 2.3.0

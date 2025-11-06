@@ -1,6 +1,6 @@
-import type {LinkColumnType} from '@taylordb/shared';
-import type {AnyDB} from './internal-types.js';
-import {QueryBuilder} from './query-builder.js';
+import type { LinkColumnType } from '@taylordb/shared';
+import type { AnyDB } from './internal-types.js';
+import { QueryBuilder } from './query-builder.js';
 
 type LinkColumnNames<T> = {
   [K in keyof T]: T[K] extends LinkColumnType<any> ? K : never;
@@ -19,10 +19,11 @@ export class SelectionBuilder<
         ? DB[CurrentTableName][LinkName]['linkedTo']
         : never
     >({
-      from: from,
-      selects: [],
-      filters: {conjunction: 'and', filters: []},
+      tableName: from,
+      fields: [],
+      filtersSet: {conjunction: 'and', filtersSet: []},
       queryType: 'link',
+      type: 'select',
     });
   }
 }

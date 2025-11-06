@@ -1,31 +1,12 @@
-import {ColumnType} from '@taylordb/shared';
+import { ColumnType } from '@taylordb/shared';
+import { MetadataWithTableName, SelectQueryMetaData } from '@webbeetechnologies/dbwand-utilities';
 
 export type AnyDB = Record<
   string,
   Record<string, ColumnType<any, any, any, any>>
 >;
 
-export type OrderByClause = {
-  field: string;
-  direction: 'asc' | 'desc';
-};
-
-export type WhereClause = {
-  field: string;
-  operator: string;
-  value: any;
-};
-
-export type FilterGroup = {
-  conjunction: 'and' | 'or';
-  filters: (WhereClause | FilterGroup)[];
-};
-
-export type QueryNode = {
-  from: string;
-  selects: (string | QueryNode)[];
-  filters: FilterGroup;
-  pagination?: {limit?: number; offset?: number};
-  orderBy?: OrderByClause[];
+export type QueryNode = Omit<MetadataWithTableName<SelectQueryMetaData>, 'fields'> & {
+  fields?: ( '*' | string | QueryNode)[];
   queryType: 'root' | 'link';
 };

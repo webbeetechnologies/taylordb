@@ -1,15 +1,13 @@
-import {LinkColumnType} from '@taylordb/shared';
-import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
-import {makeRequestFiltersSetTypeName} from './graphql/query-schema-names.js';
-import {InsertQueryBuilder} from './insert-query-builder.js';
+import { LinkColumnType } from '@taylordb/shared';
+import { FieldWithDirection, FiltersSet } from '@webbeetechnologies/dbwand-utilities/index.js';
+import { EnumType, jsonToGraphQLQuery } from 'json-to-graphql-query';
+import { InsertQueryBuilder } from './insert-query-builder.js';
 import {
   AnyDB,
-  FilterGroup,
-  OrderByClause,
   QueryNode,
 } from './internal-types.js';
-import {SelectionBuilder} from './selection-builder.js';
-import {FilterableQueryBuilder} from './where-query-builder.js';
+import { SelectionBuilder } from './selection-builder.js';
+import { FilterableQueryBuilder } from './where-query-builder.js';
 
 type NonLinkColumnNames<T> = {
   [K in keyof T]: T[K] extends LinkColumnType<any> ? never : K;
@@ -35,7 +33,7 @@ export class QueryBuilder<
 
     return new QueryBuilder({
       ...this._node,
-      selects: [...this._node.selects, ...newSelects],
+      fields: [...this._node.fields, ...newSelects],
     });
   }
 
@@ -61,14 +59,14 @@ export class QueryBuilder<
     field: keyof DB[TableName],
     direction: 'asc' | 'desc' = 'asc'
   ): QueryBuilder<DB, TableName> {
-    const newOrderBy: OrderByClause = {
+    const newSorting: FieldWithDirection<string> = {
       field: field as string,
       direction,
     };
 
     return new QueryBuilder({
       ...this._node,
-      orderBy: [...(this._node.orderBy || []), newOrderBy],
+      sorting: [...(this._node.sorting || []), newSorting],
     });
   }
 
@@ -97,11 +95,11 @@ export class QueryBuilder<
     variables: Record<string, any>;
     varDefinitions: Record<string, string>;
   }): any {
-    const buildFilters = (group: FilterGroup): any => {
-      if (!group || group.filters.length === 0) return undefined;
+    const buildFilters = (group: FiltersSet<string>): any => {
+      if (!group || group.filtersSet.length === 0) return undefined;
       return {
         conjunction: group.conjunction,
-        filtersSet: group.filters.map(f => {
+        filtersSet: group.filtersSet.map(f => {
           if ('conjunction' in f) {
             return buildFilters(f);
           }
@@ -110,23 +108,23 @@ export class QueryBuilder<
       };
     };
 
-    const buildSelects = (selects: (string | QueryNode)[]): any => {
+    const buildSelects = (selects: QueryNode['fields']): any => {
       return selects.reduce((acc, field) => {
         if (typeof field === 'string') {
           acc[field] = true;
         } else {
           const subQueryBuilder = new QueryBuilder(field);
           const compiledSubQuery = subQueryBuilder._compile(context);
-          acc[field.from] = compiledSubQuery[field.from];
+          acc[field.tableName] = compiledSubQuery[field.tableName];
         }
         return acc;
       }, {} as any);
     };
 
-    const mainSelects = buildSelects(this._node.selects);
-    const mainFilters = buildFilters(this._node.filters);
+    const mainSelects = buildSelects(this._node.fields);
+    const mainFilters = buildFilters(this._node.filtersSet);
     const mainPagination = this._node.pagination;
-    const mainOrderBy = this._node.orderBy;
+    const mainOrderBy = this._node.sorting;
 
     const args: any = {};
 
@@ -134,11 +132,11 @@ export class QueryBuilder<
       const filtersVarName =
         this._node.queryType === 'root'
           ? 'filtersSet'
-          : `${this._node.from}_filtersSet`;
+          : `${this._node.tableName}_filtersSet`;
 
       args.filtersSet = new EnumType('$' + filtersVarName);
       context.varDefinitions[filtersVarName] = makeRequestFiltersSetTypeName(
-        this._node.from
+        this._node.tableName
       );
       context.variables[filtersVarName] = mainFilters;
     }
@@ -160,7 +158,7 @@ export class QueryBuilder<
         : mainSelects;
 
     return {
-      [this._node.from]: {
+      [this._node.tableName]: {
         ...(Object.keys(args).length > 0 && {__args: args}),
         ...records,
       },
@@ -177,17 +175,26 @@ export class RootQueryBuilder<DB extends AnyDB> {
       string
   >(from: TableName): QueryBuilder<DB, TableName> {
     return new QueryBuilder<DB, TableName>({
-      from: from,
-      selects: [],
-      filters: {conjunction: 'and', filters: []},
+      tableName: from,
+      fields: [],
+      filtersSet: {conjunction: 'and', filtersSet: []},
+      type: 'select',
       queryType: 'root',
     });
   }
 
-  insertInto<TableName extends keyof DB & string>(
-    _from: TableName
-  ): InsertQueryBuilder<DB, TableName> {
-    return new InsertQueryBuilder<DB, TableName>();
+  insertInto<
+    TableName extends keyof Omit<
+      DB,
+      'selectTable' | 'attachmentTable' | 'collaboratorsTable'
+    > &
+      string
+  >(into: TableName): InsertQueryBuilder<DB, TableName> {
+    return new InsertQueryBuilder<DB, TableName>({
+      into: into,
+      values: [],
+      returning: [],
+    });
   }
 }
 

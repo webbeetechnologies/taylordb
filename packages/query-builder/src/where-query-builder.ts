@@ -1,5 +1,6 @@
-import type {ColumnType, Filters} from '@taylordb/shared';
-import type {AnyDB, QueryNode, WhereClause} from './internal-types.js';
+import type { ColumnType, Filters } from '@taylordb/shared';
+import { Filters as DBFilters } from '@webbeetechnologies/dbwand-utilities/index.js';
+import type { AnyDB, QueryNode } from './internal-types.js';
 
 export class FilterableQueryBuilder<
   DB extends AnyDB,
@@ -37,25 +38,25 @@ export class FilterableQueryBuilder<
     if (typeof column === 'function') {
       const builder = new WhereQueryBuilder<DB, TableName>({
         ...this._node,
-        filters: {conjunction: 'and', filters: []},
+        filtersSet: {conjunction: 'and', filtersSet: []},
       });
       const result = column(builder);
       return new (this.constructor as any)({
         ...this._node,
         filters: {
-          ...this._node.filters,
-          filters: [...this._node.filters.filters, result._node.filters],
+          ...this._node.filtersSet,
+          filters: [...this._node.filtersSet.filtersSet, result._node.filters],
         },
       });
     }
 
-    const newWhere: WhereClause = {field: column as string, operator, value};
+    const newWhere: DBFilters<string> = {field: column as string, operator, value};
 
     return new (this.constructor as any)({
       ...this._node,
       filters: {
-        ...this._node.filters,
-        filters: [...this._node.filters.filters, newWhere],
+        ...this._node.filtersSet,
+        filters: [...this._node.filtersSet.filtersSet, newWhere],
       },
     });
   }
@@ -81,12 +82,12 @@ export class FilterableQueryBuilder<
     column: C
   ): this;
   orWhere(column: any, operator?: any, value?: any): this {
-    const newFilters = this._node.filters.filters;
+    const newFilters = this._node.filtersSet.filtersSet;
 
     if (typeof column === 'function') {
       const builder = new WhereQueryBuilder<DB, TableName>({
         ...this._node,
-        filters: {conjunction: 'and', filters: []},
+        filtersSet: {conjunction: 'and', filtersSet: []},
       });
       const result = column(builder);
       newFilters.push(result._node.filters);
