@@ -60,13 +60,13 @@ export type TextColumnType = ColumnType<
   'text'
 >;
 
-export type LinkColumnType<T> = ColumnType<
+export type LinkColumnType<T extends string> = ColumnType<
   object,
   number[] | {newIds: number[]; deletedIds: number[]} | undefined,
   number[] | undefined,
   'link'
 > & {
-  table: T;
+  linkedTo: T;
 };
 
 export type NumberColumnType = ColumnType<
@@ -103,4 +103,17 @@ export type CollaboratorsTable = {
   name: TextColumnType;
   emailAddress: TextColumnType;
   avatar: TextColumnType;
+};
+
+export interface TaylorDatabase {
+
+  /**
+  *
+  *
+  * Internal tables, these tables can not be queried directly.
+  *
+  */
+  selectTable: SelectTable;
+  attachmentTable: AttachmentTable;
+  collaboratorsTable: CollaboratorsTable;
 };

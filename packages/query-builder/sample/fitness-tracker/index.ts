@@ -4,6 +4,20 @@ import {TaylorDatabase} from './taylorclient.types.js';
 // @ts-ignore
 const qb = createQueryBuilder<TaylorDatabase>();
 
+// qb.selectFrom('cardio')
+//   .select([
+//     'distance',
+//     qb =>
+//       qb
+//         .useLink('exercise')
+//         .select(['id', 'name'])
+//         .where('name', 'contains', 'smth')
+//         .paginate(1, 10),
+//   ])
+//   .where(qb => qb.where('distance', '!=', 2).orWhere('distance', '=', 3))
+//   .where('distance', '!=', 2)
+//   .compile();
+
 const {query, variables} = qb
   .selectFrom('calories')
   .where('id', '=', 1)
@@ -11,14 +25,14 @@ const {query, variables} = qb
     'id',
     qb =>
       qb
-        .useLink('goals')
-        .select(['id', 'name', 'value', 'description'])
+        .useLink('timeOfDay')
+        .select(['color', 'name'])
         .where('id', 'hasAnyOf', [1, 2, 3]),
 
     qb =>
       qb
-        .useLink('cardio')
-        .select(['id', 'duration', 'distance'])
+        .useLink('unit')
+        .select(['color', 'name'])
         .where('id', 'hasAnyOf', [1, 2, 3]),
 
     'proteinPer100G',
@@ -27,16 +41,12 @@ const {query, variables} = qb
     'mealName',
     'mealIngredient',
     'quantity',
-    'unit',
   ])
+  .where(qb =>
+    qb.where('carbsPer100G', '!=', 2).orWhere('carbsPer100G', '=', 3)
+  )
+  .where('carbsPer100G', '!=', 2)
   .orderBy('fatsPer100G', 'desc')
   .compile();
 
 console.dir({query, variables}, {depth: null});
-
-qb.selectFrom('calories')
-  .select(['mealName'])
-  .where(qb => qb.where('mealName', '=', 'Breakfast'))
-  .compile();
-
-console.dir(query);

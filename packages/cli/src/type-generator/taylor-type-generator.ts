@@ -50,14 +50,18 @@ export class TaylorTypeGenerator {
       });
     });
 
-    this.sourceFile.addInterface({
-      name: 'TaylorDatabase',
-      isExported: true,
-      properties: this.schema.bambooModels.records.map(table => ({
+    const taylorDatabaseInterface =
+      this.sourceFile.getInterface('TaylorDatabase');
+
+    if (!taylorDatabaseInterface)
+      throw new Error('TaylorDatabase interface not found');
+
+    taylorDatabaseInterface.addProperties(
+      this.schema.bambooModels.records.map(table => ({
         name: table.name,
         type: this.getTableName(table.name),
-      })),
-    });
+      }))
+    );
 
     await this.sourceFile.save();
   }

@@ -19,13 +19,13 @@ export type TextColumnType = ColumnType<
   'text'
 >;
 
-export type LinkColumnType<T> = ColumnType<
+export type LinkColumnType<T extends string> = ColumnType<
   object,
   number[] | {newIds: number[]; deletedIds: number[]} | undefined,
   number[] | undefined,
   'link'
 > & {
-  table: T;
+  linkedTo: T;
 };
 
 export type NumberColumnType = ColumnType<

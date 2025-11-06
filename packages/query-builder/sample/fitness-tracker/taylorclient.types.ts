@@ -60,13 +60,13 @@ export type TextColumnType = ColumnType<
   'text'
 >;
 
-export type LinkColumnType<T> = ColumnType<
+export type LinkColumnType<T extends string> = ColumnType<
   object,
   number[] | {newIds: number[]; deletedIds: number[]} | undefined,
   number[] | undefined,
   'link'
 > & {
-  table: T;
+  linkedTo: T;
 };
 
 export type NumberColumnType = ColumnType<
@@ -105,30 +105,49 @@ export type CollaboratorsTable = {
   avatar: TextColumnType;
 };
 
+export interface TaylorDatabase {
+  /**
+   *
+   *
+   * Internal tables, these tables can not be queried directly.
+   *
+   */
+  selectTable: SelectTable;
+  attachmentTable: AttachmentTable;
+  collaboratorsTable: CollaboratorsTable;
+  calories: CaloriesTable;
+  strength: StrengthTable;
+  cardio: CardioTable;
+  weight: WeightTable;
+  goals: GoalsTable;
+  settings: SettingsTable;
+  t1: T1Table;
+}
+
 interface CaloriesTable {
   id: NumberColumnType;
-  timeOfDay: LinkColumnType<SelectTable>;
+  timeOfDay: LinkColumnType<'selectTable'>;
   proteinPer100G: NumberColumnType;
   carbsPer100G: NumberColumnType;
   fatsPer100G: NumberColumnType;
   mealName: TextColumnType;
   mealIngredient: TextColumnType;
   quantity: NumberColumnType;
-  unit: LinkColumnType<SelectTable>;
+  unit: LinkColumnType<'selectTable'>;
 }
 
 interface StrengthTable {
   id: NumberColumnType;
   reps: NumberColumnType;
   weight: NumberColumnType;
-  exercise: LinkColumnType<SelectTable>;
+  exercise: LinkColumnType<'selectTable'>;
 }
 
 interface CardioTable {
   id: NumberColumnType;
   duration: NumberColumnType;
   distance: NumberColumnType;
-  exercise: LinkColumnType<SelectTable>;
+  exercise: LinkColumnType<'selectTable'>;
 }
 
 interface WeightTable {
@@ -153,14 +172,4 @@ interface SettingsTable {
 interface T1Table {
   id: NumberColumnType;
   name: TextColumnType;
-}
-
-export interface TaylorDatabase {
-  calories: CaloriesTable;
-  strength: StrengthTable;
-  cardio: CardioTable;
-  weight: WeightTable;
-  goals: GoalsTable;
-  settings: SettingsTable;
-  t1: T1Table;
 }

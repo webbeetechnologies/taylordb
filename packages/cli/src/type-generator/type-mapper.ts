@@ -28,19 +28,17 @@ export class TypeMapper {
         return 'CheckboxColumnType';
 
       case 'link':
-        return `LinkColumnType<${this.taylorTypeGenerator.getTableName(
-          this.findNameBySlug(column.options.on)
-        )}>`;
+        return `LinkColumnType<'${this.findNameBySlug(column.options.on)}'>`;
 
       case 'modifiedBy':
       case 'collaborators':
-        return 'LinkColumnType<CollaboratorsTable>';
+        return "LinkColumnType<'collaboratorsTable'>";
 
       case 'attachment':
-        return 'LinkColumnType<AttachmentTable>';
+        return "LinkColumnType<'attachmentTable'>";
 
       case 'select':
-        return 'LinkColumnType<SelectTable>';
+        return "LinkColumnType<'selectTable'>";
 
       default:
         return null;

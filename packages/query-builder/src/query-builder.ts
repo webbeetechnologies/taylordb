@@ -1,3 +1,4 @@
+import {LinkColumnType} from '@taylordb/shared';
 import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
 import {makeRequestFiltersSetTypeName} from './graphql/query-schema-names.js';
 import {InsertQueryBuilder} from './insert-query-builder.js';
@@ -10,18 +11,22 @@ import {
 import {SelectionBuilder} from './selection-builder.js';
 import {FilterableQueryBuilder} from './where-query-builder.js';
 
+type NonLinkColumnNames<T> = {
+  [K in keyof T]: T[K] extends LinkColumnType<any> ? never : K;
+}[keyof T];
+
 export class QueryBuilder<
   DB extends AnyDB,
   TableName extends keyof DB
 > extends FilterableQueryBuilder<DB, TableName> {
   select<
     K extends
-      | keyof DB[TableName]
-      | ((builder: SelectionBuilder<DB>) => QueryBuilder<DB, any>)
+      | NonLinkColumnNames<DB[TableName]>
+      | ((builder: SelectionBuilder<DB, TableName>) => QueryBuilder<DB, any>)
   >(fields: K[]): QueryBuilder<DB, TableName> {
     const newSelects = fields.map(field => {
       if (typeof field === 'function') {
-        const builder = new SelectionBuilder<DB>();
+        const builder = new SelectionBuilder<DB, TableName>();
         const subQuery = field(builder);
         return subQuery._node;
       }
@@ -73,20 +78,27 @@ export class QueryBuilder<
       varDefinitions: {} as Record<string, string>,
     };
 
-    const query = this._compile(context);
+    const queryBody = this._compile(context);
+
+    const query = {
+      query: {
+        __variables: context.varDefinitions,
+        ...queryBody,
+      },
+    };
 
     return {
-      query: jsonToGraphQLQuery({query}, {pretty: true}),
+      query: jsonToGraphQLQuery(query, {pretty: true}),
       variables: context.variables,
     };
   }
 
-  _compile(context: {
+  private _compile(context: {
     variables: Record<string, any>;
     varDefinitions: Record<string, string>;
   }): any {
     const buildFilters = (group: FilterGroup): any => {
-      if (group.filters.length === 0) return undefined;
+      if (!group || group.filters.length === 0) return undefined;
       return {
         conjunction: group.conjunction,
         filtersSet: group.filters.map(f => {
@@ -103,12 +115,9 @@ export class QueryBuilder<
         if (typeof field === 'string') {
           acc[field] = true;
         } else {
-          const from = field.from;
-          const subQueryNode = field;
-          const subQueryBuilder = new QueryBuilder(subQueryNode);
+          const subQueryBuilder = new QueryBuilder(field);
           const compiledSubQuery = subQueryBuilder._compile(context);
-
-          acc[from] = compiledSubQuery[from];
+          acc[field.from] = compiledSubQuery[field.from];
         }
         return acc;
       }, {} as any);
@@ -123,11 +132,11 @@ export class QueryBuilder<
 
     if (mainFilters) {
       const filtersVarName =
-        Object.keys(context.varDefinitions).length === 0
+        this._node.queryType === 'root'
           ? 'filtersSet'
           : `${this._node.from}_filtersSet`;
 
-      args.filtersSet = new EnumType(filtersVarName);
+      args.filtersSet = new EnumType('$' + filtersVarName);
       context.varDefinitions[filtersVarName] = makeRequestFiltersSetTypeName(
         this._node.from
       );
@@ -139,25 +148,34 @@ export class QueryBuilder<
     }
 
     if (mainOrderBy) {
-      args.sorting = mainOrderBy;
+      args.sorting = mainOrderBy.map(o => ({
+        field: new EnumType(o.field),
+        direction: new EnumType(o.direction),
+      }));
     }
 
+    const records =
+      this._node.queryType === 'root' && Object.keys(mainSelects).length > 0
+        ? {records: mainSelects}
+        : mainSelects;
+
     return {
-      __variables: context.varDefinitions,
       [this._node.from]: {
-        __args: args,
-        ...(this._node.queryType === 'root'
-          ? Object.keys(mainSelects).length > 0 && {records: mainSelects}
-          : mainSelects),
+        ...(Object.keys(args).length > 0 && {__args: args}),
+        ...records,
       },
     };
   }
 }
 
 export class RootQueryBuilder<DB extends AnyDB> {
-  selectFrom<TableName extends keyof DB & string>(
-    from: TableName
-  ): QueryBuilder<DB, TableName> {
+  selectFrom<
+    TableName extends keyof Omit<
+      DB,
+      'selectTable' | 'attachmentTable' | 'collaboratorsTable'
+    > &
+      string
+  >(from: TableName): QueryBuilder<DB, TableName> {
     return new QueryBuilder<DB, TableName>({
       from: from,
       selects: [],
@@ -173,19 +191,6 @@ export class RootQueryBuilder<DB extends AnyDB> {
   }
 }
 
-export class SelectionBuilder<DB extends AnyDB> {
-  useLink<TableName extends keyof DB & string>(
-    from: TableName
-  ): QueryBuilder<DB, TableName> {
-    return new QueryBuilder<DB, TableName>({
-      from: from,
-      selects: [],
-      filters: {conjunction: 'and', filters: []},
-      queryType: 'link',
-    });
-  }
-}
-
-export function createQueryBuilder<DB extends AnyDB>(): RootQueryBuilder<DB> {
+export function createQueryBuilder<DB extends AnyDB>() {
   return new RootQueryBuilder<DB>();
 }
