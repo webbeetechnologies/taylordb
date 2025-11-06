@@ -1,44 +1,42 @@
-import {createQueryBuilder} from '../../src/index.js';
-import {TaylorDatabase} from './taylorclient.types.js';
+import { createQueryBuilder } from '../../src/index.js';
+import { TaylorDatabase } from './taylorclient.types.js';
 
 // @ts-ignore
-const qb = createQueryBuilder<TaylorDatabase>(context);
+const qb = createQueryBuilder<TaylorDatabase>();
 
-qb.batch([
-  qb
-    .selectFrom('calories')
-    .where('id', '=', 1)
-    .with('unit')
-    .with({unit: qb => qb.selectFrom('selectTable').select(['color', 'name'])})
-    .select([
-      'id',
-      qb =>
-        qb
-          .useLink('unit')
-          .select(['color', 'name'])
-          .where('id', 'hasNoneOf', [1, 2, 3]),
+  // qb
+  //   .selectFrom('calories')
+  //   .where('id', '=', 1)
+  //   // .with({
+  //   //   unit: qb =>
+  //   //     qb.select(['color', 'name']).where('id', 'hasNoneOf', [1, 2, 3]),
+  //   // })
+  //   .select([
+  //     'id',
+  //     qb =>
+  //       qb
+  //         .useLink('unit')
+  //         .select(['color', 'name'])
+  //         .where('id', 'hasNoneOf', [1, 2, 3]),
 
-      qb =>
-        qb
-          .useLink('unit')
-          .select(['color', 'name'])
-          .where('id', 'hasAnyOf', [1, 2, 3]),
+  //     qb =>
+  //       qb
+  //         .useLink('unit')
+  //         .select(['color', 'name'])
+  //         .where('id', 'hasAnyOf', [1, 2, 3]),
 
-      'proteinPer100G',
-      'carbsPer100G',
-      'fatsPer100G',
-      'mealName',
-      'mealIngredient',
-      'quantity',
-    ])
-    .where(qb =>
-      qb.where('carbsPer100G', '!=', 2).orWhere('carbsPer100G', '=', 3)
-    )
-    .where('carbsPer100G', '!=', 2)
-    .orderBy('fatsPer100G', 'desc'),
-])
-  .subscribe((query1, query2) => {})
-  .execute();
+  //     'proteinPer100G',
+  //     'carbsPer100G',
+  //     'fatsPer100G',
+  //     'mealName',
+  //     'mealIngredient',
+  //     'quantity',
+  //   ])
+  //   .where(qb =>
+  //     qb.where('carbsPer100G', '!=', 2).orWhere('carbsPer100G', '=', 3)
+  //   )
+  //   .where('carbsPer100G', '!=', 2)
+  //   .orderBy('fatsPer100G', 'desc').compile();
 
 const {query, variables} = qb
   .selectFrom('calories')
@@ -71,7 +69,13 @@ const {query, variables} = qb
   .orderBy('fatsPer100G', 'desc')
   .compile();
 
-console.dir({query, variables}, {depth: null});
+  const t = qb.selectFrom('cardio').select([
+    'id',
+    qb =>
+      qb.useLink('test').select([qb => qb.useLink('test').select(['id'])]),
+  ]).compile();
+
+console.dir({query, variables, t}, {depth: null});
 
 const {query: insertQuery, variables: insertVars} = qb
   .insertInto('calories')

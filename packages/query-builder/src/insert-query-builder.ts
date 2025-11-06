@@ -1,9 +1,7 @@
-import {ColumnType} from '@taylordb/shared';
-import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
-import {makeMutationInputTypeName} from './graphql/mutation-schema-names.js';
-import type {AnyDB, QueryNode} from './internal-types.js';
-import {QueryBuilder} from './query-builder.js';
-import {SelectionBuilder} from './selection-builder.js';
+import { ColumnType } from '@taylordb/shared';
+import type { AnyDB, QueryNode } from './internal-types.js';
+import { QueryBuilder } from './query-builder.js';
+import { SelectionBuilder } from './selection-builder.js';
 
 type InsertNode = {
   into: string;
@@ -52,42 +50,40 @@ export class InsertQueryBuilder<DB extends AnyDB, TableName extends keyof DB> {
   }
 
   compile(): {query: string; variables: Record<string, any>} {
-    const variables: Record<string, any> = {};
-    const varDefinitions: Record<string, string> = {};
+    const query = `query ($metadata: [ExecutionMetadata]) {
+  execute(metadata: $metadata)
+}`;
 
-    const recordsVarName = 'records';
-    varDefinitions[recordsVarName] = `[${makeMutationInputTypeName(
-      this.#node.into
-    )}]`;
-    variables[recordsVarName] = this.#node.values;
-
-    const selection = this.#node.returning.length
-      ? this.#node.returning
-      : ['id'];
-    const returningSelection = selection.reduce((acc, field) => {
-      if (typeof field === 'string') {
-        acc[field] = true;
-      }
-      return acc;
-    }, {} as Record<string, any>);
-
-    const query = {
-      mutation: {
-        __variables: varDefinitions,
-        [this.#node.into]: {
-          createRecord: {
-            __args: {
-              records: new EnumType('$' + recordsVarName),
-            },
-            ...returningSelection,
-          },
-        },
-      },
-    };
+    const metadata = [this._prepareMetadata()];
 
     return {
-      query: jsonToGraphQLQuery(query, {pretty: true}),
-      variables: variables,
+      query,
+      variables: {
+        metadata,
+      },
+    };
+  }
+
+  private _prepareMetadata(): any {
+    const buildSelects = (selects: (string | QueryNode)[]): any[] => {
+      return selects.map(field => {
+        if (typeof field === 'string') {
+          return field;
+        }
+        const subQueryBuilder = new QueryBuilder(field as QueryNode);
+        return subQueryBuilder._prepareMetadata();
+      });
+    };
+
+    const returningSelection = this.#node.returning.length
+      ? buildSelects(this.#node.returning)
+      : ['id'];
+
+    return {
+      type: 'insert',
+      tableName: this.#node.into,
+      values: this.#node.values,
+      returning: returningSelection,
     };
   }
 }

@@ -4,7 +4,7 @@ import type { AnyDB, QueryNode } from './internal-types.js';
 
 export class FilterableQueryBuilder<
   DB extends AnyDB,
-  TableName extends keyof DB
+  TableName extends keyof DB,
 > {
   _node: QueryNode;
 
@@ -43,9 +43,9 @@ export class FilterableQueryBuilder<
       const result = column(builder);
       return new (this.constructor as any)({
         ...this._node,
-        filters: {
+        filtersSet: {
           ...this._node.filtersSet,
-          filters: [...this._node.filtersSet.filtersSet, result._node.filters],
+          filtersSet: [...this._node.filtersSet.filtersSet, result._node.filters],
         },
       });
     }
@@ -54,9 +54,9 @@ export class FilterableQueryBuilder<
 
     return new (this.constructor as any)({
       ...this._node,
-      filters: {
+      filtersSet: {
         ...this._node.filtersSet,
-        filters: [...this._node.filtersSet.filtersSet, newWhere],
+        filtersSet: [...this._node.filtersSet.filtersSet, newWhere],
       },
     });
   }

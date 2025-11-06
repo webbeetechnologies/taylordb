@@ -19,11 +19,10 @@ export class SelectionBuilder<
         ? DB[CurrentTableName][LinkName]['linkedTo']
         : never
     >({
-      tableName: from,
+      field: from,
       fields: [],
       filtersSet: {conjunction: 'and', filtersSet: []},
       queryType: 'link',
-      type: 'select',
     });
   }
 }

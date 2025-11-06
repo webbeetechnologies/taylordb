@@ -1,10 +1,11 @@
 import { LinkColumnType } from '@taylordb/shared';
-import { FieldWithDirection, FiltersSet } from '@webbeetechnologies/dbwand-utilities/index.js';
-import { EnumType, jsonToGraphQLQuery } from 'json-to-graphql-query';
+import { FieldWithDirection } from '@webbeetechnologies/dbwand-utilities/index.js';
 import { InsertQueryBuilder } from './insert-query-builder.js';
 import {
   AnyDB,
   QueryNode,
+  RootQueryNode,
+  SelectionQueryNode
 } from './internal-types.js';
 import { SelectionBuilder } from './selection-builder.js';
 import { FilterableQueryBuilder } from './where-query-builder.js';
@@ -34,7 +35,7 @@ export class QueryBuilder<
     return new QueryBuilder({
       ...this._node,
       fields: [...this._node.fields, ...newSelects],
-    });
+    } as QueryNode);
   }
 
   limit(count: number): QueryBuilder<DB, TableName> {
@@ -71,98 +72,64 @@ export class QueryBuilder<
   }
 
   compile(): {query: string; variables: Record<string, any>} {
-    const context = {
-      variables: {} as Record<string, any>,
-      varDefinitions: {} as Record<string, string>,
-    };
+    const query = `query ($metadata: [ExecutionMetadata]) {
+  execute(metadata: $metadata)
+}`;
 
-    const queryBody = this._compile(context);
-
-    const query = {
-      query: {
-        __variables: context.varDefinitions,
-        ...queryBody,
-      },
-    };
+    const metadata = [this._prepareMetadata()];
 
     return {
-      query: jsonToGraphQLQuery(query, {pretty: true}),
-      variables: context.variables,
+      query,
+      variables: {
+        metadata,
+      },
     };
   }
 
-  private _compile(context: {
-    variables: Record<string, any>;
-    varDefinitions: Record<string, string>;
-  }): any {
-    const buildFilters = (group: FiltersSet<string>): any => {
-      if (!group || group.filtersSet.length === 0) return undefined;
+  _prepareMetadata() {
+    if (this.isSelectionQueryNode(this._node)) {
       return {
-        conjunction: group.conjunction,
-        filtersSet: group.filtersSet.map(f => {
-          if ('conjunction' in f) {
-            return buildFilters(f);
+        field: this._node.field,
+        fields: this._node.fields.map(field => {
+          if (typeof field === 'string') {
+            return field;
           }
-          return {field: f.field, operator: f.operator, value: f.value};
+
+          return new QueryBuilder(field as QueryNode)._prepareMetadata();
         }),
+
+        ...(this._node.filtersSet.filtersSet.length > 0 ? { filtersSet: this._node.filtersSet } : {}),
+        ...(this._node.pagination ? { pagination: this._node.pagination } : {}),
+        ...(this._node.sorting ? { sorting: this._node.sorting } : {}),
       };
-    };
-
-    const buildSelects = (selects: QueryNode['fields']): any => {
-      return selects.reduce((acc, field) => {
-        if (typeof field === 'string') {
-          acc[field] = true;
-        } else {
-          const subQueryBuilder = new QueryBuilder(field);
-          const compiledSubQuery = subQueryBuilder._compile(context);
-          acc[field.tableName] = compiledSubQuery[field.tableName];
-        }
-        return acc;
-      }, {} as any);
-    };
-
-    const mainSelects = buildSelects(this._node.fields);
-    const mainFilters = buildFilters(this._node.filtersSet);
-    const mainPagination = this._node.pagination;
-    const mainOrderBy = this._node.sorting;
-
-    const args: any = {};
-
-    if (mainFilters) {
-      const filtersVarName =
-        this._node.queryType === 'root'
-          ? 'filtersSet'
-          : `${this._node.tableName}_filtersSet`;
-
-      args.filtersSet = new EnumType('$' + filtersVarName);
-      context.varDefinitions[filtersVarName] = makeRequestFiltersSetTypeName(
-        this._node.tableName
-      );
-      context.variables[filtersVarName] = mainFilters;
     }
 
-    if (mainPagination) {
-      args.pagination = mainPagination;
+    if (this.isRootQueryNode(this._node)) {
+      return {
+        type: 'select',
+        tableName: this._node.tableName,
+        fields: this._node.fields.map(field => {
+          if (typeof field === 'string') {
+            return field;
+          }
+
+          return new QueryBuilder(field as QueryNode)._prepareMetadata();
+        }),
+        ...(this._node.filtersSet.filtersSet.length > 0 ? { filtersSet: this._node.filtersSet } : {}),
+        ...(this._node.pagination ? { pagination: this._node.pagination } : {}),
+        ...(this._node.sorting ? { sorting: this._node.sorting } : {}),
+      };
     }
 
-    if (mainOrderBy) {
-      args.sorting = mainOrderBy.map(o => ({
-        field: new EnumType(o.field),
-        direction: new EnumType(o.direction),
-      }));
-    }
+    throw new Error('Invalid query node');
+  }
 
-    const records =
-      this._node.queryType === 'root' && Object.keys(mainSelects).length > 0
-        ? {records: mainSelects}
-        : mainSelects;
+  isSelectionQueryNode(node: QueryNode): node is SelectionQueryNode {
+    return node.queryType === 'link';
+  }
 
-    return {
-      [this._node.tableName]: {
-        ...(Object.keys(args).length > 0 && {__args: args}),
-        ...records,
-      },
-    };
+  isRootQueryNode(node: QueryNode): node is RootQueryNode {
+    return node.queryType === 'root';
   }
 }
 

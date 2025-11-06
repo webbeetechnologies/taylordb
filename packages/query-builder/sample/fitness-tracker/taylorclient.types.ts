@@ -148,11 +148,13 @@ interface CardioTable {
   duration: NumberColumnType;
   distance: NumberColumnType;
   exercise: LinkColumnType<'selectTable'>;
+  test: LinkColumnType<'weight'>;
 }
 
 interface WeightTable {
   id: NumberColumnType;
   weight: NumberColumnType;
+  test: LinkColumnType<'goals'>;
 }
 
 interface GoalsTable {
