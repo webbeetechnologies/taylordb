@@ -1,18 +1,18 @@
 import { LinkColumnType } from '@taylordb/shared';
 import { FieldWithDirection } from '@webbeetechnologies/dbwand-utilities/index.js';
-import { InsertQueryBuilder } from './insert-query-builder.js';
 import {
   AnyDB,
   QueryNode,
   RootQueryNode,
-  SelectionQueryNode
-} from './internal-types.js';
+  SelectionQueryNode,
+} from './@types/internal-types.js';
+import {
+  LinkColumnNames,
+  NonLinkColumnNames,
+} from './@types/query-builder.js';
+import { InsertQueryBuilder } from './insert-query-builder.js';
 import { SelectionBuilder } from './selection-builder.js';
 import { FilterableQueryBuilder } from './where-query-builder.js';
-
-type NonLinkColumnNames<T> = {
-  [K in keyof T]: T[K] extends LinkColumnType<any> ? never : K;
-}[keyof T];
 
 export class QueryBuilder<
   DB extends AnyDB,
@@ -31,6 +31,75 @@ export class QueryBuilder<
       }
       return field as string;
     });
+
+    return new QueryBuilder({
+      ...this._node,
+      fields: [...this._node.fields, ...newSelects],
+    } as QueryNode);
+  }
+
+  selectAll(): QueryBuilder<DB, TableName> {
+    return new QueryBuilder({
+      ...this._node,
+      fields: ['*'],
+    } as QueryNode);
+  }
+
+  with(
+    relations:
+      | (LinkColumnNames<DB[TableName]> & string)
+      | (LinkColumnNames<DB[TableName]> & string)[]
+  ): QueryBuilder<DB, TableName>;
+  with(
+    relations: {
+      [K in LinkColumnNames<DB[TableName]>]?: (
+        qb: QueryBuilder<
+          DB,
+          DB[TableName][K] extends LinkColumnType<any>
+            ? DB[TableName][K]['linkedTo']
+            : never
+        >
+      ) => QueryBuilder<
+        DB,
+        DB[TableName][K] extends LinkColumnType<any>
+          ? DB[TableName][K]['linkedTo']
+          : never
+      >;
+    }
+  ): QueryBuilder<DB, TableName>;
+  with(
+    arg:
+      | (LinkColumnNames<DB[TableName]> & string)
+      | (LinkColumnNames<DB[TableName]> & string)[]
+      | Record<string, (qb: any) => any>
+  ): QueryBuilder<DB, TableName> {
+    if (typeof arg === 'string' || Array.isArray(arg)) {
+      const relationNames = (Array.isArray(arg) ? arg : [arg]) as string[];
+      const newSelects = relationNames.map(relationName => {
+        const selectionBuilder = new SelectionBuilder<DB, TableName>();
+        const subQuery = selectionBuilder
+          .useLink(relationName as any)
+          .selectAll();
+        return subQuery._node;
+      });
+
+      return new QueryBuilder({
+        ...this._node,
+        fields: [...this._node.fields, ...newSelects],
+      } as QueryNode);
+    }
+
+    const relations = arg as Record<string, (qb: any) => any>;
+    const newSelects = Object.entries(relations).map(
+      ([relationName, configFn]) => {
+        const selectionBuilder = new SelectionBuilder<DB, TableName>();
+        const initialSubQueryBuilder = selectionBuilder.useLink(
+          relationName as any
+        );
+        const configuredSubQueryBuilder = configFn(initialSubQueryBuilder);
+        return configuredSubQueryBuilder._node;
+      }
+    );
 
     return new QueryBuilder({
       ...this._node,
@@ -72,7 +141,7 @@ export class QueryBuilder<
   }
 
   compile(): {query: string; variables: Record<string, any>} {
-    const query = `query ($metadata: [ExecutionMetadata]) {
+    const query = `mutation ($metadata: GraphQLJSON) {
   execute(metadata: $metadata)
 }`;
 

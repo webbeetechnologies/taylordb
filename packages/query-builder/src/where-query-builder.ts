@@ -1,6 +1,6 @@
 import type { ColumnType, Filters } from '@taylordb/shared';
-import { Filters as DBFilters } from '@webbeetechnologies/dbwand-utilities/index.js';
-import type { AnyDB, QueryNode } from './internal-types.js';
+import { Filters as DBFilters } from '@webbeetechnologies/dbwand-utilities';
+import type { AnyDB, QueryNode } from './@types/internal-types.js';
 
 export class FilterableQueryBuilder<
   DB extends AnyDB,

@@ -1,17 +1,7 @@
-import { ColumnType } from '@taylordb/shared';
-import type { AnyDB, QueryNode } from './internal-types.js';
+import type { Insertable, InsertNode } from './@types/insert.js';
+import type { AnyDB, QueryNode } from './@types/internal-types.js';
 import { QueryBuilder } from './query-builder.js';
 import { SelectionBuilder } from './selection-builder.js';
-
-type InsertNode = {
-  into: string;
-  values: any | any[];
-  returning: (string | QueryNode)[];
-};
-
-type Insertable<T> = {
-  [K in keyof T]?: T[K] extends ColumnType<any, any, infer I, any> ? I : never;
-};
 
 export class InsertQueryBuilder<DB extends AnyDB, TableName extends keyof DB> {
   #node: InsertNode;
@@ -25,7 +15,7 @@ export class InsertQueryBuilder<DB extends AnyDB, TableName extends keyof DB> {
   ): InsertQueryBuilder<DB, TableName> {
     return new InsertQueryBuilder({
       ...this.#node,
-      values: values,
+      createdRecords: Array.isArray(values) ? values : [values],
     });
   }
 
@@ -50,9 +40,7 @@ export class InsertQueryBuilder<DB extends AnyDB, TableName extends keyof DB> {
   }
 
   compile(): {query: string; variables: Record<string, any>} {
-    const query = `query ($metadata: [ExecutionMetadata]) {
-  execute(metadata: $metadata)
-}`;
+    const query = `mutation ($metadata: GraphQLJSON) { execute(metadata: $metadata) }`;
 
     const metadata = [this._prepareMetadata()];
 
@@ -80,9 +68,9 @@ export class InsertQueryBuilder<DB extends AnyDB, TableName extends keyof DB> {
       : ['id'];
 
     return {
-      type: 'insert',
-      tableName: this.#node.into,
-      values: this.#node.values,
+      type: 'create',
+      tableName: this.#node.tableName,
+      createdRecords: this.#node.createdRecords,
       returning: returningSelection,
     };
   }

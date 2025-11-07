@@ -1,10 +1,7 @@
 import type { LinkColumnType } from '@taylordb/shared';
-import type { AnyDB } from './internal-types.js';
+import type { AnyDB } from './@types/internal-types.js';
+import { LinkColumnNames } from './@types/query-builder.js';
 import { QueryBuilder } from './query-builder.js';
-
-type LinkColumnNames<T> = {
-  [K in keyof T]: T[K] extends LinkColumnType<any> ? K : never;
-}[keyof T];
 
 export class SelectionBuilder<
   DB extends AnyDB,

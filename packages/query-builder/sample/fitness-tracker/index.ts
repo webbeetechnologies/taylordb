@@ -43,11 +43,6 @@ const {query, variables} = qb
   .where('id', '=', 1)
   .select([
     'id',
-    qb =>
-      qb
-        .useLink('timeOfDay')
-        .select(['color'])
-        .where('id', 'hasAnyOf', [1, 2, 3]),
 
     qb =>
       qb
@@ -62,6 +57,7 @@ const {query, variables} = qb
     'mealIngredient',
     'quantity',
   ])
+  .with({timeOfDay: qb => qb.select(['color']).where('id', 'hasAnyOf', [1, 2, 3])})
   .where(qb =>
     qb.where('carbsPer100G', '!=', 2).orWhere('carbsPer100G', '=', 3)
   )
@@ -94,6 +90,7 @@ const {query: insertQuery, variables: insertVars} = qb
       fatsPer100G: 15,
     },
   ])
+  .returning(['carbsPer100G'])
   .compile();
 
 console.log('\n--- Insert Records ---');
