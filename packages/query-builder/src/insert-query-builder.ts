@@ -52,7 +52,7 @@ export class InsertQueryBuilder<DB extends AnyDB, TableName extends keyof DB> {
     };
   }
 
-  private _prepareMetadata(): any {
+  _prepareMetadata(): any {
     const buildSelects = (selects: (string | QueryNode)[]): any[] => {
       return selects.map(field => {
         if (typeof field === 'string') {

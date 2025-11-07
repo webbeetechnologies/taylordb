@@ -6,9 +6,9 @@ export class FilterableQueryBuilder<
   DB extends AnyDB,
   TableName extends keyof DB,
 > {
-  _node: QueryNode;
+  _node: Pick<QueryNode, 'filtersSet'>;
 
-  constructor(node: QueryNode) {
+  constructor(node: Pick<QueryNode, 'filtersSet'>) {
     this._node = node;
   }
 
@@ -45,7 +45,7 @@ export class FilterableQueryBuilder<
         ...this._node,
         filtersSet: {
           ...this._node.filtersSet,
-          filtersSet: [...this._node.filtersSet.filtersSet, result._node.filters],
+          filtersSet: [...this._node.filtersSet.filtersSet, result._node.filtersSet],
         },
       });
     }
@@ -97,10 +97,9 @@ export class FilterableQueryBuilder<
 
     return new (this.constructor as any)({
       ...this._node,
-      filters: {
-        ...this._node.filters,
+      filtersSet: {
         conjunction: 'or',
-        filters: newFilters,
+        filtersSet: newFilters,
       },
     });
   }

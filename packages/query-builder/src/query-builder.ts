@@ -10,14 +10,24 @@ import {
   LinkColumnNames,
   NonLinkColumnNames,
 } from './@types/query-builder.js';
+import { AnyQueryBuilder, BatchQueryBuilder } from './batch-query-builder.js';
+import { DeleteQueryBuilder } from './delete-query-builder.js';
 import { InsertQueryBuilder } from './insert-query-builder.js';
 import { SelectionBuilder } from './selection-builder.js';
+import { UpdateQueryBuilder } from './update-query-builder.js';
 import { FilterableQueryBuilder } from './where-query-builder.js';
 
 export class QueryBuilder<
   DB extends AnyDB,
   TableName extends keyof DB
 > extends FilterableQueryBuilder<DB, TableName> {
+  declare _node: QueryNode;
+
+  constructor(node: QueryNode) {
+    super(node);
+    this._node = node;
+  }
+
   select<
     K extends
       | NonLinkColumnNames<DB[TableName]>
@@ -227,10 +237,47 @@ export class RootQueryBuilder<DB extends AnyDB> {
       string
   >(into: TableName): InsertQueryBuilder<DB, TableName> {
     return new InsertQueryBuilder<DB, TableName>({
-      into: into,
-      values: [],
+      tableName: into,
+      createdRecords: [],
       returning: [],
+      type: 'create',
     });
+  }
+
+  update<
+    TableName extends keyof Omit<
+      DB,
+      'selectTable' | 'attachmentTable' | 'collaboratorsTable'
+    > &
+      string
+  >(tableName: TableName): UpdateQueryBuilder<DB, TableName> {
+    return new UpdateQueryBuilder<DB, TableName>({
+      tableName: tableName,
+      values: {},
+      filtersSet: {conjunction: 'and', filtersSet: []},
+      type: 'update',
+    });
+  }
+
+  deleteFrom<
+    TableName extends keyof Omit<
+      DB,
+      'selectTable' | 'attachmentTable' | 'collaboratorsTable'
+    > &
+      string
+  >(tableName: TableName): DeleteQueryBuilder<DB, TableName> {
+    return new DeleteQueryBuilder<DB, TableName>({
+      tableName: tableName,
+      deletedRecordIds: [],
+      filtersSet: {conjunction: 'and', filtersSet: []},
+      type: 'delete',
+    });
+  }
+
+  batch(
+    builders: AnyQueryBuilder[]
+  ): BatchQueryBuilder {
+    return new BatchQueryBuilder(builders);
   }
 }
 
