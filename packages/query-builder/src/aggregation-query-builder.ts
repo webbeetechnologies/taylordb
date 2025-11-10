@@ -7,7 +7,8 @@ import { FilterableQueryBuilder } from './where-query-builder.js';
 export class AggregationQueryBuilder<
   DB extends AnyDB,
   TableName extends keyof DB['tables'],
-  FN extends string = never,
+  TGroupBy extends readonly (keyof DB['tables'][TableName] & string)[] = [],
+  TAggregations extends { [K in keyof DB['tables'][TableName] & string]?: readonly (keyof DB['aggregates'][DB['tables'][TableName][K]['type']])[] } = {},
 > extends FilterableQueryBuilder<DB, TableName> {
   #node: AggregateNode;
 
@@ -16,21 +17,27 @@ export class AggregationQueryBuilder<
     this.#node = node;
   }
 
-  groupBy(
-    fields: (keyof DB['tables'][TableName] & string)[]
-  ): AggregationQueryBuilder<DB, TableName, FN> {
+  groupBy<const TField extends keyof DB['tables'][TableName] & string>(
+    field: TField,
+    direction: 'asc' | 'desc' = 'asc'
+  ): AggregationQueryBuilder<DB, TableName, [...TGroupBy, TField], TAggregations> {
+    const newGrouping: GroupingConfiguration<string> = {
+      field,
+      direction,
+    };
+
     return new AggregationQueryBuilder(
       {
         ...this.#node,
-        groupings: [...(this.#node.groupings || []), ...fields] as GroupingConfiguration<string>[],
+        groupings: [...(this.#node.groupings || []), newGrouping],
       },
       this._executor
     );
   }
 
-  withAggregates<T extends { [K in keyof DB['tables'][TableName] & string]?: (keyof DB['aggregates'][DB['tables'][TableName][K]['type']])[] }>(
+  withAggregates<const T extends { [K in keyof DB['tables'][TableName] & string]?: readonly (keyof DB['aggregates'][DB['tables'][TableName][K]['type']])[] }>(
     aggregates: T
-  ): AggregationQueryBuilder<DB, TableName, FN | (keyof T & string)> {
+  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations & T> {
     const newAggregates = { ...this.#node.aggregations };
     for (const key in aggregates) {
         newAggregates[key] = aggregates[key]!.map(aggregate => aggregate as string);
@@ -47,7 +54,7 @@ export class AggregationQueryBuilder<
 
   limit(
     count: number
-  ): AggregationQueryBuilder<DB, TableName, FN> {
+  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations> {
     return new AggregationQueryBuilder(
       {
         ...this.#node,
@@ -59,7 +66,7 @@ export class AggregationQueryBuilder<
 
   offset(
     count: number
-  ): AggregationQueryBuilder<DB, TableName, FN> {
+  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations> {
     return new AggregationQueryBuilder(
       {
         ...this.#node,
@@ -72,14 +79,14 @@ export class AggregationQueryBuilder<
   paginate(
     page: number,
     limit: number
-  ): AggregationQueryBuilder<DB, TableName, FN> {
+  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations> {
     return this.offset((page - 1) * limit).limit(limit);
   }
 
   orderBy(
     field: keyof DB['tables'][TableName],
     direction: 'asc' | 'desc' = 'asc'
-  ): AggregationQueryBuilder<DB, TableName, FN> {
+  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations> {
     const newSorting: FieldWithDirection<string> = {
       field: field as string,
       direction,
@@ -94,9 +101,9 @@ export class AggregationQueryBuilder<
     );
   }
 
-  async execute(): Promise<AggregateRecord<FN>> {
-    const response = await this._executor.execute<AggregateRecord<FN>[]>(this);
-    return response[0];
+  async execute(): Promise<AggregateRecord<DB, TableName, TGroupBy, TAggregations>[]> {
+    const response = await this._executor.execute<AggregateRecord<DB, TableName, TGroupBy, TAggregations>[]>(this);
+    return response;
   }
 
   compile(): {query: string; variables: Record<string, any>} {
