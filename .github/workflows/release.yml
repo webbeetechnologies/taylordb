@@ -1,33 +1,27 @@
-name: Node.js Package
+name: Release
 
 on:
   release:
     types: [created]
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
       - uses: actions/setup-node@v3
         with:
-          node-version: 19
-      - run: yarn install
-      - run: yarn test:ci
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
 
-  publish-gpr:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 19
-          registry-url: https://npm.pkg.github.com/
-      - run: yarn ci
-      - run: yarn publish
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run compile
+
+      - run: pnpm publish --no-git-checks --access public
+        working-directory: ./packages/query-builder
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

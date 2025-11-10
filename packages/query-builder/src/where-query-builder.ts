@@ -1,5 +1,6 @@
 import type { ColumnType } from '@taylordb/shared';
-import { Filters } from '@webbeetech/dbwand-utilities';
+// @ts-ignore
+import { Filters } from '@webbeetechnologies/dbwand-utilities';
 import type { AnyDB, QueryNode } from './@types/internal-types.js';
 import { Executor } from './executor.js';
 

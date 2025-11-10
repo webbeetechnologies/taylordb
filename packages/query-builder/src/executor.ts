@@ -36,7 +36,7 @@ export class Executor {
     }
 
     if (jsonResponse.data && Array.isArray(jsonResponse.data.execute)) {
-      return jsonResponse.data.execute as T[];
+      return jsonResponse.data.execute;
     }
 
     throw new Error('Unexpected response format');
