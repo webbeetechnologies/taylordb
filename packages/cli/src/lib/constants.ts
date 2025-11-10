@@ -1,4 +1,4 @@
-import {BambooField} from './types';
+import { BambooField } from './types';
 
 export const defaultFields: BambooField[] = [
   {
@@ -8,5 +8,21 @@ export const defaultFields: BambooField[] = [
     options: {},
     title: 'ID',
     returnType: 'number',
+  },
+  {
+    id: 2,
+    name: 'createdAt',
+    type: 'createdAt',
+    options: {},
+    title: 'Created At',
+    returnType: 'date',
+  },
+  {
+    id: 3,
+    name: 'updatedAt',
+    type: 'updatedAt',
+    options: {},
+    title: 'Updated At',
+    returnType: 'date',
   },
 ];

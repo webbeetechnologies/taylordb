@@ -1,5 +1,7 @@
 import { LinkColumnType } from '@taylordb/shared';
 import { FieldWithDirection } from '@webbeetechnologies/dbwand-utilities/index.js';
+import { z } from 'zod';
+import { AggregateNode } from './@types/aggregate.js';
 import {
   AnyDB,
   QueryNode,
@@ -10,8 +12,16 @@ import {
   LinkColumnNames,
   NonLinkColumnNames,
 } from './@types/query-builder.js';
+import {
+  InferDataType,
+  ResolveSelection,
+  ResolveWithObject,
+  ResolveWithPlain,
+} from './@types/type-helpers.js';
+import { AggregationQueryBuilder } from './aggregation-query-builder.js';
 import { AnyQueryBuilder, BatchQueryBuilder } from './batch-query-builder.js';
 import { DeleteQueryBuilder } from './delete-query-builder.js';
+import { Executor } from './executor.js';
 import { InsertQueryBuilder } from './insert-query-builder.js';
 import { SelectionBuilder } from './selection-builder.js';
 import { UpdateQueryBuilder } from './update-query-builder.js';
@@ -19,90 +29,114 @@ import { FilterableQueryBuilder } from './where-query-builder.js';
 
 export class QueryBuilder<
   DB extends AnyDB,
-  TableName extends keyof DB
+  TableName extends keyof DB['tables'],
+  Selection = {},
+  LinkName = null,
 > extends FilterableQueryBuilder<DB, TableName> {
   declare _node: QueryNode;
 
-  constructor(node: QueryNode) {
-    super(node);
+  constructor(node: QueryNode, executor: Executor) {
+    super(node, executor);
     this._node = node;
   }
 
   select<
-    K extends
-      | NonLinkColumnNames<DB[TableName]>
-      | ((builder: SelectionBuilder<DB, TableName>) => QueryBuilder<DB, any>)
-  >(fields: K[]): QueryBuilder<DB, TableName> {
-    const newSelects = fields.map(field => {
-      if (typeof field === 'function') {
-        const builder = new SelectionBuilder<DB, TableName>();
-        const subQuery = field(builder);
-        return subQuery._node;
-      }
-      return field as string;
-    });
-
-    return new QueryBuilder({
-      ...this._node,
-      fields: [...this._node.fields, ...newSelects],
-    } as QueryNode);
+    const TFields extends readonly NonLinkColumnNames<DB['tables'][TableName]>[],
+  >(
+    fields: TFields
+  ): QueryBuilder<  
+    DB,
+    TableName,
+    ResolveSelection<DB, TableName, TFields, Selection>
+  > {
+    return new QueryBuilder(
+      {
+        ...this._node,
+        fields: [...this._node.fields, ...fields],
+      } as QueryNode,
+      this._executor
+    );
   }
 
-  selectAll(): QueryBuilder<DB, TableName> {
-    return new QueryBuilder({
-      ...this._node,
-      fields: ['*'],
-    } as QueryNode);
+  selectAll(): QueryBuilder<
+    DB,
+    TableName,
+    Selection & {[K in keyof DB['tables'][TableName]]: InferDataType<DB['tables'][TableName][K]>}
+  > {
+    return new QueryBuilder(
+      {
+        ...this._node,
+        fields: ['*'],
+      } as QueryNode,
+      this._executor
+    );
   }
 
-  with(
-    relations:
-      | (LinkColumnNames<DB[TableName]> & string)
-      | (LinkColumnNames<DB[TableName]> & string)[]
-  ): QueryBuilder<DB, TableName>;
-  with(
-    relations: {
-      [K in LinkColumnNames<DB[TableName]>]?: (
+  with<
+    const TArg extends
+      | (LinkColumnNames<DB['tables'][TableName]> & string)
+      | readonly (LinkColumnNames<DB['tables'][TableName]> & string)[]
+  >(
+    relations: TArg
+  ): QueryBuilder<
+    DB,
+    TableName,
+    ResolveWithPlain<DB, TableName, TArg, Selection>
+  >;
+  with<
+    const TArg extends {
+      [K in LinkColumnNames<DB['tables'][TableName]>]?: (
         qb: QueryBuilder<
           DB,
-          DB[TableName][K] extends LinkColumnType<any>
-            ? DB[TableName][K]['linkedTo']
-            : never
+          DB['tables'][TableName][K] extends LinkColumnType<any>
+            ? DB['tables'][TableName][K]['linkedTo']
+            : never,
+          {},
+          K
         >
       ) => QueryBuilder<
         DB,
-        DB[TableName][K] extends LinkColumnType<any>
-          ? DB[TableName][K]['linkedTo']
-          : never
+        any,
+        any,
+        any
       >;
     }
-  ): QueryBuilder<DB, TableName>;
+  >(
+    relations: TArg
+  ): QueryBuilder<DB, TableName, ResolveWithObject<TArg, Selection>>;
   with(
     arg:
-      | (LinkColumnNames<DB[TableName]> & string)
-      | (LinkColumnNames<DB[TableName]> & string)[]
+      | (LinkColumnNames<DB['tables'][TableName]> & string)
+      | (LinkColumnNames<DB['tables'][TableName]> & string)[]
       | Record<string, (qb: any) => any>
-  ): QueryBuilder<DB, TableName> {
+  ): QueryBuilder<DB, TableName, any> {
     if (typeof arg === 'string' || Array.isArray(arg)) {
       const relationNames = (Array.isArray(arg) ? arg : [arg]) as string[];
       const newSelects = relationNames.map(relationName => {
-        const selectionBuilder = new SelectionBuilder<DB, TableName>();
+        const selectionBuilder = new SelectionBuilder<DB, TableName>(
+          this._executor
+        );
         const subQuery = selectionBuilder
           .useLink(relationName as any)
           .selectAll();
         return subQuery._node;
       });
 
-      return new QueryBuilder({
-        ...this._node,
-        fields: [...this._node.fields, ...newSelects],
-      } as QueryNode);
+      return new QueryBuilder(
+        {
+          ...this._node,
+          fields: [...this._node.fields, ...newSelects],
+        } as QueryNode,
+        this._executor
+      );
     }
 
     const relations = arg as Record<string, (qb: any) => any>;
     const newSelects = Object.entries(relations).map(
       ([relationName, configFn]) => {
-        const selectionBuilder = new SelectionBuilder<DB, TableName>();
+        const selectionBuilder = new SelectionBuilder<DB, TableName>(
+          this._executor
+        );
         const initialSubQueryBuilder = selectionBuilder.useLink(
           relationName as any
         );
@@ -111,49 +145,72 @@ export class QueryBuilder<
       }
     );
 
-    return new QueryBuilder({
-      ...this._node,
-      fields: [...this._node.fields, ...newSelects],
-    } as QueryNode);
+    return new QueryBuilder(
+      {
+        ...this._node,
+        fields: [...this._node.fields, ...newSelects],
+      } as QueryNode,
+      this._executor
+    );
   }
 
-  limit(count: number): QueryBuilder<DB, TableName> {
-    return new QueryBuilder({
-      ...this._node,
-      pagination: {...this._node.pagination, limit: count},
-    });
+  limit(
+    count: number
+  ): QueryBuilder<DB, TableName, Selection, LinkName> {
+    return new QueryBuilder(
+      {
+        ...this._node,
+        pagination: {...this._node.pagination, limit: count},
+      },
+      this._executor
+    );
   }
 
-  offset(count: number): QueryBuilder<DB, TableName> {
-    return new QueryBuilder({
-      ...this._node,
-      pagination: {...this._node.pagination, offset: count},
-    });
+  offset(
+    count: number
+  ): QueryBuilder<DB, TableName, Selection, LinkName> {
+    return new QueryBuilder(
+      {
+        ...this._node,
+        pagination: {...this._node.pagination, offset: count},
+      },
+      this._executor
+    );
   }
 
-  paginate(page: number, limit: number): QueryBuilder<DB, TableName> {
+  paginate(
+    page: number,
+    limit: number
+  ): QueryBuilder<DB, TableName, Selection, LinkName> {
     return this.offset((page - 1) * limit).limit(limit);
   }
 
   orderBy(
-    field: keyof DB[TableName],
+    field: keyof DB['tables'][TableName],
     direction: 'asc' | 'desc' = 'asc'
-  ): QueryBuilder<DB, TableName> {
+  ): QueryBuilder<DB, TableName, Selection, LinkName> {
     const newSorting: FieldWithDirection<string> = {
       field: field as string,
       direction,
     };
 
-    return new QueryBuilder({
-      ...this._node,
-      sorting: [...(this._node.sorting || []), newSorting],
-    });
+    return new QueryBuilder(
+      {
+        ...this._node,
+        sorting: [...(this._node.sorting || []), newSorting],
+      },
+      this._executor
+    );
+  }
+
+  async execute(): Promise<Selection[]> {
+    const response = await this._executor.execute<Selection>(this);
+    
+    return response[0];
   }
 
   compile(): {query: string; variables: Record<string, any>} {
-    const query = `mutation ($metadata: GraphQLJSON) {
-  execute(metadata: $metadata)
-}`;
+    const query = `mutation ($metadata: JSON) { execute(metadata: $metadata) }`;
 
     const metadata = [this._prepareMetadata()];
 
@@ -174,7 +231,7 @@ export class QueryBuilder<
             return field;
           }
 
-          return new QueryBuilder(field as QueryNode)._prepareMetadata();
+          return new QueryBuilder(field as QueryNode, this._executor)._prepareMetadata();
         }),
 
         ...(this._node.filtersSet.filtersSet.length > 0 ? { filtersSet: this._node.filtersSet } : {}),
@@ -192,7 +249,7 @@ export class QueryBuilder<
             return field;
           }
 
-          return new QueryBuilder(field as QueryNode)._prepareMetadata();
+          return new QueryBuilder(field as QueryNode, this._executor)._prepareMetadata();
         }),
         ...(this._node.filtersSet.filtersSet.length > 0 ? { filtersSet: this._node.filtersSet } : {}),
         ...(this._node.pagination ? { pagination: this._node.pagination } : {}),
@@ -213,74 +270,115 @@ export class QueryBuilder<
 }
 
 export class RootQueryBuilder<DB extends AnyDB> {
+  #executor: Executor;
+
+  constructor(config: {baseUrl: string; apiKey: string}) {
+    this.#executor = new Executor(config.baseUrl, config.apiKey);
+  }
   selectFrom<
     TableName extends keyof Omit<
-      DB,
+      DB['tables'],
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
       string
   >(from: TableName): QueryBuilder<DB, TableName> {
-    return new QueryBuilder<DB, TableName>({
-      tableName: from,
-      fields: [],
-      filtersSet: {conjunction: 'and', filtersSet: []},
-      type: 'select',
-      queryType: 'root',
-    });
+    return new QueryBuilder<DB, TableName>(
+      {
+        tableName: from,
+        fields: [],
+        filtersSet: {conjunction: 'and', filtersSet: []},
+        type: 'select',
+        queryType: 'root',
+      },
+      this.#executor
+    );
   }
 
   insertInto<
     TableName extends keyof Omit<
-      DB,
+      DB['tables'],
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
       string
   >(into: TableName): InsertQueryBuilder<DB, TableName> {
-    return new InsertQueryBuilder<DB, TableName>({
-      tableName: into,
-      createdRecords: [],
-      returning: [],
-      type: 'create',
-    });
+    return new InsertQueryBuilder<DB, TableName>(
+      {
+        tableName: into,
+        createdRecords: [],
+        returning: [],
+        type: 'create',
+      },
+      this.#executor
+    );
   }
 
   update<
     TableName extends keyof Omit<
-      DB,
+      DB['tables'],
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
       string
   >(tableName: TableName): UpdateQueryBuilder<DB, TableName> {
-    return new UpdateQueryBuilder<DB, TableName>({
-      tableName: tableName,
-      values: {},
-      filtersSet: {conjunction: 'and', filtersSet: []},
-      type: 'update',
-    });
+    return new UpdateQueryBuilder<DB, TableName>(
+      {
+        tableName: tableName,
+        values: {},
+        filtersSet: {conjunction: 'and', filtersSet: []},
+        type: 'update',
+      },
+      this.#executor
+    );
   }
 
   deleteFrom<
     TableName extends keyof Omit<
-      DB,
+      DB['tables'],
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
       string
   >(tableName: TableName): DeleteQueryBuilder<DB, TableName> {
-    return new DeleteQueryBuilder<DB, TableName>({
-      tableName: tableName,
-      deletedRecordIds: [],
-      filtersSet: {conjunction: 'and', filtersSet: []},
-      type: 'delete',
-    });
+    return new DeleteQueryBuilder<DB, TableName>(
+      {
+        tableName: tableName,
+        deletedRecordIds: [],
+        filtersSet: {conjunction: 'and', filtersSet: []},
+        type: 'delete',
+      },
+      this.#executor
+    );
   }
 
-  batch(
-    builders: AnyQueryBuilder[]
-  ): BatchQueryBuilder {
-    return new BatchQueryBuilder(builders);
+  batch(builders: AnyQueryBuilder[]): BatchQueryBuilder {
+    return new BatchQueryBuilder(builders, this.#executor);
+  }
+
+  aggregateFrom<
+    TableName extends keyof Omit<
+      DB['tables'],
+      'selectTable' | 'attachmentTable' | 'collaboratorsTable'
+    > &
+      string
+  >(tableName: TableName): AggregationQueryBuilder<DB, TableName> {
+    const node: AggregateNode = {
+        tableName: tableName,
+        type: 'aggregation',
+        filtersSet: {conjunction: 'and', filtersSet: []},
+        groupings: [],
+        aggregations: {}
+      };
+    return new AggregationQueryBuilder<DB, TableName>(node, this.#executor);
   }
 }
 
-export function createQueryBuilder<DB extends AnyDB>() {
-  return new RootQueryBuilder<DB>();
+const QBConfigSchema = z.object({
+  baseUrl: z.string().url(),
+  apiKey: z.string().nonempty(),
+});
+
+export function createQueryBuilder<DB extends AnyDB>(config: {
+  baseUrl: string;
+  apiKey: string;
+}) {
+  QBConfigSchema.parse(config);
+  return new RootQueryBuilder<DB>(config);
 }

@@ -1,9 +1,9 @@
 import * as fs from 'fs';
-import {camelCase, upperFirst} from 'lodash';
-import {IndentationText, Project, QuoteKind, SourceFile} from 'ts-morph';
-import {defaultFields} from '../lib/constants';
-import {BambooModelsResponse} from '../lib/types';
-import {TypeMapper} from './type-mapper';
+import { camelCase, upperFirst } from 'lodash';
+import { IndentationText, Project, QuoteKind, SourceFile } from 'ts-morph';
+import { defaultFields } from '../lib/constants';
+import { BambooModelsResponse } from '../lib/types';
+import { TypeMapper } from './type-mapper';
 
 export class TaylorTypeGenerator {
   private readonly sourceFile: SourceFile;
@@ -51,10 +51,10 @@ export class TaylorTypeGenerator {
     });
 
     const taylorDatabaseInterface =
-      this.sourceFile.getInterface('TaylorDatabase');
+      this.sourceFile.getInterface('Tables');
 
     if (!taylorDatabaseInterface)
-      throw new Error('TaylorDatabase interface not found');
+      throw new Error('Tables interface not found');
 
     taylorDatabaseInterface.addProperties(
       this.schema.bambooModels.records.map(table => ({

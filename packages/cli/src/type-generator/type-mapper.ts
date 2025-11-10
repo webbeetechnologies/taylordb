@@ -1,5 +1,5 @@
-import {BambooField} from '../lib/types';
-import {TaylorTypeGenerator} from './taylor-type-generator';
+import { BambooField } from '../lib/types';
+import { TaylorTypeGenerator } from './taylor-type-generator';
 
 export class TypeMapper {
   constructor(private readonly taylorTypeGenerator: TaylorTypeGenerator) {}
@@ -40,6 +40,12 @@ export class TypeMapper {
       case 'select':
         return "LinkColumnType<'selectTable'>";
 
+      case 'createdAt':
+      case 'updatedAt':
+      case 'date':
+      case 'modifiedAt':
+        return 'DateColumnType';
+        
       default:
         return null;
     }
