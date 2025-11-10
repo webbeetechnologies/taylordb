@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Debug file list
+        run: ls -la
       - uses: pnpm/action-setup@v2
         with:
           version: 8
@@ -18,6 +20,11 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
 
+      - name: Show pnpm version and lockfile details
+        run: |
+          pnpm --version
+          echo "---"
+          cat pnpm-lock.yaml | tail -n 5
       - run: pnpm install --frozen-lockfile
       - run: pnpm run compile
 

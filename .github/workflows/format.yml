@@ -5,6 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Debug file list
+        run: ls -la
       - uses: pnpm/action-setup@v2
         with:
           version: 8
@@ -12,7 +14,11 @@ jobs:
         with:
           node-version: 18
           cache: 'pnpm'
-      - run: ls -la
+      - name: Show pnpm version and lockfile details
+        run: |
+          pnpm --version
+          echo "---"
+          cat pnpm-lock.yaml | tail -n 5
       - run: pnpm install --frozen-lockfile
       - run: pnpm run format
       - uses: stefanzweifel/git-auto-commit-action@v4
