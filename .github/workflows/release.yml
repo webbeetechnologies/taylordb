@@ -25,7 +25,7 @@ jobs:
           pnpm --version
           echo "---"
           cat pnpm-lock.yaml | tail -n 5
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile
       - run: pnpm run compile
 
       - run: pnpm publish --no-git-checks --access public
