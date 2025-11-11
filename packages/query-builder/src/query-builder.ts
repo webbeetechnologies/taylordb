@@ -202,6 +202,12 @@ export class QueryBuilder<
     return response[0];
   }
 
+  async executeTakeFirst(): Promise<Selection | null> {
+    const response = await this._executor.execute<Selection>(this);
+
+    return response[0]?.[0] ?? null;
+  }
+
   compile(): { query: string; variables: Record<string, any> } {
     const query = 'mutation ($metadata: JSON) { execute(metadata: $metadata) }';
 
