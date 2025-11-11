@@ -351,7 +351,9 @@ export class RootQueryBuilder<DB extends AnyDB> {
     );
   }
 
-  batch(builders: AnyQueryBuilder[]): BatchQueryBuilder {
+  batch<const TBuilders extends readonly AnyQueryBuilder[]>(
+    builders: TBuilders,
+  ): BatchQueryBuilder<TBuilders> {
     return new BatchQueryBuilder(builders, this.#executor);
   }
 

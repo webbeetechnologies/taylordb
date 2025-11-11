@@ -1,5 +1,7 @@
 import type { Insertable, InsertNode } from './@types/insert.js';
 import type { AnyDB, QueryNode } from './@types/internal-types.js';
+import { NonLinkColumnNames } from './@types/query-builder.js';
+import { ResolveSelection } from './@types/type-helpers.js';
 import { Executor } from './executor.js';
 import { QueryBuilder } from './query-builder.js';
 import { SelectionBuilder } from './selection-builder.js';
@@ -7,6 +9,7 @@ import { SelectionBuilder } from './selection-builder.js';
 export class InsertQueryBuilder<
   DB extends AnyDB,
   TableName extends keyof DB['tables'],
+  Selection = { id: number },
 > {
   #node: InsertNode;
   #executor: Executor;
@@ -20,7 +23,7 @@ export class InsertQueryBuilder<
     values:
       | Insertable<DB['tables'][TableName]>
       | Insertable<DB['tables'][TableName]>[],
-  ): InsertQueryBuilder<DB, TableName> {
+  ): InsertQueryBuilder<DB, TableName, Selection> {
     return new InsertQueryBuilder(
       {
         ...this.#node,
@@ -31,13 +34,20 @@ export class InsertQueryBuilder<
   }
 
   returning<
-    K extends
-      | keyof DB['tables'][TableName]
-      | ((builder: SelectionBuilder<DB, TableName>) => QueryBuilder<DB, any>),
-  >(fields: K[]): InsertQueryBuilder<DB, TableName> {
+    const TFields extends readonly NonLinkColumnNames<
+      DB['tables'][TableName]
+    >[],
+  >(
+    fields: TFields,
+  ): InsertQueryBuilder<
+    DB,
+    TableName,
+    ResolveSelection<DB, TableName, TFields, object>
+  > {
     const newSelects = fields.map(field => {
       if (typeof field === 'function') {
         const builder = new SelectionBuilder<DB, TableName>(this.#executor);
+        // @ts-ignore
         const subQuery = field(builder);
         return subQuery._node;
       }
@@ -53,8 +63,8 @@ export class InsertQueryBuilder<
     );
   }
 
-  async execute<T>(): Promise<T> {
-    return this.#executor.execute<T>(this);
+  async execute(): Promise<Selection[]> {
+    return this.#executor.execute(this);
   }
 
   compile(): { query: string; variables: Record<string, any> } {

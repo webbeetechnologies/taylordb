@@ -6,23 +6,33 @@ import { QueryBuilder } from './query-builder.js';
 import { UpdateQueryBuilder } from './update-query-builder.js';
 
 export type AnyQueryBuilder =
-  | QueryBuilder<any, any>
-  | InsertQueryBuilder<any, any>
+  | QueryBuilder<any, any, any, any>
+  | InsertQueryBuilder<any, any, any>
   | UpdateQueryBuilder<any, any>
   | DeleteQueryBuilder<any, any>
-  | AggregationQueryBuilder<any, any>;
+  | AggregationQueryBuilder<any, any, any, any>;
 
-export class BatchQueryBuilder {
-  #builders: AnyQueryBuilder[];
+type InferExecuteResult<TBuilder> = TBuilder extends {
+  execute: () => Promise<any>;
+}
+  ? Awaited<ReturnType<TBuilder['execute']>>
+  : never;
+
+export class BatchQueryBuilder<
+  const TBuilders extends readonly AnyQueryBuilder[],
+> {
+  #builders: TBuilders;
   #executor: Executor;
 
-  constructor(builders: AnyQueryBuilder[], executor: Executor) {
+  constructor(builders: TBuilders, executor: Executor) {
     this.#builders = builders;
     this.#executor = executor;
   }
 
-  async execute<T>(): Promise<T> {
-    return this.#executor.execute<T>(this);
+  async execute(): Promise<{
+    -readonly [K in keyof TBuilders]: InferExecuteResult<TBuilders[K]>;
+  }> {
+    return this.#executor.execute(this);
   }
 
   compile(): { query: string; variables: Record<string, any> } {

@@ -48,12 +48,25 @@ async function main() {
 
   // Example 5: Batching queries
   console.log('\n--- Batching Queries ---');
-  await qb
+  const batchResult = await qb
     .batch([
-      qb.selectFrom('customers').select(['firstName', 'lastName']),
       qb
         .insertInto('customers')
-        .values({ firstName: 'Batch', lastName: 'User' }),
+        .values({ firstName: 'Batch', lastName: 'User' })
+        .returning(['firstName', 'id']),
+      qb
+        .update('customers')
+        .set({ lastName: 'Batch User' })
+        .where('id', '=', 1),
+      qb
+        .aggregateFrom('customers')
+        .groupBy('firstName', 'asc')
+        .groupBy('lastName', 'desc')
+        .withAggregates({
+          id: ['sum', 'empty'],
+          updatedAt: ['daysRange'],
+        }),
+      qb.selectFrom('customers').select(['firstName', 'lastName']),
     ])
     .execute();
 
