@@ -13,8 +13,9 @@
     "prepublishOnly": "pnpm run build",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "compile": "tsc -p .",
-    "fix": "gts fix",
-    "format": "gts check",
+    "lint": "eslint .",
+    "fix": "eslint . --fix",
+    "format": "prettier --write .",
     "doc:generate": "typedoc",
     "dev": "tsc -b --watch"
   },
@@ -29,21 +30,26 @@
   },
   "homepage": "https://github.com/webbeetechnologies/taylordb.git#readme",
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@types/inquirer": "^9.0.7",
     "@types/jest": "^29.5.12",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.0.0",
+    "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
-    "gts": "^3.1.1",
+    "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^16.5.0",
     "jest": "^29.7.0",
     "nodemon": "^2.0.20",
+    "prettier": "^3.6.2",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.20.6",
     "typedoc": "^0.24.0",
     "typedoc-plugin-markdown": "^3.14.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^8.46.4"
   },
   "engines": {
     "node": ">=18.0.0"

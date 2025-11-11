@@ -20,7 +20,10 @@ jobs:
           echo "---"
           cat pnpm-lock.yaml | tail -n 5
       - run: pnpm install --no-frozen-lockfile
-      - run: pnpm run format
+      - name: Attempt to fix lint and format issues
+        run: pnpm run fix
+      - name: Check for remaining lint and format issues
+        run: pnpm run lint
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: 'style: auto format'

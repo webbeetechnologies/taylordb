@@ -27,9 +27,8 @@ export class UpdateQueryBuilder<
   }
 
   async execute(): Promise<{ affectedRecords: number }> {
-    const response = await this._executor.execute<
-      { affectedRecords: number }[]
-    >(this);
+    const response =
+      await this._executor.execute<{ affectedRecords: number }[]>(this);
 
     return response[0];
   }

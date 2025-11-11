@@ -19,8 +19,8 @@ With this function, you can get a loan of any amount. It has a very sophisticate
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
+| Name     | Type     | Description                         |
+| :------- | :------- | :---------------------------------- |
 | `amount` | `number` | The amount of money you want to get |
 
 #### Returns
@@ -31,23 +31,23 @@ With this function, you can get a loan of any amount. It has a very sophisticate
 
 [index.ts:20](https://github.com/webbeetechnologies/taylordb/blob/1e6176b/src/index.ts#L20)
 
-___
+---
 
 ### yolo
 
-▸ **yolo**(`lifeEnjoyment`): ``"yolo"`` \| ``"no yolo"``
+▸ **yolo**(`lifeEnjoyment`): `"yolo"` \| `"no yolo"`
 
 This function will determine whether you enjoy your life and if so, return 'yolo' and if not, return 'no yolo'
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
+| Name            | Type     | Description             |
+| :-------------- | :------- | :---------------------- |
 | `lifeEnjoyment` | `number` | How much you enjoy life |
 
 #### Returns
 
-``"yolo"`` \| ``"no yolo"``
+`"yolo"` \| `"no yolo"`
 
 #### Defined in
 

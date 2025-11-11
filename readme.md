@@ -79,8 +79,5 @@ const updatedCustomer = await qb
 ### Deleting Data
 
 ```typescript
-const result = await qb
-  .deleteFrom('customers')
-  .where('id', '=', 1)
-  .execute();
+const result = await qb.deleteFrom('customers').where('id', '=', 1).execute();
 ```

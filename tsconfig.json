@@ -15,8 +15,8 @@
   },
   "files": [],
   "references": [
-    {"path": "packages/cli"},
-    {"path": "packages/shared"},
-    {"path": "packages/query-builder"}
+    { "path": "packages/cli" },
+    { "path": "packages/shared" },
+    { "path": "packages/query-builder" }
   ]
 }

@@ -23,4 +23,3 @@ pnpm taylordb --help
 ```bash
 pnpm taylordb login
 ```
-

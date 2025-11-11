@@ -81,10 +81,7 @@ const updatedCustomer = await qb
 You can delete data from a table using the `deleteFrom` method.
 
 ```typescript
-const result = await qb
-  .deleteFrom('customers')
-  .where('id', '=', 1)
-  .execute();
+const result = await qb.deleteFrom('customers').where('id', '=', 1).execute();
 ```
 
 ### Batch Queries
@@ -92,10 +89,12 @@ const result = await qb
 You can execute multiple queries in a single batch request for improved performance. The result will be a tuple that corresponds to the results of each query in the batch.
 
 ```typescript
-const [customers, newCustomer] = await qb.batch([
-  qb.selectFrom('customers').select(['firstName', 'lastName']),
-  qb.insertInto('customers').values({ firstName: 'John', lastName: 'Doe' }),
-]).execute();
+const [customers, newCustomer] = await qb
+  .batch([
+    qb.selectFrom('customers').select(['firstName', 'lastName']),
+    qb.insertInto('customers').values({ firstName: 'John', lastName: 'Doe' }),
+  ])
+  .execute();
 ```
 
 ### Aggregation Queries

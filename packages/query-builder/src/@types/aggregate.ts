@@ -46,7 +46,7 @@ export type AggregateRecord<
       count: number;
       aggregates: Aggregates<DB, TName, TAggregations>;
     } & (Tail<TGroupBy> extends readonly []
-      ? {}
+      ? object
       : {
           children: AggregateRecord<DB, TName, Tail<TGroupBy>, TAggregations>[];
         });

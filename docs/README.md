@@ -1,11 +1,13 @@
 @webbeetechnologies/blueprint-nodejs / [Exports](modules.md)
 
 # blueprint kysely nodejs
+
 The blueprint kysely nodejs is a boilerplate for creating backend projects with consistent tooling, code style, and structure. It includes npm scripts, GitHub workflows, Jest for testing, and Google's Typescript Style guide (gts). To use this project, follow the getting started section, which include creating a dev branch on GitHub and setting up branch rules to ensure code quality. This project also includes rules for writing unit and e2e tests, as well as creating a clear readme for users.
 
-On top of that it sets up a basic structure for a database based project, complete with migrations and associated commands for running and creating migrations. It also configures jest in a way, that tests are run in sqlite in an in-memory database, so that you can test mutating database operations. 
+On top of that it sets up a basic structure for a database based project, complete with migrations and associated commands for running and creating migrations. It also configures jest in a way, that tests are run in sqlite in an in-memory database, so that you can test mutating database operations.
 
 ## Goal
+
 - You have less work setting up all the boilerplate code for a database based project
 - All the fundamentals in place: migrations, seeder, CI, testing, linting, code style, etc.
 - Consistent tooling, code style and structure among all backend projects
@@ -14,6 +16,7 @@ On top of that it sets up a basic structure for a database based project, comple
 - Enforced code quality with automated tests
 
 ## Getting started
+
 - **Configure Github branch rules**
   - Create a new repo using this repo as a template
   - Checkout your repo, create a `dev` branch and push it to github. This is important before the next step as the next step requires that the `tests.yml` github action has run at least once.
@@ -25,14 +28,15 @@ On top of that it sets up a basic structure for a database based project, comple
     - Do not allow bypassing the above settings
     - Click save
 - **Remove db engines you don't need from `./kysely` and `package.json`**
-    - The package `pg` and `pg-cursor` are required for the `postgres` engine
-    - The package `mysql2` is required for the `mysql` engine
-    - The package `better-sqlite3` is required for the `sqlite` engine
+  - The package `pg` and `pg-cursor` are required for the `postgres` engine
+  - The package `mysql2` is required for the `mysql` engine
+  - The package `better-sqlite3` is required for the `sqlite` engine
 - run `yarn` to install all dependencies
 - run `yarn run migration:run` to run all migrations
 - Copy the `.env.sample` to `.env`
 
 ## Included
+
 - **General scripts**
   - `yarn run start` - starts the `sample/index.ts` in watch mode with nodemon, restarts it if the code changes
   - `yarn run test` - runs tests including code coverage requirements
@@ -59,6 +63,7 @@ On top of that it sets up a basic structure for a database based project, comple
 - `getConfig` function in `src/getConfig.ts` to get a normalized config from environment variables
 
 ## Testing
+
 - Uses jest for testing
 - Runs tests in the `__tests__` folder or with the `.spec.ts` extension
 - 80 % coverage requirement
@@ -67,6 +72,7 @@ On top of that it sets up a basic structure for a database based project, comple
 - Please note that the db is not reset in between tests so if you mutate data in test A, this data is present in test B
 
 ## Rules
+
 - Write unit tests directly in your code and not in a separate directory. Postfix them with `NAME_OF_YOUR_FILE.spec.ts`.
 - Write e2e tests in the `__tests__` directory.
 - Create a `readme.md` for your project which includes a "getting started" section with instructions on how to install and use this project. Make sure that getting started is easy.
@@ -80,9 +86,11 @@ On top of that it sets up a basic structure for a database based project, comple
 - [Github checks documentation](https://docs.github.com/en/rest/checks?apiVersion=2022-11-28)
 - [Google Typescript Style](https://google.github.io/styleguide/tsguide.html)
 
-## Database structure 
+## Database structure
+
 ![](./resources/db_structure.png)
 
 ## ToDo:
+
 - Add debug tutorial for vscode & intelij
 - Add CI&CD

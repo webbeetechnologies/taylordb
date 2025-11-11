@@ -4,3 +4,4 @@ node_modules
 .pnpm
 .yarn
 coverage
+packages/cli/src/templates/schema-default.template.hbs

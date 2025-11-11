@@ -1,27 +1,27 @@
 {
-    "name": "@taylordb/query-builder",
-    "version": "0.1.0",
-    "description": "A type-safe query builder for TaylorDB",
-    "main": "dist/index.js",
-    "types": "src/index.ts",
-    "scripts": {
-        "build": "tsc",
-        "dev": "tsc -w",
-        "example": "tsx sample/sample-1/index.ts"
-    },
-    "keywords": [
-        "query-builder",
-        "taylordb"
-    ],
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "@taylordb/shared": "workspace:*",
-        "@webbeetechnologies/dbwand-utilities": "link:../../../bamboo/packages/backend/packages/db-wand/dbwand-utilities",
-        "json-to-graphql-query": "^2.2.5",
-        "zod": "^4.1.12"
-    },
-    "devDependencies": {
-        "@types/node": "^18.0.0"
-    }
+  "name": "@taylordb/query-builder",
+  "version": "0.1.0",
+  "description": "A type-safe query builder for TaylorDB",
+  "main": "dist/index.js",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "example": "tsx sample/sample-1/index.ts"
+  },
+  "keywords": [
+    "query-builder",
+    "taylordb"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@taylordb/shared": "workspace:*",
+    "@webbeetechnologies/dbwand-utilities": "link:../../../bamboo/packages/backend/packages/db-wand/dbwand-utilities",
+    "json-to-graphql-query": "^2.2.5",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0"
+  }
 }

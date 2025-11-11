@@ -27,7 +27,7 @@ import { FilterableQueryBuilder } from './where-query-builder.js';
 export class QueryBuilder<
   DB extends AnyDB,
   TableName extends keyof DB['tables'],
-  Selection = {},
+  Selection = object,
   LinkName = null,
 > extends FilterableQueryBuilder<DB, TableName> {
   declare _node: QueryNode;
@@ -94,7 +94,7 @@ export class QueryBuilder<
           DB['tables'][TableName][K] extends LinkColumnType<any>
             ? DB['tables'][TableName][K]['linkedTo']
             : never,
-          {},
+          object,
           K
         >,
       ) => QueryBuilder<DB, any, any, any>;

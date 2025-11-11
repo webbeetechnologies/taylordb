@@ -7,5 +7,10 @@
   },
   "exclude": ["**/dist"],
   "include": ["src/**/*", "sample/**/*"],
-  "references": [{"path": "../shared"}, {"path": "../../../bamboo/packages/backend/packages/db-wand/dbwand-utilities"}]
+  "references": [
+    { "path": "../shared" },
+    {
+      "path": "../../../bamboo/packages/backend/packages/db-wand/dbwand-utilities"
+    }
+  ]
 }

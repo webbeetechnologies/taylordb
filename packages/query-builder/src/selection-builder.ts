@@ -22,7 +22,7 @@ export class SelectionBuilder<
       DB['tables'][CurrentTableName][LinkName] extends LinkColumnType<any>
         ? DB['tables'][CurrentTableName][LinkName]['linkedTo']
         : never,
-      {},
+      object,
       LinkName
     >(
       {

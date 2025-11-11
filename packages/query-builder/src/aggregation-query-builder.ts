@@ -14,7 +14,7 @@ export class AggregationQueryBuilder<
   TAggregations extends {
     [K in keyof DB['tables'][TableName] &
       string]?: readonly (keyof DB['aggregates'][DB['tables'][TableName][K]['type']])[];
-  } = {},
+  } = object,
 > extends FilterableQueryBuilder<DB, TableName> {
   #node: AggregateNode;
 
@@ -122,9 +122,10 @@ export class AggregationQueryBuilder<
   async execute(): Promise<
     AggregateRecord<DB, TableName, TGroupBy, TAggregations>[]
   > {
-    const response = await this._executor.execute<
-      AggregateRecord<DB, TableName, TGroupBy, TAggregations>[]
-    >(this);
+    const response =
+      await this._executor.execute<
+        AggregateRecord<DB, TableName, TGroupBy, TAggregations>[]
+      >(this);
     return response;
   }
 
