@@ -5,6 +5,9 @@
     "main": "dist/index.js",
     "types": "src/index.ts",
     "private": false,
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "build": "tsc",
         "dev": "tsc -w",
