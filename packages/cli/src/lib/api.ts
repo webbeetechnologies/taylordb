@@ -2,11 +2,12 @@ import axios from 'axios';
 import { getToken } from './auth';
 
 const umsApi = axios.create({
-  baseURL: 'http://localhost:8070/graphql',
+  baseURL:
+    process.env.TAYLORDB_UMS_BASE_URL || 'https://ums.taylordb.ai/graphql',
 });
 
 const taylorApi = axios.create({
-  baseURL: 'http://localhost:8090',
+  baseURL: process.env.TAYLORDB_SERVER_BASE_URL || 'https://server.taylordb.ai',
 });
 
 umsApi.interceptors.request.use(config => {

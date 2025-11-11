@@ -1,18 +1,19 @@
 {
   "name": "@taylordb/cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "CLI for TaylorDB",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "private": false,
   "files": [
-    "dist"
+    "dist",
+    "src/templates"
   ],
   "bin": {
     "taylordb": "dist/index.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r src/templates dist/templates",
     "dev": "tsc",
     "start:dev": "ts-node src/index.ts",
     "start:prod": "node dist/index.js",
