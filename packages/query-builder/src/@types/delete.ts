@@ -1,6 +1,6 @@
 import {
   DeleteMutationMetaData,
   MetadataWithTableName,
-} from '@webbeetechnologies/dbwand-utilities';
+} from '@taylordb/shared';
 
 export type DeleteNode = MetadataWithTableName<DeleteMutationMetaData>;

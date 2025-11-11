@@ -1,7 +1,7 @@
 import {
   AggregationQueryMetaData,
   MetadataWithTableName,
-} from '@webbeetechnologies/dbwand-utilities';
+} from '@taylordb/shared';
 import { AnyDB } from './internal-types.js';
 import { InferDataType } from './type-helpers.js';
 

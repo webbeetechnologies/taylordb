@@ -1,8 +1,9 @@
-import { ColumnType } from '@taylordb/shared';
 import {
+  ColumnType,
   CreateMutationMetaData,
   MetadataWithTableName,
-} from '@webbeetechnologies/dbwand-utilities';
+} from '@taylordb/shared';
+
 import { QueryNode } from './internal-types.js';
 
 export type InsertNode = MetadataWithTableName<CreateMutationMetaData> & {

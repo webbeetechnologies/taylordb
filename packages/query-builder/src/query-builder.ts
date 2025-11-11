@@ -1,5 +1,4 @@
-import { LinkColumnType } from '@taylordb/shared';
-import { FieldWithDirection } from '@webbeetechnologies/dbwand-utilities/index.js';
+import { FieldWithDirection, LinkColumnType } from '@taylordb/shared';
 import { z } from 'zod';
 import { AggregateNode } from './@types/aggregate.js';
 import {

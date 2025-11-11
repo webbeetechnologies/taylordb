@@ -1,8 +1,8 @@
-import { ColumnType } from '@taylordb/shared';
 import {
+  ColumnType,
   MetadataWithTableName,
   UpdateMutationMetaData,
-} from '@webbeetechnologies/dbwand-utilities';
+} from '@taylordb/shared';
 
 export type UpdateNode = MetadataWithTableName<UpdateMutationMetaData>;
 

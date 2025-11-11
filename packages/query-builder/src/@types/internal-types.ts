@@ -1,9 +1,9 @@
-import { ColumnType } from '@taylordb/shared';
 import {
+  ColumnType,
   MetadataWithTableName,
   ObjConfigurationVisibleField,
   SelectQueryMetaData,
-} from '@webbeetechnologies/dbwand-utilities';
+} from '@taylordb/shared';
 
 export type Filters = {
   [key: string]: {

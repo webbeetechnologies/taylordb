@@ -1,7 +1,4 @@
-import {
-  FieldWithDirection,
-  GroupingConfiguration,
-} from '@webbeetechnologies/dbwand-utilities/index.js';
+import { FieldWithDirection, GroupingConfiguration } from '@taylordb/shared';
 import type { AggregateNode, AggregateRecord } from './@types/aggregate.js';
 import type { AnyDB } from './@types/internal-types.js';
 import { Executor } from './executor.js';
