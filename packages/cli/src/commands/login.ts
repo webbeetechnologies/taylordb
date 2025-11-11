@@ -1,14 +1,14 @@
-import {input, password} from '@inquirer/prompts';
+import { input, password } from '@inquirer/prompts';
 import chalk from 'chalk';
-import {Command} from 'commander';
-import {umsApi} from '../lib/api';
-import {setToken} from '../lib/auth';
+import { Command } from 'commander';
+import { umsApi } from '../lib/api';
+import { setToken } from '../lib/auth';
 
 export const loginCommand = new Command('login')
   .description('Authenticate with TaylorDB')
   .action(async () => {
-    const email = await input({message: 'Enter your email'});
-    const pass = await password({message: 'Enter your password', mask: true});
+    const email = await input({ message: 'Enter your email' });
+    const pass = await password({ message: 'Enter your password', mask: true });
 
     try {
       const response = await umsApi.post('', {
@@ -42,7 +42,7 @@ export const loginCommand = new Command('login')
         throw new Error(response.data.errors[0].message);
       }
 
-      const {token} = response.data.data.auth.login.accessToken;
+      const { token } = response.data.data.auth.login.accessToken;
       setToken(token);
       console.log(chalk.green('Login successful!'));
     } catch (error: any) {

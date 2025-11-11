@@ -25,44 +25,65 @@ export class FilterableQueryBuilder<
       infer T
     >
       ? T & keyof DB['filters']
-      : never]
+      : never],
   >(
     column: C,
     operator: O,
-    value: DB['filters'][DB['tables'][TableName][C] extends ColumnType<any, any, any, infer T>
+    value: DB['filters'][DB['tables'][TableName][C] extends ColumnType<
+      any,
+      any,
+      any,
+      infer T
+    >
       ? T & keyof DB['filters']
-      : never][O]
+      : never][O],
   ): this;
   where<
     C extends (
-      builder: WhereQueryBuilder<DB, TableName>
-    ) => FilterableQueryBuilder<DB, TableName>
+      builder: WhereQueryBuilder<DB, TableName>,
+    ) => FilterableQueryBuilder<DB, TableName>,
   >(column: C): this;
   where(column: any, operator?: any, value?: any): this {
     if (typeof column === 'function') {
-      const builder = new WhereQueryBuilder<DB, TableName>({
-        ...this._node,
-        filtersSet: {conjunction: 'and', filtersSet: []},
-      }, this._executor);
+      const builder = new WhereQueryBuilder<DB, TableName>(
+        {
+          ...this._node,
+          filtersSet: { conjunction: 'and', filtersSet: [] },
+        },
+        this._executor,
+      );
       const result = column(builder);
-      return new (this.constructor as any)({
+      return new (this.constructor as any)(
+        {
+          ...this._node,
+          filtersSet: {
+            ...this._node.filtersSet,
+            filtersSet: [
+              ...this._node.filtersSet.filtersSet,
+              result._node.filtersSet,
+            ],
+          },
+        },
+        this._executor,
+      );
+    }
+
+    const newWhere: Filters<string> = {
+      field: column as string,
+      operator,
+      value,
+    };
+
+    return new (this.constructor as any)(
+      {
         ...this._node,
         filtersSet: {
           ...this._node.filtersSet,
-          filtersSet: [...this._node.filtersSet.filtersSet, result._node.filtersSet],
+          filtersSet: [...this._node.filtersSet.filtersSet, newWhere],
         },
-      }, this._executor);
-    }
-
-    const newWhere: Filters<string> = {field: column as string, operator, value};
-
-    return new (this.constructor as any)({
-      ...this._node,
-      filtersSet: {
-        ...this._node.filtersSet,
-        filtersSet: [...this._node.filtersSet.filtersSet, newWhere],
       },
-    }, this._executor);
+      this._executor,
+    );
   }
 
   orWhere<
@@ -74,42 +95,53 @@ export class FilterableQueryBuilder<
       infer T
     >
       ? T & keyof DB['filters']
-      : never]
+      : never],
   >(
     column: C,
     operator: O,
-    value: DB['filters'][DB['tables'][TableName][C] extends ColumnType<any, any, any, infer T>
+    value: DB['filters'][DB['tables'][TableName][C] extends ColumnType<
+      any,
+      any,
+      any,
+      infer T
+    >
       ? T & keyof DB['filters']
-      : never][O]
+      : never][O],
   ): this;
   orWhere<C extends (builder: WhereQueryBuilder<DB, TableName>) => any>(
-    column: C
+    column: C,
   ): this;
   orWhere(column: any, operator?: any, value?: any): this {
     const newFilters = this._node.filtersSet.filtersSet;
 
     if (typeof column === 'function') {
-      const builder = new WhereQueryBuilder<DB, TableName>({
-        ...this._node,
-        filtersSet: {conjunction: 'and', filtersSet: []},
-      }, this._executor);
+      const builder = new WhereQueryBuilder<DB, TableName>(
+        {
+          ...this._node,
+          filtersSet: { conjunction: 'and', filtersSet: [] },
+        },
+        this._executor,
+      );
       const result = column(builder);
       newFilters.push(result._node.filters);
     } else {
-      newFilters.push({field: column as string, operator, value});
+      newFilters.push({ field: column as string, operator, value });
     }
 
-    return new (this.constructor as any)({
-      ...this._node,
-      filtersSet: {
-        conjunction: 'or',
-        filtersSet: newFilters,
+    return new (this.constructor as any)(
+      {
+        ...this._node,
+        filtersSet: {
+          conjunction: 'or',
+          filtersSet: newFilters,
+        },
       },
-    }, this._executor);
+      this._executor,
+    );
   }
 }
 
 export class WhereQueryBuilder<
   DB extends AnyDB,
-  TableName extends keyof DB['tables']
+  TableName extends keyof DB['tables'],
 > extends FilterableQueryBuilder<DB, TableName> {}

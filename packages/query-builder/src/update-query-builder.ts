@@ -15,25 +15,27 @@ export class UpdateQueryBuilder<
   }
 
   set(
-    values: Updatable<DB['tables'][TableName]>
+    values: Updatable<DB['tables'][TableName]>,
   ): UpdateQueryBuilder<DB, TableName> {
     return new UpdateQueryBuilder<DB, TableName>(
       {
         ...this.#node,
         values,
       },
-      this._executor
+      this._executor,
     );
   }
 
-  async execute(): Promise<{affectedRecords: number}> {
-    const response = await this._executor.execute<{affectedRecords: number}[]>(this);
-    
+  async execute(): Promise<{ affectedRecords: number }> {
+    const response = await this._executor.execute<
+      { affectedRecords: number }[]
+    >(this);
+
     return response[0];
   }
 
-  compile(): {query: string; variables: Record<string, any>} {
-    const query = `mutation ($metadata: JSON) { execute(metadata: $metadata) }`;
+  compile(): { query: string; variables: Record<string, any> } {
+    const query = 'mutation ($metadata: JSON) { execute(metadata: $metadata) }';
 
     const metadata = [this._prepareMetadata()];
 
@@ -50,7 +52,9 @@ export class UpdateQueryBuilder<
       type: 'update',
       tableName: this.#node.tableName,
       values: this.#node.values,
-      ...(this.#node.filtersSet.filtersSet.length > 0 ? { filtersSet: this.#node.filtersSet } : {}),
+      ...(this.#node.filtersSet.filtersSet.length > 0
+        ? { filtersSet: this.#node.filtersSet }
+        : {}),
     };
   }
 }

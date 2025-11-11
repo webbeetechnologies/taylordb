@@ -4,7 +4,10 @@ import { Executor } from './executor.js';
 import { QueryBuilder } from './query-builder.js';
 import { SelectionBuilder } from './selection-builder.js';
 
-export class InsertQueryBuilder<DB extends AnyDB, TableName extends keyof DB['tables']> {
+export class InsertQueryBuilder<
+  DB extends AnyDB,
+  TableName extends keyof DB['tables'],
+> {
   #node: InsertNode;
   #executor: Executor;
 
@@ -14,21 +17,23 @@ export class InsertQueryBuilder<DB extends AnyDB, TableName extends keyof DB['ta
   }
 
   values(
-    values: Insertable<DB['tables'][TableName]> | Insertable<DB['tables'][TableName]>[]
+    values:
+      | Insertable<DB['tables'][TableName]>
+      | Insertable<DB['tables'][TableName]>[],
   ): InsertQueryBuilder<DB, TableName> {
     return new InsertQueryBuilder(
       {
         ...this.#node,
         createdRecords: Array.isArray(values) ? values : [values],
       },
-      this.#executor
+      this.#executor,
     );
   }
 
   returning<
     K extends
       | keyof DB['tables'][TableName]
-      | ((builder: SelectionBuilder<DB, TableName>) => QueryBuilder<DB, any>)
+      | ((builder: SelectionBuilder<DB, TableName>) => QueryBuilder<DB, any>),
   >(fields: K[]): InsertQueryBuilder<DB, TableName> {
     const newSelects = fields.map(field => {
       if (typeof field === 'function') {
@@ -44,7 +49,7 @@ export class InsertQueryBuilder<DB extends AnyDB, TableName extends keyof DB['ta
         ...this.#node,
         returning: [...this.#node.returning, ...newSelects],
       },
-      this.#executor
+      this.#executor,
     );
   }
 
@@ -52,8 +57,8 @@ export class InsertQueryBuilder<DB extends AnyDB, TableName extends keyof DB['ta
     return this.#executor.execute<T>(this);
   }
 
-  compile(): {query: string; variables: Record<string, any>} {
-    const query = `mutation ($metadata: JSON) { execute(metadata: $metadata) }`;
+  compile(): { query: string; variables: Record<string, any> } {
+    const query = 'mutation ($metadata: JSON) { execute(metadata: $metadata) }';
 
     const metadata = [this._prepareMetadata()];
 
@@ -71,7 +76,10 @@ export class InsertQueryBuilder<DB extends AnyDB, TableName extends keyof DB['ta
         if (typeof field === 'string') {
           return field;
         }
-        const subQueryBuilder = new QueryBuilder(field as QueryNode, this.#executor);
+        const subQueryBuilder = new QueryBuilder(
+          field as QueryNode,
+          this.#executor,
+        );
         return subQueryBuilder._prepareMetadata();
       });
     };

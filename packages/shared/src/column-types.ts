@@ -21,7 +21,7 @@ export type TextColumnType = ColumnType<
 
 export type LinkColumnType<T extends string> = ColumnType<
   object,
-  number[] | {newIds: number[]; deletedIds: number[]} | undefined,
+  number[] | { newIds: number[]; deletedIds: number[] } | undefined,
   number[] | undefined,
   'link'
 > & {

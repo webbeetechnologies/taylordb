@@ -45,7 +45,7 @@ export class TypeMapper {
       case 'date':
       case 'modifiedAt':
         return 'DateColumnType';
-        
+
       default:
         return null;
     }
@@ -53,7 +53,7 @@ export class TypeMapper {
 
   private findNameBySlug(slug: string) {
     const table = this.taylorTypeGenerator.tablesSchema.find(
-      table => table.slug === slug
+      table => table.slug === slug,
     );
 
     if (!table) {

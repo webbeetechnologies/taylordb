@@ -1,1 +1,10 @@
-build/
+# Ignore compiled output and dependencies
+/dist
+/node_modules
+/.pnpm
+/.yarn
+/coverage
+
+# Ignore package-specific dist folders
+packages/*/dist
+github-actions-reporter.js

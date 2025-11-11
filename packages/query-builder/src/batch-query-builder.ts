@@ -25,8 +25,8 @@ export class BatchQueryBuilder {
     return this.#executor.execute<T>(this);
   }
 
-  compile(): {query: string; variables: Record<string, any>} {
-    const query = `mutation ($metadata: JSON) { execute(metadata: $metadata) }`;
+  compile(): { query: string; variables: Record<string, any> } {
+    const query = 'mutation ($metadata: JSON) { execute(metadata: $metadata) }';
 
     const metadata = this.#builders.map(builder => {
       return builder._prepareMetadata();

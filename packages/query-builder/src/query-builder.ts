@@ -8,10 +8,7 @@ import {
   RootQueryNode,
   SelectionQueryNode,
 } from './@types/internal-types.js';
-import {
-  LinkColumnNames,
-  NonLinkColumnNames,
-} from './@types/query-builder.js';
+import { LinkColumnNames, NonLinkColumnNames } from './@types/query-builder.js';
 import {
   InferDataType,
   ResolveSelection,
@@ -41,10 +38,12 @@ export class QueryBuilder<
   }
 
   select<
-    const TFields extends readonly NonLinkColumnNames<DB['tables'][TableName]>[],
+    const TFields extends readonly NonLinkColumnNames<
+      DB['tables'][TableName]
+    >[],
   >(
-    fields: TFields
-  ): QueryBuilder<  
+    fields: TFields,
+  ): QueryBuilder<
     DB,
     TableName,
     ResolveSelection<DB, TableName, TFields, Selection>
@@ -54,30 +53,34 @@ export class QueryBuilder<
         ...this._node,
         fields: [...this._node.fields, ...fields],
       } as QueryNode,
-      this._executor
+      this._executor,
     );
   }
 
   selectAll(): QueryBuilder<
     DB,
     TableName,
-    Selection & {[K in keyof DB['tables'][TableName]]: InferDataType<DB['tables'][TableName][K]>}
+    Selection & {
+      [K in keyof DB['tables'][TableName]]: InferDataType<
+        DB['tables'][TableName][K]
+      >;
+    }
   > {
     return new QueryBuilder(
       {
         ...this._node,
         fields: ['*'],
       } as QueryNode,
-      this._executor
+      this._executor,
     );
   }
 
   with<
     const TArg extends
       | (LinkColumnNames<DB['tables'][TableName]> & string)
-      | readonly (LinkColumnNames<DB['tables'][TableName]> & string)[]
+      | readonly (LinkColumnNames<DB['tables'][TableName]> & string)[],
   >(
-    relations: TArg
+    relations: TArg,
   ): QueryBuilder<
     DB,
     TableName,
@@ -93,28 +96,23 @@ export class QueryBuilder<
             : never,
           {},
           K
-        >
-      ) => QueryBuilder<
-        DB,
-        any,
-        any,
-        any
-      >;
-    }
+        >,
+      ) => QueryBuilder<DB, any, any, any>;
+    },
   >(
-    relations: TArg
+    relations: TArg,
   ): QueryBuilder<DB, TableName, ResolveWithObject<TArg, Selection>>;
   with(
     arg:
       | (LinkColumnNames<DB['tables'][TableName]> & string)
       | (LinkColumnNames<DB['tables'][TableName]> & string)[]
-      | Record<string, (qb: any) => any>
+      | Record<string, (qb: any) => any>,
   ): QueryBuilder<DB, TableName, any> {
     if (typeof arg === 'string' || Array.isArray(arg)) {
       const relationNames = (Array.isArray(arg) ? arg : [arg]) as string[];
       const newSelects = relationNames.map(relationName => {
         const selectionBuilder = new SelectionBuilder<DB, TableName>(
-          this._executor
+          this._executor,
         );
         const subQuery = selectionBuilder
           .useLink(relationName as any)
@@ -127,7 +125,7 @@ export class QueryBuilder<
           ...this._node,
           fields: [...this._node.fields, ...newSelects],
         } as QueryNode,
-        this._executor
+        this._executor,
       );
     }
 
@@ -135,14 +133,14 @@ export class QueryBuilder<
     const newSelects = Object.entries(relations).map(
       ([relationName, configFn]) => {
         const selectionBuilder = new SelectionBuilder<DB, TableName>(
-          this._executor
+          this._executor,
         );
         const initialSubQueryBuilder = selectionBuilder.useLink(
-          relationName as any
+          relationName as any,
         );
         const configuredSubQueryBuilder = configFn(initialSubQueryBuilder);
         return configuredSubQueryBuilder._node;
-      }
+      },
     );
 
     return new QueryBuilder(
@@ -150,44 +148,40 @@ export class QueryBuilder<
         ...this._node,
         fields: [...this._node.fields, ...newSelects],
       } as QueryNode,
-      this._executor
+      this._executor,
     );
   }
 
-  limit(
-    count: number
-  ): QueryBuilder<DB, TableName, Selection, LinkName> {
+  limit(count: number): QueryBuilder<DB, TableName, Selection, LinkName> {
     return new QueryBuilder(
       {
         ...this._node,
-        pagination: {...this._node.pagination, limit: count},
+        pagination: { ...this._node.pagination, limit: count },
       },
-      this._executor
+      this._executor,
     );
   }
 
-  offset(
-    count: number
-  ): QueryBuilder<DB, TableName, Selection, LinkName> {
+  offset(count: number): QueryBuilder<DB, TableName, Selection, LinkName> {
     return new QueryBuilder(
       {
         ...this._node,
-        pagination: {...this._node.pagination, offset: count},
+        pagination: { ...this._node.pagination, offset: count },
       },
-      this._executor
+      this._executor,
     );
   }
 
   paginate(
     page: number,
-    limit: number
+    limit: number,
   ): QueryBuilder<DB, TableName, Selection, LinkName> {
     return this.offset((page - 1) * limit).limit(limit);
   }
 
   orderBy(
     field: keyof DB['tables'][TableName],
-    direction: 'asc' | 'desc' = 'asc'
+    direction: 'asc' | 'desc' = 'asc',
   ): QueryBuilder<DB, TableName, Selection, LinkName> {
     const newSorting: FieldWithDirection<string> = {
       field: field as string,
@@ -199,18 +193,18 @@ export class QueryBuilder<
         ...this._node,
         sorting: [...(this._node.sorting || []), newSorting],
       },
-      this._executor
+      this._executor,
     );
   }
 
   async execute(): Promise<Selection[]> {
     const response = await this._executor.execute<Selection>(this);
-    
+
     return response[0];
   }
 
-  compile(): {query: string; variables: Record<string, any>} {
-    const query = `mutation ($metadata: JSON) { execute(metadata: $metadata) }`;
+  compile(): { query: string; variables: Record<string, any> } {
+    const query = 'mutation ($metadata: JSON) { execute(metadata: $metadata) }';
 
     const metadata = [this._prepareMetadata()];
 
@@ -231,10 +225,15 @@ export class QueryBuilder<
             return field;
           }
 
-          return new QueryBuilder(field as QueryNode, this._executor)._prepareMetadata();
+          return new QueryBuilder(
+            field as QueryNode,
+            this._executor,
+          )._prepareMetadata();
         }),
 
-        ...(this._node.filtersSet.filtersSet.length > 0 ? { filtersSet: this._node.filtersSet } : {}),
+        ...(this._node.filtersSet.filtersSet.length > 0
+          ? { filtersSet: this._node.filtersSet }
+          : {}),
         ...(this._node.pagination ? { pagination: this._node.pagination } : {}),
         ...(this._node.sorting ? { sorting: this._node.sorting } : {}),
       };
@@ -249,9 +248,14 @@ export class QueryBuilder<
             return field;
           }
 
-          return new QueryBuilder(field as QueryNode, this._executor)._prepareMetadata();
+          return new QueryBuilder(
+            field as QueryNode,
+            this._executor,
+          )._prepareMetadata();
         }),
-        ...(this._node.filtersSet.filtersSet.length > 0 ? { filtersSet: this._node.filtersSet } : {}),
+        ...(this._node.filtersSet.filtersSet.length > 0
+          ? { filtersSet: this._node.filtersSet }
+          : {}),
         ...(this._node.pagination ? { pagination: this._node.pagination } : {}),
         ...(this._node.sorting ? { sorting: this._node.sorting } : {}),
       };
@@ -272,7 +276,7 @@ export class QueryBuilder<
 export class RootQueryBuilder<DB extends AnyDB> {
   #executor: Executor;
 
-  constructor(config: {baseUrl: string; apiKey: string}) {
+  constructor(config: { baseUrl: string; apiKey: string }) {
     this.#executor = new Executor(config.baseUrl, config.apiKey);
   }
   selectFrom<
@@ -280,17 +284,17 @@ export class RootQueryBuilder<DB extends AnyDB> {
       DB['tables'],
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
-      string
+      string,
   >(from: TableName): QueryBuilder<DB, TableName> {
     return new QueryBuilder<DB, TableName>(
       {
         tableName: from,
         fields: [],
-        filtersSet: {conjunction: 'and', filtersSet: []},
+        filtersSet: { conjunction: 'and', filtersSet: [] },
         type: 'select',
         queryType: 'root',
       },
-      this.#executor
+      this.#executor,
     );
   }
 
@@ -299,7 +303,7 @@ export class RootQueryBuilder<DB extends AnyDB> {
       DB['tables'],
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
-      string
+      string,
   >(into: TableName): InsertQueryBuilder<DB, TableName> {
     return new InsertQueryBuilder<DB, TableName>(
       {
@@ -308,7 +312,7 @@ export class RootQueryBuilder<DB extends AnyDB> {
         returning: [],
         type: 'create',
       },
-      this.#executor
+      this.#executor,
     );
   }
 
@@ -317,16 +321,16 @@ export class RootQueryBuilder<DB extends AnyDB> {
       DB['tables'],
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
-      string
+      string,
   >(tableName: TableName): UpdateQueryBuilder<DB, TableName> {
     return new UpdateQueryBuilder<DB, TableName>(
       {
         tableName: tableName,
         values: {},
-        filtersSet: {conjunction: 'and', filtersSet: []},
+        filtersSet: { conjunction: 'and', filtersSet: [] },
         type: 'update',
       },
-      this.#executor
+      this.#executor,
     );
   }
 
@@ -335,16 +339,16 @@ export class RootQueryBuilder<DB extends AnyDB> {
       DB['tables'],
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
-      string
+      string,
   >(tableName: TableName): DeleteQueryBuilder<DB, TableName> {
     return new DeleteQueryBuilder<DB, TableName>(
       {
         tableName: tableName,
         deletedRecordIds: [],
-        filtersSet: {conjunction: 'and', filtersSet: []},
+        filtersSet: { conjunction: 'and', filtersSet: [] },
         type: 'delete',
       },
-      this.#executor
+      this.#executor,
     );
   }
 
@@ -357,15 +361,15 @@ export class RootQueryBuilder<DB extends AnyDB> {
       DB['tables'],
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
-      string
+      string,
   >(tableName: TableName): AggregationQueryBuilder<DB, TableName> {
     const node: AggregateNode = {
-        tableName: tableName,
-        type: 'aggregation',
-        filtersSet: {conjunction: 'and', filtersSet: []},
-        groupings: [],
-        aggregations: {}
-      };
+      tableName: tableName,
+      type: 'aggregation',
+      filtersSet: { conjunction: 'and', filtersSet: [] },
+      groupings: [],
+      aggregations: {},
+    };
     return new AggregationQueryBuilder<DB, TableName>(node, this.#executor);
   }
 }

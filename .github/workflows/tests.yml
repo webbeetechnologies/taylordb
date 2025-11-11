@@ -26,7 +26,7 @@ jobs:
           echo "---"
           cat pnpm-lock.yaml | tail -n 5
       - run: pnpm install --no-frozen-lockfile
-      - run: pnpm run test -- --coverage
+      - run: pnpm run test
 
       - name: Tests ✅
         if: ${{ success() }}

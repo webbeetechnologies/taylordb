@@ -443,7 +443,7 @@ queryBuilder.insertInto('customers').values({
   email: 'test@example.com',
   phone: '1234567890',
   orders: [
-    {id: 1, address: '123 Main St'},
-    {id: 2, address: '456 Main St'},
+    { id: 1, address: '123 Main St' },
+    { id: 2, address: '456 Main St' },
   ],
 });

@@ -20,6 +20,9 @@ importers:
       '@types/node':
         specifier: ^18.0.0
         version: 18.19.130
+      eslint-config-prettier:
+        specifier: ^10.1.8
+        version: 10.1.8(eslint@7.32.0)
       gts:
         specifier: ^3.1.1
         version: 3.1.1(typescript@5.9.3)
@@ -1193,6 +1196,12 @@ packages:
   escape-string-regexp@4.0.0:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
+
+  eslint-config-prettier@10.1.8:
+    resolution: {integrity: sha512-82GZUjRS0p/jganf6q1rEO25VSoHH0hKPCTrgillPjdI/3bgBhAE1QzHrHTizjpRvy6pGAvKjDJtk2pF9NDq8w==}
+    hasBin: true
+    peerDependencies:
+      eslint: '>=7.0.0'
 
   eslint-config-prettier@7.2.0:
     resolution: {integrity: sha512-rV4Qu0C3nfJKPOAhFujFxB7RMP+URFyQqqOZW9DMRD7ZDTFyjaIlETU3xzHELt++4ugC0+Jm084HQYkkJe+Ivg==}
@@ -3707,6 +3716,10 @@ snapshots:
   escape-string-regexp@2.0.0: {}
 
   escape-string-regexp@4.0.0: {}
+
+  eslint-config-prettier@10.1.8(eslint@7.32.0):
+    dependencies:
+      eslint: 7.32.0
 
   eslint-config-prettier@7.2.0(eslint@7.32.0):
     dependencies:

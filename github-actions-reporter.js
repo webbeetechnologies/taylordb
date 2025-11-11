@@ -25,7 +25,7 @@ class GithubActionsReporter {
 
           const [, line, col] = captureGroup;
           console.log(
-            `::error file=${testFilePath},line=${line},col=${col}::${message}`
+            `::error file=${testFilePath},line=${line},col=${col}::${message}`,
           );
         });
       });

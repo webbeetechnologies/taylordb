@@ -1,7 +1,7 @@
 // @ts-ignore
 import Conf from 'conf';
 
-const config = new Conf({projectName: 'taylordb'});
+const config = new Conf({ projectName: 'taylordb' });
 
 export function setToken(token: string) {
   config.set('accessToken', token);

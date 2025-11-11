@@ -16,21 +16,25 @@ export type TableShape<TTable> = {
   [K in keyof TTable]: InferDataType<TTable[K]>;
 };
 
-type InferSubqueryResult<TSubquery> =
-  TSubquery extends QueryBuilder<any, any, infer TSelection, any>
-    ? TSelection[]
-    : never;
+type InferSubqueryResult<TSubquery> = TSubquery extends QueryBuilder<
+  any,
+  any,
+  infer TSelection,
+  any
+>
+  ? TSelection[]
+  : never;
 
 type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
-  k: infer I
+  k: infer I,
 ) => void
   ? I
   : never;
 
 type InferSubqueryShape<TFunc> = TFunc extends (
-  b: any
+  b: any,
 ) => QueryBuilder<any, any, infer SubSelection, infer LinkName>
-  ? {[K in LinkName & string]: SubSelection[]}
+  ? { [K in LinkName & string]: SubSelection[] }
   : {};
 
 export type ResolveSelection<
@@ -41,8 +45,10 @@ export type ResolveSelection<
 > = TCurrentSelection &
   UnionToIntersection<
     {
-      [I in keyof TFields]: TFields[I] extends NonLinkColumnNames<DB['tables'][TName]>
-        ? {[K in TFields[I]]: InferDataType<DB['tables'][TName][K]>}
+      [I in keyof TFields]: TFields[I] extends NonLinkColumnNames<
+        DB['tables'][TName]
+      >
+        ? { [K in TFields[I]]: InferDataType<DB['tables'][TName][K]> }
         : TFields[I] extends (b: any) => QueryBuilder<any, any, any, any>
         ? InferSubqueryShape<TFields[I]>
         : {};
@@ -63,7 +69,9 @@ export type ResolveWithPlain<
         ? TRelations[number]
         : TRelations]: {
         [P in K]: TableShape<
-          DB['tables'][DB['tables'][TName][P] extends LinkColumnType<infer L> ? L : never]
+          DB['tables'][DB['tables'][TName][P] extends LinkColumnType<infer L>
+            ? L
+            : never]
         >[];
       };
     }[TRelations extends readonly any[] ? TRelations[number] : TRelations]

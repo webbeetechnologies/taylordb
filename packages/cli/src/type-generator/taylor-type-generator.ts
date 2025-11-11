@@ -12,7 +12,7 @@ export class TaylorTypeGenerator {
   constructor(
     private readonly schema: BambooModelsResponse,
     private readonly output: string,
-    private readonly templateFile: string
+    private readonly templateFile: string,
   ) {
     const project = new Project({
       manipulationSettings: {
@@ -50,17 +50,15 @@ export class TaylorTypeGenerator {
       });
     });
 
-    const taylorDatabaseInterface =
-      this.sourceFile.getInterface('Tables');
+    const taylorDatabaseInterface = this.sourceFile.getInterface('Tables');
 
-    if (!taylorDatabaseInterface)
-      throw new Error('Tables interface not found');
+    if (!taylorDatabaseInterface) throw new Error('Tables interface not found');
 
     taylorDatabaseInterface.addProperties(
       this.schema.bambooModels.records.map(table => ({
         name: table.name,
         type: this.getTableName(table.name),
-      }))
+      })),
     );
 
     await this.sourceFile.save();

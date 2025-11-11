@@ -1,7 +1,7 @@
 import chalk from 'chalk';
-import {Command} from 'commander';
-import {umsApi} from '../lib/api';
-import {clearToken, getToken} from '../lib/auth';
+import { Command } from 'commander';
+import { umsApi } from '../lib/api';
+import { clearToken, getToken } from '../lib/auth';
 
 export const logoutCommand = new Command('logout')
   .description('Log out from TaylorDB')
@@ -28,7 +28,7 @@ export const logoutCommand = new Command('logout')
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       clearToken();

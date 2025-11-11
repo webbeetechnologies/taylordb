@@ -1,10 +1,10 @@
 import chalk from 'chalk';
-import {Command} from 'commander';
-import {EnumType, jsonToGraphQLQuery} from 'json-to-graphql-query';
+import { Command } from 'commander';
+import { EnumType, jsonToGraphQLQuery } from 'json-to-graphql-query';
 import * as path from 'path';
-import {taylorApi, umsApi} from '../lib/api';
-import {AppGetResponse, BambooModelsResponse} from '../lib/types';
-import {TaylorTypeGenerator} from '../type-generator/taylor-type-generator';
+import { taylorApi, umsApi } from '../lib/api';
+import { AppGetResponse, BambooModelsResponse } from '../lib/types';
+import { TaylorTypeGenerator } from '../type-generator/taylor-type-generator';
 
 export const generateSchemaCommand = new Command('generate-schema')
   .description('Generate a schema from a TaylorDB instance')
@@ -34,8 +34,8 @@ export const generateSchemaCommand = new Command('generate-schema')
           },
         },
       };
-      const appQueryString = jsonToGraphQLQuery(appQuery, {pretty: true});
-      const appResponse = await umsApi.post<{data: AppGetResponse}>('', {
+      const appQueryString = jsonToGraphQLQuery(appQuery, { pretty: true });
+      const appResponse = await umsApi.post<{ data: AppGetResponse }>('', {
         query: appQueryString,
       });
 
@@ -85,13 +85,14 @@ export const generateSchemaCommand = new Command('generate-schema')
           },
         },
       };
-      const bambooQueryString = jsonToGraphQLQuery(bambooQuery, {pretty: true});
-      const bambooResponse = await taylorApi.post<{data: BambooModelsResponse}>(
-        'api/' + appDbId,
-        {
-          query: bambooQueryString,
-        }
-      );
+      const bambooQueryString = jsonToGraphQLQuery(bambooQuery, {
+        pretty: true,
+      });
+      const bambooResponse = await taylorApi.post<{
+        data: BambooModelsResponse;
+      }>('api/' + appDbId, {
+        query: bambooQueryString,
+      });
 
       const schemaData = bambooResponse.data.data;
 
@@ -106,13 +107,13 @@ export const generateSchemaCommand = new Command('generate-schema')
       const taylorTypeGenerator = new TaylorTypeGenerator(
         schemaData,
         output,
-        path.join(__dirname, '../templates/schema-default.template.hbs')
+        path.join(__dirname, '../templates/schema-default.template.hbs'),
       );
 
       await taylorTypeGenerator.build();
 
       console.log(
-        chalk.green(`Schema generated successfully at ${path.resolve(output)}`)
+        chalk.green(`Schema generated successfully at ${path.resolve(output)}`),
       );
     } catch (error: any) {
       console.error(chalk.red(`Failed to generate schema: ${error.message}`));

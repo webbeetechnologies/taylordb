@@ -5,6 +5,7 @@
     "rootDir": ".",
     "composite": true
   },
+  "exclude": ["**/dist"],
   "include": ["src/**/*", "sample/**/*"],
   "references": [{"path": "../shared"}, {"path": "../../../bamboo/packages/backend/packages/db-wand/dbwand-utilities"}]
 }

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
-import {Command} from 'commander';
-import {umsApi} from '../lib/api';
-import {getToken} from '../lib/auth';
+import { Command } from 'commander';
+import { umsApi } from '../lib/api';
+import { getToken } from '../lib/auth';
 
 export const meCommand = new Command('me')
   .description('Get the current logged in user')
@@ -9,7 +9,7 @@ export const meCommand = new Command('me')
     const token = getToken();
     if (!token) {
       console.log(
-        chalk.yellow('You are not logged in. Please run "taylordb login"')
+        chalk.yellow('You are not logged in. Please run "taylordb login"'),
       );
       return;
     }
@@ -32,7 +32,7 @@ export const meCommand = new Command('me')
         throw new Error(response.data.errors[0].message);
       }
 
-      const {name, email} = response.data.data.user.profile;
+      const { name, email } = response.data.data.user.profile;
       console.log(`Logged in as: ${chalk.green(name)} (${chalk.blue(email)})`);
     } catch (error: any) {
       console.error(chalk.red(`Failed to get user: ${error.message}`));

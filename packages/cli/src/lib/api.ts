@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {getToken} from './auth';
+import { getToken } from './auth';
 
 const umsApi = axios.create({
   baseURL: 'http://localhost:8070/graphql',
@@ -25,4 +25,4 @@ taylorApi.interceptors.request.use(config => {
   return config;
 });
 
-export {taylorApi, umsApi};
+export { taylorApi, umsApi };

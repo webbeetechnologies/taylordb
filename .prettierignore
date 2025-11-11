@@ -1,0 +1,6 @@
+# Ignore compiled output and dependencies
+dist
+node_modules
+.pnpm
+.yarn
+coverage
