@@ -60,6 +60,7 @@ export const generateSchemaCommand = new Command('generate-schema')
             records: {
               id: true,
               name: true,
+              slug: true,
               title: true,
               fields: {
                 __args: {
@@ -76,6 +77,7 @@ export const generateSchemaCommand = new Command('generate-schema')
                 },
                 id: true,
                 name: true,
+                slug: true,
                 title: true,
                 type: true,
                 options: true,
