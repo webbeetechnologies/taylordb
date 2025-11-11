@@ -1,8 +1,8 @@
 import {
-    AggregateConfiguration,
-    Configuration,
-    FiltersSet,
-    PaginationRequest,
+  AggregateConfiguration,
+  Configuration,
+  FiltersSet,
+  PaginationRequest,
 } from './table-loader';
 
 export type SelectQueryMetaData = {

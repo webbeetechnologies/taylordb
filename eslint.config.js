@@ -5,33 +5,33 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default [
-    {
-        ignores: [
-            '**/dist/**',
-            '**/node_modules/**',
-            '**/.pnpm/**',
-            '**/.yarn/**',
-            '**/coverage/**',
-            'github-actions-reporter.js',
-            'packages/cli/src/templates/schema-default.template.hbs',
-        ],
+  {
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/.pnpm/**',
+      '**/.yarn/**',
+      '**/coverage/**',
+      'github-actions-reporter.js',
+      'packages/cli/src/templates/schema-default.template.hbs',
+    ],
+  },
+  {
+    languageOptions: {
+      globals: globals.node,
     },
-    {
-        languageOptions: {
-            globals: globals.node,
-        },
+  },
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
+  eslintConfigPrettier,
+  {
+    plugins: {
+      prettier: eslintPluginPrettier,
     },
-    pluginJs.configs.recommended,
-    ...tseslint.configs.recommended,
-    eslintConfigPrettier,
-    {
-        plugins: {
-            prettier: eslintPluginPrettier,
-        },
-        rules: {
-            'prettier/prettier': 'error',
-            '@typescript-eslint/ban-ts-comment': 'off',
-            '@typescript-eslint/no-explicit-any': 'off',
-        },
+    rules: {
+      'prettier/prettier': 'error',
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
     },
+  },
 ];
