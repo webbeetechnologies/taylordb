@@ -2,9 +2,11 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": ".",
+    "rootDir": "./src",
     "composite": true,
     "skipLibCheck": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
   "exclude": ["**/dist"],

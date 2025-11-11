@@ -14,7 +14,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc",
-    "start": "ts-node src/index.ts",
+    "start:dev": "ts-node src/index.ts",
+    "start:prod": "node dist/index.js",
     "prepublish": "npm run build"
   },
   "keywords": [
@@ -31,9 +32,11 @@
     "conf": "^15.0.2",
     "inquirer": "^12.10.0",
     "json-to-graphql-query": "^2.3.0",
+    "lodash": "^4.17.21",
     "ts-morph": "^13.0.2"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.0",
     "@types/node": "^18.0.0"
   }
 }
