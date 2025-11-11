@@ -4,6 +4,7 @@
     "description": "A type-safe query builder for TaylorDB",
     "main": "dist/index.js",
     "types": "src/index.ts",
+    "private": false,
     "scripts": {
         "build": "tsc",
         "dev": "tsc -w",

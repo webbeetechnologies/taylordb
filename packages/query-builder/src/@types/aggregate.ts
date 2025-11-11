@@ -15,8 +15,10 @@ export type Aggregates<
       string]?: readonly (keyof DB['aggregates'][DB['tables'][TName][K]['type']])[];
   },
 > = {
-  -readonly [K in keyof TAggregations]: {
-    -readonly [P in TAggregations[K][number]]: DB['aggregates'][DB['tables'][TName][K]['type']][P];
+  -readonly [K in keyof TAggregations & keyof DB['tables'][TName]]: {
+    -readonly [P in NonNullable<
+      TAggregations[K]
+    >[number]]: DB['aggregates'][DB['tables'][TName][K]['type']][P];
   };
 };
 

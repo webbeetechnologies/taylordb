@@ -1,5 +1,4 @@
 import {
-  ColumnType,
   MetadataWithTableName,
   ObjConfigurationVisibleField,
   SelectQueryMetaData,
@@ -20,7 +19,7 @@ export type Aggregates = {
 export type AnyDB = {
   filters: Filters;
   aggregates: Aggregates;
-  tables: Record<string, Record<string, ColumnType<any, any, any, any>>>;
+  tables: any;
 };
 
 export type SelectionQueryNode = ObjConfigurationVisibleField<string> & {

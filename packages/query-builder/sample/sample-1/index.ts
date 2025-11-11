@@ -48,21 +48,13 @@ async function main() {
 
   // Example 5: Batching queries
   console.log('\n--- Batching Queries ---');
-  const [customerList, freshlyInsertedCustomer] = await qb
+  await qb
     .batch([
       qb.selectFrom('customers').select(['firstName', 'lastName']),
       qb
         .insertInto('customers')
         .values({ firstName: 'Batch', lastName: 'User' }),
     ])
-    .execute();
-  console.log('Customer List:', customerList);
-  console.log('Newly Inserted Customer:', freshlyInsertedCustomer);
-
-  // Cleanup the batch inserted user
-  await qb
-    .deleteFrom('customers')
-    .where('id', '=', freshlyInsertedCustomer[0].id)
     .execute();
 
   // Example 6: Aggregation query
