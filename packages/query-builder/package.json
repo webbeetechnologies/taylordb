@@ -1,9 +1,9 @@
 {
     "name": "@taylordb/query-builder",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A type-safe query builder for TaylorDB",
     "main": "dist/index.js",
-    "types": "src/index.ts",
+    "types": "dist/index.d.ts",
     "private": false,
     "files": [
         "dist"
