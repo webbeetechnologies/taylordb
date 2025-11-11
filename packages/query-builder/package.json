@@ -7,7 +7,7 @@
     "scripts": {
         "build": "tsc",
         "dev": "tsc -w",
-        "example": "tsx sample/fitness-tracker/index.ts"
+        "example": "tsx sample/sample-1/index.ts"
     },
     "keywords": [
         "query-builder",

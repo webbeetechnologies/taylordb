@@ -1,5 +1,5 @@
-import { createQueryBuilder } from '../src/query-builder';
-import { TaylorDatabase } from './taylorclient.types';
+import { createQueryBuilder } from '../../src/query-builder.js';
+import { TaylorDatabase } from './taylorclient.types.js';
 
 async function main() {
     const qb = createQueryBuilder<TaylorDatabase>({
@@ -63,8 +63,10 @@ async function main() {
     const aggregates = await qb
         .aggregateFrom('customers')
         .groupBy('firstName', 'asc')
+        .groupBy('lastName', 'desc')
         .withAggregates({
-            id: ['count', 'sum'],
+            id: ['sum', 'empty'],
+            updatedAt: ['daysRange']
         })
         .execute();
     console.log(JSON.stringify(aggregates, null, 2));

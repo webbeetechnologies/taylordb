@@ -19,7 +19,7 @@ jobs:
           pnpm --version
           echo "---"
           cat pnpm-lock.yaml | tail -n 5
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile
       - run: pnpm run format
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
