@@ -130,6 +130,7 @@ export class SubscriptionManager {
     for (const patch of response.patches) {
       const sub = this.#subscriptions.get(patch.subscriptionId);
       if (sub) {
+        // @ts-ignore
         const { newDocument } = jsonpatch.applyPatch(sub.data, patch.delta);
         sub.data = newDocument;
         sub.callback(newDocument);
