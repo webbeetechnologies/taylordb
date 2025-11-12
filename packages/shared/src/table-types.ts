@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { NumberColumnType, TextColumnType } from './column-types';
+import { NumberColumnType, TextColumnType } from './column-types.js';
 
 export type SelectTable = {
   id: NumberColumnType;

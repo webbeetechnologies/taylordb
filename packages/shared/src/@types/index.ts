@@ -1,2 +1,3 @@
-export * from './metadata';
-export * from './table-loader';
+export * from './metadata.js';
+export * from './table-loader.js';
+

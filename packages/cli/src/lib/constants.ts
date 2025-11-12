@@ -1,4 +1,4 @@
-import { BambooField } from './types';
+import { BambooField } from './types.js';
 
 export const defaultFields: BambooField[] = [
   {

@@ -3,7 +3,7 @@ import {
   Configuration,
   FiltersSet,
   PaginationRequest,
-} from './table-loader';
+} from './table-loader.js';
 
 export type SelectQueryMetaData = {
   type: 'select';

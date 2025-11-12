@@ -1,5 +1,5 @@
-import { BambooField } from '../lib/types';
-import { TaylorTypeGenerator } from './taylor-type-generator';
+import { BambooField } from '../lib/types.js';
+import { TaylorTypeGenerator } from './taylor-type-generator.js';
 
 export class TypeMapper {
   constructor(private readonly taylorTypeGenerator: TaylorTypeGenerator) {}

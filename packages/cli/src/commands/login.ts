@@ -1,8 +1,8 @@
 import { input, password } from '@inquirer/prompts';
 import chalk from 'chalk';
 import { Command } from 'commander';
-import { umsApi } from '../lib/api';
-import { setToken } from '../lib/auth';
+import { umsApi } from '../lib/api.js';
+import { setToken } from '../lib/auth.js';
 
 export const loginCommand = new Command('login')
   .description('Authenticate with TaylorDB')

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { generateSchemaCommand } from './commands/generate-schema';
-import { loginCommand } from './commands/login';
-import { logoutCommand } from './commands/logout';
-import { meCommand } from './commands/me';
+import { generateSchemaCommand } from './commands/generate-schema.js';
+import { loginCommand } from './commands/login.js';
+import { logoutCommand } from './commands/logout.js';
+import { meCommand } from './commands/me.js';
 
 const program = new Command();
 

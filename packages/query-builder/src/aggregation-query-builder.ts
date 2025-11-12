@@ -1,4 +1,7 @@
-import { FieldWithDirection, GroupingConfiguration } from '@taylordb/shared';
+import type {
+  FieldWithDirection,
+  GroupingConfiguration,
+} from '@taylordb/shared';
 import type { AggregateNode, AggregateRecord } from './@types/aggregate.js';
 import type { AnyDB } from './@types/internal-types.js';
 import { Executor } from './executor.js';
@@ -126,6 +129,14 @@ export class AggregationQueryBuilder<
     return response;
   }
 
+  subscribe(
+    callback: (
+      result: AggregateRecord<DB, TableName, TGroupBy, TAggregations>[],
+    ) => void,
+  ) {
+    return this._executor.subscribe([this], callback);
+  }
+
   compile(): { query: string; variables: Record<string, any> } {
     const query = 'mutation ($metadata: JSON) { execute(metadata: $metadata) }';
     const metadata = [this._prepareMetadata()];
@@ -134,7 +145,7 @@ export class AggregationQueryBuilder<
 
   _prepareMetadata(): any {
     return {
-      type: 'aggregate',
+      type: 'aggregation',
       tableName: this.#node.tableName,
       groupings: this.#node.groupings,
       aggregations: this.#node.aggregations,

@@ -190,7 +190,9 @@ export interface Tables {
   selectTable: SelectTable;
   attachmentTable: AttachmentTable;
   collaboratorsTable: CollaboratorsTable;
-  customers: CustomersTable;
+  users: UsersTable;
+  chat: ChatTable;
+  messages: MessagesTable;
 }
 
 export interface TaylorDatabase {
@@ -201,10 +203,27 @@ export interface TaylorDatabase {
   tables: Tables;
 }
 
-interface CustomersTable {
+interface UsersTable {
   id: NumberColumnType;
   createdAt: DateColumnType;
   updatedAt: DateColumnType;
-  firstName: TextColumnType;
-  lastName: TextColumnType;
+  name: TextColumnType;
+  messages: LinkColumnType<'messages'>;
+  messages1: LinkColumnType<'messages'>;
+}
+
+interface ChatTable {
+  id: NumberColumnType;
+  createdAt: DateColumnType;
+  updatedAt: DateColumnType;
+  name: TextColumnType;
+}
+
+interface MessagesTable {
+  id: NumberColumnType;
+  createdAt: DateColumnType;
+  updatedAt: DateColumnType;
+  content: TextColumnType;
+  user: LinkColumnType<'users'>;
+  chat: LinkColumnType<'users'>;
 }

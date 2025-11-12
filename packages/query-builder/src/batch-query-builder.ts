@@ -5,18 +5,25 @@ import { InsertQueryBuilder } from './insert-query-builder.js';
 import { QueryBuilder } from './query-builder.js';
 import { UpdateQueryBuilder } from './update-query-builder.js';
 
-export type AnyQueryBuilder =
+export type AnySubscribableQueryBuilder =
   | QueryBuilder<any, any, any, any>
+  | AggregationQueryBuilder<any, any, any, any>;
+
+export type AnyQueryBuilder =
+  | AnySubscribableQueryBuilder
   | InsertQueryBuilder<any, any, any>
   | UpdateQueryBuilder<any, any>
-  | DeleteQueryBuilder<any, any>
-  | AggregationQueryBuilder<any, any, any, any>;
+  | DeleteQueryBuilder<any, any>;
 
 type InferExecuteResult<TBuilder> = TBuilder extends {
   execute: () => Promise<any>;
 }
   ? Awaited<ReturnType<TBuilder['execute']>>
   : never;
+
+export type AreAllBuildersSubscribable<
+  TBuilders extends readonly AnyQueryBuilder[],
+> = TBuilders[number] extends AnySubscribableQueryBuilder ? true : false;
 
 export class BatchQueryBuilder<
   const TBuilders extends readonly AnyQueryBuilder[],
@@ -33,6 +40,28 @@ export class BatchQueryBuilder<
     -readonly [K in keyof TBuilders]: InferExecuteResult<TBuilders[K]>;
   }> {
     return this.#executor.execute(this);
+  }
+
+  subscribe(
+    callback: (
+      ...results: {
+        -readonly [K in keyof TBuilders]: InferExecuteResult<TBuilders[K]>;
+      }
+    ) => void,
+  ) {
+    const builders = this.#builders.filter(
+      builder =>
+        builder instanceof AggregationQueryBuilder ||
+        builder instanceof QueryBuilder,
+    );
+
+    if (builders.length !== this.#builders.length) {
+      throw new Error(
+        'Batch contains non-subscribable queries (e.g., insert, update, delete)',
+      );
+    }
+
+    return this.#executor.subscribe(builders, callback as any);
   }
 
   compile(): { query: string; variables: Record<string, any> } {

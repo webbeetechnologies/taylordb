@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import { camelCase, upperFirst } from 'lodash';
 import { IndentationText, Project, QuoteKind, SourceFile } from 'ts-morph';
-import { defaultFields } from '../lib/constants';
-import { BambooModelsResponse } from '../lib/types';
-import { TypeMapper } from './type-mapper';
+import { defaultFields } from '../lib/constants.js';
+import { BambooModelsResponse } from '../lib/types.js';
+import { TypeMapper } from './type-mapper.js';
 
 export class TaylorTypeGenerator {
   private readonly sourceFile: SourceFile;

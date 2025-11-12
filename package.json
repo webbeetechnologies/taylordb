@@ -5,14 +5,14 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "examples/*"
   ],
   "scripts": {
     "taylordb": "node packages/cli/dist/index.js",
-    "build": "pnpm run compile",
+    "build": "pnpm -r --filter \"./packages/*\" build",
     "prepublishOnly": "pnpm run build",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "compile": "tsc -p .",
     "lint": "eslint .",
     "fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -51,9 +51,16 @@
     "typedoc": "^0.24.0",
     "typedoc-plugin-markdown": "^3.14.0",
     "typescript": "^5.4.5",
-    "typescript-eslint": "^8.46.4"
+    "typescript-eslint": "^8.46.4",
+    "vite": "^5.2.0",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "fast-json-patch": "^3.1.1",
+    "socket.io-client": "^4.8.1"
   }
 }

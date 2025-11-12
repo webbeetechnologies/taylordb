@@ -15,7 +15,11 @@ import {
   ResolveWithPlain,
 } from './@types/type-helpers.js';
 import { AggregationQueryBuilder } from './aggregation-query-builder.js';
-import { AnyQueryBuilder, BatchQueryBuilder } from './batch-query-builder.js';
+import {
+  AnyQueryBuilder,
+  AreAllBuildersSubscribable,
+  BatchQueryBuilder,
+} from './batch-query-builder.js';
 import { DeleteQueryBuilder } from './delete-query-builder.js';
 import { Executor } from './executor.js';
 import { InsertQueryBuilder } from './insert-query-builder.js';
@@ -203,9 +207,13 @@ export class QueryBuilder<
   }
 
   async executeTakeFirst(): Promise<Selection | null> {
-    const response = await this._executor.execute<Selection>(this);
+    const response = await this._executor.execute<Selection[]>(this);
 
     return response[0]?.[0] ?? null;
+  }
+
+  subscribe(callback: (result: Selection[]) => void) {
+    return this._executor.subscribe([this], callback);
   }
 
   compile(): { query: string; variables: Record<string, any> } {
@@ -359,7 +367,9 @@ export class RootQueryBuilder<DB extends AnyDB> {
 
   batch<const TBuilders extends readonly AnyQueryBuilder[]>(
     builders: TBuilders,
-  ): BatchQueryBuilder<TBuilders> {
+  ): AreAllBuildersSubscribable<TBuilders> extends true
+    ? BatchQueryBuilder<TBuilders>
+    : Omit<BatchQueryBuilder<TBuilders>, 'subscribe'> {
     return new BatchQueryBuilder(builders, this.#executor);
   }
 

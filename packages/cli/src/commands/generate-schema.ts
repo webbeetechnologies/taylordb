@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import { EnumType, jsonToGraphQLQuery } from 'json-to-graphql-query';
 import * as path from 'path';
-import { taylorApi, umsApi } from '../lib/api';
-import { AppGetResponse, BambooModelsResponse } from '../lib/types';
-import { TaylorTypeGenerator } from '../type-generator/taylor-type-generator';
+import { taylorApi, umsApi } from '../lib/api.js';
+import { AppGetResponse, BambooModelsResponse } from '../lib/types.js';
+import { TaylorTypeGenerator } from '../type-generator/taylor-type-generator.js';
 
 export const generateSchemaCommand = new Command('generate-schema')
   .description('Generate a schema from a TaylorDB instance')

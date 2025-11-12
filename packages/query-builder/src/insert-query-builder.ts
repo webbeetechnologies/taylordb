@@ -64,7 +64,7 @@ export class InsertQueryBuilder<
   }
 
   async execute(): Promise<Selection[]> {
-    return this.#executor.execute(this);
+    return (await this.#executor.execute(this))[0];
   }
 
   compile(): { query: string; variables: Record<string, any> } {

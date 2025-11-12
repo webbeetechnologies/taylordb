@@ -129,7 +129,7 @@ describe('QueryBuilder', () => {
       .compile();
 
     expect(variables.metadata[0]).toMatchObject({
-      type: 'aggregate',
+      type: 'aggregation',
       tableName: 'customers',
       groupings: [{ field: 'firstName', direction: 'asc' }],
       aggregations: {
