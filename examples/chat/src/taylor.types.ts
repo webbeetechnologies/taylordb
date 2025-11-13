@@ -36,8 +36,8 @@ export type ColumnType<
   U,
   I,
   T,
-  F extends { [key: string]: any } = {},
-  A extends { [key: string]: any } = {},
+  F extends { [key: string]: any } = object,
+  A extends { [key: string]: any } = object,
 > = {
   raw: S;
   insert: I;
