@@ -9,16 +9,16 @@ export type AggregationValue = number | null | object | undefined;
 
 export type Aggregates<
   DB extends AnyDB,
-  TName extends keyof DB['tables'],
+  TName extends keyof DB,
   TAggregations extends {
-    [K in keyof DB['tables'][TName] &
-      string]?: readonly (keyof DB['aggregates'][DB['tables'][TName][K]['type']])[];
+    [K in keyof DB[TName] &
+      string]?: readonly (keyof DB[TName][K]['aggregations'])[];
   },
 > = {
-  -readonly [K in keyof TAggregations & keyof DB['tables'][TName]]: {
+  -readonly [K in keyof TAggregations & keyof DB[TName]]: {
     -readonly [P in NonNullable<
       TAggregations[K]
-    >[number]]: DB['aggregates'][DB['tables'][TName][K]['type']][P];
+    >[number]]: DB[TName][K]['aggregations'][P];
   };
 };
 
@@ -31,11 +31,11 @@ type Tail<T extends readonly any[]> = T extends readonly [any, ...infer R]
 
 export type AggregateRecord<
   DB extends AnyDB,
-  TName extends keyof DB['tables'],
-  TGroupBy extends readonly (keyof DB['tables'][TName] & string)[],
+  TName extends keyof DB,
+  TGroupBy extends readonly (keyof DB[TName] & string)[],
   TAggregations extends {
-    [K in keyof DB['tables'][TName] &
-      string]?: readonly (keyof DB['aggregates'][DB['tables'][TName][K]['type']])[];
+    [K in keyof DB[TName] &
+      string]?: readonly (keyof DB[TName][K]['aggregations'])[];
   },
 > = TGroupBy extends readonly []
   ? {
@@ -44,7 +44,7 @@ export type AggregateRecord<
     }
   : {
       field: Head<TGroupBy>;
-      value: InferDataType<DB['tables'][TName][Head<TGroupBy>]>;
+      value: InferDataType<DB[TName][Head<TGroupBy>]>;
       count: number;
       aggregates: Aggregates<DB, TName, TAggregations>;
     } & (Tail<TGroupBy> extends readonly []

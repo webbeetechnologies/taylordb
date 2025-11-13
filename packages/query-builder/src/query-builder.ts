@@ -29,7 +29,7 @@ import { FilterableQueryBuilder } from './where-query-builder.js';
 
 export class QueryBuilder<
   DB extends AnyDB,
-  TableName extends keyof DB['tables'],
+  TableName extends keyof DB,
   Selection = object,
   LinkName = null,
 > extends FilterableQueryBuilder<DB, TableName> {
@@ -40,11 +40,7 @@ export class QueryBuilder<
     this._node = node;
   }
 
-  select<
-    const TFields extends readonly NonLinkColumnNames<
-      DB['tables'][TableName]
-    >[],
-  >(
+  select<const TFields extends readonly NonLinkColumnNames<DB[TableName]>[]>(
     fields: TFields,
   ): QueryBuilder<
     DB,
@@ -64,9 +60,7 @@ export class QueryBuilder<
     DB,
     TableName,
     Selection & {
-      [K in keyof DB['tables'][TableName]]: InferDataType<
-        DB['tables'][TableName][K]
-      >;
+      [K in keyof DB[TableName]]: InferDataType<DB[TableName][K]>;
     }
   > {
     return new QueryBuilder(
@@ -80,8 +74,8 @@ export class QueryBuilder<
 
   with<
     const TArg extends
-      | (LinkColumnNames<DB['tables'][TableName]> & string)
-      | readonly (LinkColumnNames<DB['tables'][TableName]> & string)[],
+      | (LinkColumnNames<DB[TableName]> & string)
+      | readonly (LinkColumnNames<DB[TableName]> & string)[],
   >(
     relations: TArg,
   ): QueryBuilder<
@@ -91,11 +85,11 @@ export class QueryBuilder<
   >;
   with<
     const TArg extends {
-      [K in LinkColumnNames<DB['tables'][TableName]>]?: (
+      [K in LinkColumnNames<DB[TableName]>]?: (
         qb: QueryBuilder<
           DB,
-          DB['tables'][TableName][K] extends LinkColumnType<any>
-            ? DB['tables'][TableName][K]['linkedTo']
+          DB[TableName][K] extends LinkColumnType<any>
+            ? DB[TableName][K]['linkedTo']
             : never,
           object,
           K
@@ -107,8 +101,8 @@ export class QueryBuilder<
   ): QueryBuilder<DB, TableName, ResolveWithObject<TArg, Selection>>;
   with(
     arg:
-      | (LinkColumnNames<DB['tables'][TableName]> & string)
-      | (LinkColumnNames<DB['tables'][TableName]> & string)[]
+      | (LinkColumnNames<DB[TableName]> & string)
+      | (LinkColumnNames<DB[TableName]> & string)[]
       | Record<string, (qb: any) => any>,
   ): QueryBuilder<DB, TableName, any> {
     if (typeof arg === 'string' || Array.isArray(arg)) {
@@ -183,7 +177,7 @@ export class QueryBuilder<
   }
 
   orderBy(
-    field: keyof DB['tables'][TableName],
+    field: keyof DB[TableName],
     direction: 'asc' | 'desc' = 'asc',
   ): QueryBuilder<DB, TableName, Selection, LinkName> {
     const newSorting: FieldWithDirection<string> = {
@@ -294,7 +288,7 @@ export class RootQueryBuilder<DB extends AnyDB> {
   }
   selectFrom<
     TableName extends keyof Omit<
-      DB['tables'],
+      DB,
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
       string,
@@ -313,7 +307,7 @@ export class RootQueryBuilder<DB extends AnyDB> {
 
   insertInto<
     TableName extends keyof Omit<
-      DB['tables'],
+      DB,
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
       string,
@@ -331,7 +325,7 @@ export class RootQueryBuilder<DB extends AnyDB> {
 
   update<
     TableName extends keyof Omit<
-      DB['tables'],
+      DB,
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
       string,
@@ -349,7 +343,7 @@ export class RootQueryBuilder<DB extends AnyDB> {
 
   deleteFrom<
     TableName extends keyof Omit<
-      DB['tables'],
+      DB,
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
       string,
@@ -375,7 +369,7 @@ export class RootQueryBuilder<DB extends AnyDB> {
 
   aggregateFrom<
     TableName extends keyof Omit<
-      DB['tables'],
+      DB,
       'selectTable' | 'attachmentTable' | 'collaboratorsTable'
     > &
       string,

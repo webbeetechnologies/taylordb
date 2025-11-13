@@ -8,7 +8,7 @@ import { SelectionBuilder } from './selection-builder.js';
 
 export class InsertQueryBuilder<
   DB extends AnyDB,
-  TableName extends keyof DB['tables'],
+  TableName extends keyof DB,
   Selection = { id: number },
 > {
   #node: InsertNode;
@@ -20,9 +20,7 @@ export class InsertQueryBuilder<
   }
 
   values(
-    values:
-      | Insertable<DB['tables'][TableName]>
-      | Insertable<DB['tables'][TableName]>[],
+    values: Insertable<DB[TableName]> | Insertable<DB[TableName]>[],
   ): InsertQueryBuilder<DB, TableName, Selection> {
     return new InsertQueryBuilder(
       {
@@ -33,11 +31,7 @@ export class InsertQueryBuilder<
     );
   }
 
-  returning<
-    const TFields extends readonly NonLinkColumnNames<
-      DB['tables'][TableName]
-    >[],
-  >(
+  returning<const TFields extends readonly NonLinkColumnNames<DB[TableName]>[]>(
     fields: TFields,
   ): InsertQueryBuilder<
     DB,

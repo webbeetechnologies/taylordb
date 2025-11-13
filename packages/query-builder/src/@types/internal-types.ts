@@ -1,25 +1,14 @@
 import {
+  ColumnType,
   MetadataWithTableName,
   ObjConfigurationVisibleField,
   SelectQueryMetaData,
 } from '@taylordb/shared';
 
-export type Filters = {
-  [key: string]: {
-    [key: string]: any;
-  };
-};
-
-export type Aggregates = {
-  [key: string]: {
-    [key: string]: any;
-  };
-};
-
 export type AnyDB = {
-  filters: Filters;
-  aggregates: Aggregates;
-  tables: any;
+  [key: string]: {
+    [key: string]: ColumnType<any, any, any, any, any, any>;
+  };
 };
 
 export type SelectionQueryNode = ObjConfigurationVisibleField<string> & {

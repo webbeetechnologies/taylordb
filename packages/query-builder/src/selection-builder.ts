@@ -6,7 +6,7 @@ import { QueryBuilder } from './query-builder.js';
 
 export class SelectionBuilder<
   DB extends AnyDB,
-  CurrentTableName extends keyof DB['tables'],
+  CurrentTableName extends keyof DB,
 > {
   _executor: Executor;
 
@@ -14,13 +14,13 @@ export class SelectionBuilder<
     this._executor = executor;
   }
 
-  useLink<
-    LinkName extends LinkColumnNames<DB['tables'][CurrentTableName]> & string,
-  >(from: LinkName) {
+  useLink<LinkName extends LinkColumnNames<DB[CurrentTableName]> & string>(
+    from: LinkName,
+  ) {
     return new QueryBuilder<
       DB,
-      DB['tables'][CurrentTableName][LinkName] extends LinkColumnType<any>
-        ? DB['tables'][CurrentTableName][LinkName]['linkedTo']
+      DB[CurrentTableName][LinkName] extends LinkColumnType<any>
+        ? DB[CurrentTableName][LinkName]['linkedTo']
         : never,
       object,
       LinkName

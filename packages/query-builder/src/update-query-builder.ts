@@ -5,7 +5,7 @@ import { FilterableQueryBuilder } from './where-query-builder.js';
 
 export class UpdateQueryBuilder<
   DB extends AnyDB,
-  TableName extends keyof DB['tables'],
+  TableName extends keyof DB,
 > extends FilterableQueryBuilder<DB, TableName> {
   #node: UpdateNode;
 
@@ -14,9 +14,7 @@ export class UpdateQueryBuilder<
     this.#node = node;
   }
 
-  set(
-    values: Updatable<DB['tables'][TableName]>,
-  ): UpdateQueryBuilder<DB, TableName> {
+  set(values: Updatable<DB[TableName]>): UpdateQueryBuilder<DB, TableName> {
     return new UpdateQueryBuilder<DB, TableName>(
       {
         ...this.#node,

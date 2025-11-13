@@ -1,10 +1,10 @@
-import type { ColumnType, Filters } from '@taylordb/shared';
+import type { Filters } from '@taylordb/shared';
 import type { AnyDB, QueryNode } from './@types/internal-types.js';
 import { Executor } from './executor.js';
 
 export class FilterableQueryBuilder<
   DB extends AnyDB,
-  TableName extends keyof DB['tables'],
+  TableName extends keyof DB,
 > {
   _node: Pick<QueryNode, 'filtersSet'>;
   _executor: Executor;
@@ -15,27 +15,9 @@ export class FilterableQueryBuilder<
   }
 
   where<
-    C extends keyof DB['tables'][TableName],
-    O extends keyof DB['filters'][DB['tables'][TableName][C] extends ColumnType<
-      any,
-      any,
-      any,
-      infer T
-    >
-      ? T & keyof DB['filters']
-      : never],
-  >(
-    column: C,
-    operator: O,
-    value: DB['filters'][DB['tables'][TableName][C] extends ColumnType<
-      any,
-      any,
-      any,
-      infer T
-    >
-      ? T & keyof DB['filters']
-      : never][O],
-  ): this;
+    C extends keyof DB[TableName],
+    O extends keyof DB[TableName][C]['filters'],
+  >(column: C, operator: O, value: DB[TableName][C]['filters'][0]): this;
   where<
     C extends (
       builder: WhereQueryBuilder<DB, TableName>,
@@ -85,27 +67,9 @@ export class FilterableQueryBuilder<
   }
 
   orWhere<
-    C extends keyof DB['tables'][TableName],
-    O extends keyof DB['filters'][DB['tables'][TableName][C] extends ColumnType<
-      any,
-      any,
-      any,
-      infer T
-    >
-      ? T & keyof DB['filters']
-      : never],
-  >(
-    column: C,
-    operator: O,
-    value: DB['filters'][DB['tables'][TableName][C] extends ColumnType<
-      any,
-      any,
-      any,
-      infer T
-    >
-      ? T & keyof DB['filters']
-      : never][O],
-  ): this;
+    C extends keyof DB[TableName],
+    O extends keyof DB[TableName][C]['filters'],
+  >(column: C, operator: O, value: DB[TableName][C]['filters'][0]): this;
   orWhere<C extends (builder: WhereQueryBuilder<DB, TableName>) => any>(
     column: C,
   ): this;
@@ -141,5 +105,5 @@ export class FilterableQueryBuilder<
 
 export class WhereQueryBuilder<
   DB extends AnyDB,
-  TableName extends keyof DB['tables'],
+  TableName extends keyof DB,
 > extends FilterableQueryBuilder<DB, TableName> {}

@@ -31,38 +31,28 @@ type DefaultDateFilterValue =
   | ['exactDay' | 'exactTimestamp', string]
   | ['daysAgo' | 'daysFromNow', number];
 
-export type Filters = {
-  text: {
-    '=': string;
-    '!=': string;
-    caseEqual: string;
-    hasAnyOf: string[];
-    contains: string;
-    startsWith: string;
-    endsWith: string;
-    doesNotContain: string;
-  };
-  number: {
-    '=': number;
-    '!=': number;
-    '>': number;
-    '>=': number;
-    '<': number;
-    '<=': number;
-    hasAnyOf: number[];
-    hasNoneOf: number[];
-  };
-  checkbox: {
-    '=': number;
-  };
-  link: {
-    hasAnyOf: number[];
-    hasAllOf: number[];
-    isExactly: number[];
-    '=': number;
-    hasNoneOf: number[];
-  };
-  date: {
+export type ColumnType<
+  S,
+  U,
+  I,
+  T,
+  F extends { [key: string]: any } = {},
+  A extends { [key: string]: any } = {},
+> = {
+  raw: S;
+  insert: I;
+  update: U;
+  type: T;
+  filters: F;
+  aggregations: A;
+};
+
+export type DateColumnType = ColumnType<
+  string | undefined,
+  string | undefined,
+  string | undefined,
+  'date',
+  {
     '=': DefaultDateFilterValue;
     '!=': DefaultDateFilterValue;
     '<': DefaultDateFilterValue;
@@ -74,11 +64,76 @@ export type Filters = {
       | { value: 'daysAgo' | 'daysFromNow'; date: number };
     isEmpty: boolean;
     isNotEmpty: boolean;
-  };
+  },
+  {
+    empty: number;
+    filled: number;
+    unique: number;
+    percentEmpty: number;
+    percentFilled: number;
+    percentUnique: number;
+    min: number | null;
+    max: number | null;
+    daysRange: number | null;
+    monthRange: number | null;
+  }
+>;
+
+export type TextColumnType = ColumnType<
+  string | undefined,
+  string | undefined,
+  string | null,
+  'text',
+  {
+    '=': string;
+    '!=': string;
+    caseEqual: string;
+    hasAnyOf: string[];
+    contains: string;
+    startsWith: string;
+    endsWith: string;
+    doesNotContain: string;
+  }
+>;
+
+export type LinkColumnType<T extends string> = ColumnType<
+  object,
+  number[] | { newIds: number[]; deletedIds: number[] } | undefined,
+  number[] | undefined,
+  'link',
+  {
+    hasAnyOf: number[];
+    hasAllOf: number[];
+    isExactly: number[];
+    '=': number;
+    hasNoneOf: number[];
+  },
+  {
+    empty: number;
+    filled: number;
+    percentEmpty: number;
+    percentFilled: number;
+  }
+> & {
+  linkedTo: T;
 };
 
-type Aggregates = {
-  number: {
+export type NumberColumnType = ColumnType<
+  number | undefined,
+  number | undefined,
+  number | undefined,
+  'number',
+  {
+    '=': number;
+    '!=': number;
+    '>': number;
+    '>=': number;
+    '<': number;
+    '<=': number;
+    hasAnyOf: number[];
+    hasNoneOf: number[];
+  },
+  {
     sum: number;
     average: number;
     median: number;
@@ -93,69 +148,17 @@ type Aggregates = {
     percentEmpty: number;
     percentFilled: number;
     percentUnique: number;
-  };
-  date: {
-    empty: number;
-    filled: number;
-    unique: number;
-    percentEmpty: number;
-    percentFilled: number;
-    percentUnique: number;
-    min: number | null;
-    max: number | null;
-    daysRange: number | null;
-    monthRange: number | null;
-  };
-  link: {
-    empty: number;
-    filled: number;
-    percentEmpty: number;
-    percentFilled: number;
-  };
-};
-
-export type ColumnType<S, U, I, T> = {
-  raw: S;
-  insert: I;
-  update: U;
-  type: T;
-};
-
-export type DateColumnType = ColumnType<
-  string | undefined,
-  string | undefined,
-  string | undefined,
-  'date'
->;
-
-export type TextColumnType = ColumnType<
-  string | undefined,
-  string | undefined,
-  string | null,
-  'text'
->;
-
-export type LinkColumnType<T extends string> = ColumnType<
-  object,
-  number[] | { newIds: number[]; deletedIds: number[] } | undefined,
-  number[] | undefined,
-  'link'
-> & {
-  linkedTo: T;
-};
-
-export type NumberColumnType = ColumnType<
-  number | undefined,
-  number | undefined,
-  number | undefined,
-  'number'
+  }
 >;
 
 export type CheckboxColumnType = ColumnType<
   boolean | undefined,
   boolean | undefined,
   boolean | undefined,
-  'checkbox'
+  'checkbox',
+  {
+    '=': number;
+  }
 >;
 
 export type SelectTable = {
@@ -180,7 +183,7 @@ export type CollaboratorsTable = {
   avatar: TextColumnType;
 };
 
-export interface Tables {
+export interface TaylorDatabase {
   /**
    *
    *
@@ -191,14 +194,6 @@ export interface Tables {
   attachmentTable: AttachmentTable;
   collaboratorsTable: CollaboratorsTable;
   customers: CustomersTable;
-}
-
-export interface TaylorDatabase {
-  filters: Filters;
-
-  aggregates: Aggregates;
-
-  tables: Tables;
 }
 
 interface CustomersTable {

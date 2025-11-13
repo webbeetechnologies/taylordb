@@ -5,7 +5,7 @@ import { FilterableQueryBuilder } from './where-query-builder.js';
 
 export class DeleteQueryBuilder<
   DB extends AnyDB,
-  TableName extends keyof DB['tables'],
+  TableName extends keyof DB,
 > extends FilterableQueryBuilder<DB, TableName> {
   #node: DeleteNode;
 

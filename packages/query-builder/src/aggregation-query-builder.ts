@@ -9,11 +9,11 @@ import { FilterableQueryBuilder } from './where-query-builder.js';
 
 export class AggregationQueryBuilder<
   DB extends AnyDB,
-  TableName extends keyof DB['tables'],
-  TGroupBy extends readonly (keyof DB['tables'][TableName] & string)[] = [],
+  TableName extends keyof DB,
+  TGroupBy extends readonly (keyof DB[TableName] & string)[] = [],
   TAggregations extends {
-    [K in keyof DB['tables'][TableName] &
-      string]?: readonly (keyof DB['aggregates'][DB['tables'][TableName][K]['type']])[];
+    [K in keyof DB[TableName] &
+      string]?: readonly (keyof DB[TableName][K]['aggregations'])[];
   } = object,
 > extends FilterableQueryBuilder<DB, TableName> {
   #node: AggregateNode;
@@ -23,7 +23,7 @@ export class AggregationQueryBuilder<
     this.#node = node;
   }
 
-  groupBy<const TField extends keyof DB['tables'][TableName] & string>(
+  groupBy<const TField extends keyof DB[TableName] & string>(
     field: TField,
     direction: 'asc' | 'desc' = 'asc',
   ): AggregationQueryBuilder<
@@ -48,8 +48,8 @@ export class AggregationQueryBuilder<
 
   withAggregates<
     const T extends {
-      [K in keyof DB['tables'][TableName] &
-        string]?: readonly (keyof DB['aggregates'][DB['tables'][TableName][K]['type']])[];
+      [K in keyof DB[TableName] &
+        string]?: readonly (keyof DB[TableName][K]['aggregations'])[];
     },
   >(
     aggregates: T,
@@ -102,7 +102,7 @@ export class AggregationQueryBuilder<
   }
 
   orderBy(
-    field: keyof DB['tables'][TableName],
+    field: keyof DB[TableName],
     direction: 'asc' | 'desc' = 'asc',
   ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations> {
     const newSorting: FieldWithDirection<string> = {
