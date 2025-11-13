@@ -2,6 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
+    "module": "ES2020",
+    "moduleResolution": "Node",
     "skipLibCheck": true,
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
