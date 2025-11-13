@@ -2,7 +2,7 @@ import { createQueryBuilder } from '@taylordb/query-builder';
 import { useEffect, useState } from 'react';
 import { TaylorDatabase } from './taylor.types';
 
-type RootQueryBuilder = ReturnType<typeof createQueryBuilder<TaylorDatabase>>
+type RootQueryBuilder = ReturnType<typeof createQueryBuilder<TaylorDatabase>>;
 
 const qb = createQueryBuilder<TaylorDatabase>({
   baseUrl: 'http://localhost:8090/api/c5c60f8c-35e6-4155-9a5c-9e7d102317b4',
