@@ -183,7 +183,7 @@ export type CollaboratorsTable = {
   avatar: TextColumnType;
 };
 
-export interface TaylorDatabase {
+export type TaylorDatabase = {
   /**
    *
    *
@@ -196,29 +196,29 @@ export interface TaylorDatabase {
   users: UsersTable;
   chat: ChatTable;
   messages: MessagesTable;
-}
+};
 
-interface UsersTable {
+type UsersTable = {
   id: NumberColumnType;
   createdAt: DateColumnType;
   updatedAt: DateColumnType;
   name: TextColumnType;
   messages: LinkColumnType<'messages'>;
   messages1: LinkColumnType<'messages'>;
-}
+};
 
-interface ChatTable {
+type ChatTable = {
   id: NumberColumnType;
   createdAt: DateColumnType;
   updatedAt: DateColumnType;
   name: TextColumnType;
-}
+};
 
-interface MessagesTable {
+type MessagesTable = {
   id: NumberColumnType;
   createdAt: DateColumnType;
   updatedAt: DateColumnType;
   content: TextColumnType;
   user: LinkColumnType<'users'>;
   chat: LinkColumnType<'users'>;
-}
+};

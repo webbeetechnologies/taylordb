@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import { camelCase, upperFirst } from 'lodash';
 import { IndentationText, Project, QuoteKind, SourceFile } from 'ts-morph';
-import { defaultFields } from '../lib/constants.js';
-import { BambooModelsResponse } from '../lib/types.js';
-import { TypeMapper } from './type-mapper.js';
+import { defaultFields } from '../lib/constants';
+import { BambooModelsResponse } from '../lib/types';
+import { TypeMapper } from './type-mapper';
 
 export class TaylorTypeGenerator {
   private readonly sourceFile: SourceFile;
@@ -38,28 +38,34 @@ export class TaylorTypeGenerator {
 
   async build() {
     this.schema.bambooModels.records.forEach(table => {
-      this.sourceFile.addInterface({
+      const properties = [...defaultFields, ...table.fields]
+        .map(column => ({
+          name: column.name,
+          type: this.typeMapper.map(column),
+        }))
+        .filter(p => p.type)
+        .map(p => `${p.name}: ${p.type};`)
+        .join('\n');
+
+      this.sourceFile.addTypeAlias({
         name: this.getTableName(table.name),
-        // @ts-ignore
-        properties: [...defaultFields, ...table.fields]
-          .filter(column => this.typeMapper.map(column))
-          .map(column => ({
-            name: column.name,
-            type: this.typeMapper.map(column),
-          })),
+        type: `{\n${properties}\n}`,
       });
     });
 
-    const taylorDatabaseInterface = this.sourceFile.getInterface('Tables');
+    const taylorDatabaseInterface =
+      this.sourceFile.getTypeAlias('TaylorDatabase');
 
-    if (!taylorDatabaseInterface) throw new Error('Tables interface not found');
+    if (!taylorDatabaseInterface)
+      throw new Error('TaylorDatabase type not found');
 
-    taylorDatabaseInterface.addProperties(
-      this.schema.bambooModels.records.map(table => ({
+    for (const table of this.schema.bambooModels.records) {
+      // @ts-ignore
+      taylorDatabaseInterface.getTypeNodeOrThrow().addProperty({
         name: table.name,
         type: this.getTableName(table.name),
-      })),
-    );
+      });
+    }
 
     await this.sourceFile.save();
   }

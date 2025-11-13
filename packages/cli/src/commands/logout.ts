@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { Command } from 'commander';
-import { umsApi } from '../lib/api.js';
-import { clearToken, getToken } from '../lib/auth.js';
+import { umsApi } from '../lib/api';
+import { clearToken, getToken } from '../lib/auth';
 
 export const logoutCommand = new Command('logout')
   .description('Log out from TaylorDB')

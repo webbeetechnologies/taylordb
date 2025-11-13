@@ -4,17 +4,8 @@
   "description": "CLI for TaylorDB",
   "private": false,
   "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
   "bin": {
-    "taylordb": "./dist/esm/index.js"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/esm/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
-    }
+    "taylordb": "./dist/cjs/index.js"
   },
   "files": [
     "dist",
@@ -22,13 +13,10 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "copy-templates": "cp -r src/templates dist/esm/templates && cp -r src/templates dist/cjs/templates",
-    "build:esm": "tsc -p tsconfig.esm.json",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
-    "build": "pnpm run clean && pnpm run build:esm && pnpm run build:cjs && pnpm run copy-templates",
+    "copy-templates": "cp -r src/templates dist/templates",
+    "build": "pnpm run clean && tsc && pnpm run copy-templates",
     "dev": "tsc",
     "start:dev": "ts-node src/index.ts",
-    "start:prod": "node dist/esm/index.js",
     "prepublish": "npm run build"
   },
   "keywords": [

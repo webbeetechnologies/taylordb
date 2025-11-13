@@ -36,8 +36,8 @@ export type ColumnType<
   U,
   I,
   T,
-  F extends { [key: string]: any } = {},
-  A extends { [key: string]: any } = {},
+  F extends { [key: string]: any } = object,
+  A extends { [key: string]: any } = object,
 > = {
   raw: S;
   insert: I;
@@ -183,22 +183,14 @@ export type CollaboratorsTable = {
   avatar: TextColumnType;
 };
 
-export interface Tables {
+export type TaylorDatabase = {
   /**
-  *
-  *
-  * Internal tables, these tables can not be queried directly.
-  *
-  */
+   *
+   *
+   * Internal tables, these tables can not be queried directly.
+   *
+   */
   selectTable: SelectTable;
   attachmentTable: AttachmentTable;
   collaboratorsTable: CollaboratorsTable;
-}
-
-export interface TaylorDatabase {
-  filters: Filters;
-
-  aggregates: Aggregates;
-
-  tables: Tables;
 };

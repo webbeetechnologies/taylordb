@@ -6,8 +6,8 @@ import {
 } from '@taylordb/shared';
 
 export type AnyDB = {
-  [key: string]: {
-    [key: string]: ColumnType<any, any, any, any, any, any>;
+  [key in keyof any]: {
+    [key in keyof any]: ColumnType<any, any, any, any, any, any>;
   };
 };
 

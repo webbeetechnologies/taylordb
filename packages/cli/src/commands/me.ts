@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { Command } from 'commander';
-import { umsApi } from '../lib/api.js';
-import { getToken } from '../lib/auth.js';
+import { umsApi } from '../lib/api';
+import { getToken } from '../lib/auth';
 
 export const meCommand = new Command('me')
   .description('Get the current logged in user')

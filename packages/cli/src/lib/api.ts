@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getToken } from './auth.js';
+import { getToken } from './auth';
 
 const umsApi = axios.create({
   baseURL:
