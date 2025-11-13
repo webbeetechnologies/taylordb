@@ -3,20 +3,11 @@
 // Retrieved 2025-11-10, License - CC BY-SA 4.0
 
 module.exports = {
-  preset: 'ts-jest/presets/default-esm',
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   transform: {
-    '^.+\\.ts$': [
-      'ts-jest',
-      {
-        useESM: true,
-        diagnostics: {
-          ignoreCodes: [151002],
-        },
-      },
-    ],
+    '^.+\\.ts$': ['ts-jest'],
   },
   testEnvironment: 'node',
   testRegex: '\\.(test|spec)\\.ts$',
