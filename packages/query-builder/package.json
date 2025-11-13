@@ -3,7 +3,6 @@
     "version": "0.2.0",
     "description": "A type-safe query builder for TaylorDB",
     "private": false,
-    "type": "module",
     "main": "./dist/cjs/index.js",
     "module": "./dist/esm/index.js",
     "types": "./dist/esm/index.d.ts",
