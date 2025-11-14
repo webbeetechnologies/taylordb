@@ -1,14 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
-    "skipLibCheck": true,
     "module": "CommonJS",
     "moduleResolution": "Node",
     "outDir": "./dist",
     "rootDir": "./src",
     "baseUrl": ".",
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "paths": {}
   },
   "include": ["src/**/*"]
 }
