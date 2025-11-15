@@ -124,6 +124,26 @@ export class SubscriptionManager {
     }
 
     callback(...(initialData as TResult[]));
+
+    return {
+      unsubscribe: async () => {
+        const subscriptionIds = subscriptions.map(s => s.subscriptionId);
+        for (const id of subscriptionIds) {
+          this.#subscriptions.delete(id);
+        }
+
+        await this.executor.rawRequest(
+          `query RemoveSubscription ($subscriptionIds: [String]) {
+            plugins {
+              subscriptions {
+                unsubscribe(subscriptionIds: $subscriptionIds)
+              }
+            }
+          }`,
+          { subscriptionIds },
+        );
+      },
+    };
   }
 
   #handlePatch(response: { patches: DriverSubscriptionResponse[] }) {

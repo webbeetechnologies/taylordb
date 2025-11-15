@@ -193,25 +193,17 @@ export type TaylorDatabase = {
   selectTable: SelectTable;
   attachmentTable: AttachmentTable;
   collaboratorsTable: CollaboratorsTable;
-  users: UsersTable;
-  chat: ChatTable;
+  chats: ChatsTable;
   messages: MessagesTable;
+  users: UsersTable;
 };
 
-type UsersTable = {
+type ChatsTable = {
   id: NumberColumnType;
   createdAt: DateColumnType;
   updatedAt: DateColumnType;
   name: TextColumnType;
   messages: LinkColumnType<'messages'>;
-  messages1: LinkColumnType<'messages'>;
-};
-
-type ChatTable = {
-  id: NumberColumnType;
-  createdAt: DateColumnType;
-  updatedAt: DateColumnType;
-  name: TextColumnType;
 };
 
 type MessagesTable = {
@@ -219,6 +211,16 @@ type MessagesTable = {
   createdAt: DateColumnType;
   updatedAt: DateColumnType;
   content: TextColumnType;
+  chats: LinkColumnType<'chats'>;
   user: LinkColumnType<'users'>;
-  chat: LinkColumnType<'users'>;
+  attachments: LinkColumnType<'attachmentTable'>;
+};
+
+type UsersTable = {
+  id: NumberColumnType;
+  createdAt: DateColumnType;
+  updatedAt: DateColumnType;
+  name: TextColumnType;
+  messages1: LinkColumnType<'messages'>;
+  avatar: LinkColumnType<'attachmentTable'>;
 };

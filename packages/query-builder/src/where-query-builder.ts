@@ -17,7 +17,7 @@ export class FilterableQueryBuilder<
   where<
     C extends keyof DB[TableName],
     O extends keyof DB[TableName][C]['filters'],
-  >(column: C, operator: O, value: DB[TableName][C]['filters'][0]): this;
+  >(column: C, operator: O, value: DB[TableName][C]['filters'][O]): this;
   where<
     C extends (
       builder: WhereQueryBuilder<DB, TableName>,
@@ -69,7 +69,7 @@ export class FilterableQueryBuilder<
   orWhere<
     C extends keyof DB[TableName],
     O extends keyof DB[TableName][C]['filters'],
-  >(column: C, operator: O, value: DB[TableName][C]['filters'][0]): this;
+  >(column: C, operator: O, value: DB[TableName][C]['filters'][O]): this;
   orWhere<C extends (builder: WhereQueryBuilder<DB, TableName>) => any>(
     column: C,
   ): this;

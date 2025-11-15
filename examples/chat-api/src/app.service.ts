@@ -22,7 +22,7 @@ export class AppService {
     // In a real app, you'd likely have a findOrCreate a user here.
 
     const newChat = await this.qb
-      .insertInto('chat')
+      .insertInto('chats')
       .values({
         name,
       })
@@ -36,7 +36,7 @@ export class AppService {
 
     const newMessage = await this.qb.insertInto('messages').values({
       content,
-      chat: [chatId],
+      chats: [chatId],
       user: [userId],
     });
 

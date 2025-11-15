@@ -27,6 +27,8 @@ import { SelectionBuilder } from './selection-builder.js';
 import { UpdateQueryBuilder } from './update-query-builder.js';
 import { FilterableQueryBuilder } from './where-query-builder.js';
 
+const DEFAULT_LIMIT = 50;
+
 export class QueryBuilder<
   DB extends AnyDB,
   TableName extends keyof DB,
@@ -37,7 +39,10 @@ export class QueryBuilder<
 
   constructor(node: QueryNode, executor: Executor) {
     super(node, executor);
-    this._node = node;
+    this._node = {
+      ...node,
+      pagination: { limit: DEFAULT_LIMIT, offset: 0, ...node.pagination },
+    };
   }
 
   select<const TFields extends readonly NonLinkColumnNames<DB[TableName]>[]>(

@@ -84,8 +84,8 @@ importers:
   examples/chat:
     dependencies:
       '@taylordb/cli':
-        specifier: ^0.4.0
-        version: 0.4.0(@types/node@20.19.25)
+        specifier: ^0.5.0
+        version: 0.5.0(@types/node@20.19.25)
       '@taylordb/query-builder':
         specifier: workspace:*
         version: link:../../packages/query-builder
@@ -1323,8 +1323,8 @@ packages:
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
 
-  '@taylordb/cli@0.4.0':
-    resolution: {integrity: sha512-tVaOLWCsdpruClWu02JKh5cO6BojA10eBx/d4ihwDmc1i3v88T7DDD6laLTRGUKtkSzf4dYqESZN3vMq0O9r5g==}
+  '@taylordb/cli@0.5.0':
+    resolution: {integrity: sha512-kWXBeTpdvaepP6klkRhjw1EXHzCXf9lJGY12a9d1sm890WfDKnWpRHQ/YIXa1FuhD/hA7zxrjlLB5VyEMxx+Pw==}
     hasBin: true
 
   '@tokenizer/inflate@0.2.7':
@@ -5375,7 +5375,7 @@ snapshots:
 
   '@socket.io/component-emitter@3.1.2': {}
 
-  '@taylordb/cli@0.4.0(@types/node@20.19.25)':
+  '@taylordb/cli@0.5.0(@types/node@20.19.25)':
     dependencies:
       '@inquirer/prompts': 7.10.1(@types/node@20.19.25)
       axios: 1.13.2

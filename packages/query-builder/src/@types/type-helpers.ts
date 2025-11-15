@@ -4,7 +4,7 @@ import { AnyDB } from './internal-types.js';
 import { LinkColumnNames, NonLinkColumnNames } from './query-builder.js';
 
 export type InferDataType<TColumn> =
-  TColumn extends ColumnType<any, any, any, infer D> ? D : never;
+  TColumn extends ColumnType<infer D, any, any, any> ? D : never;
 
 export type TableShape<TTable> = {
   [K in keyof TTable]: InferDataType<TTable[K]>;

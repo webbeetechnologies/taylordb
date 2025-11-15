@@ -77,7 +77,7 @@ export class Executor {
     throw new Error('Unexpected response format');
   }
 
-  async subscribe<TResult>(
+  subscribe<TResult>(
     builders: AnySubscribableQueryBuilder[],
     callback: (result: TResult) => void,
   ) {
