@@ -18,7 +18,8 @@
     "format": "prettier --write .",
     "doc:generate": "typedoc",
     "dev": "tsc -b --watch",
-    "prepare": "husky"
+    "prepare": "husky",
+    "publish": "pnpm build && pnpm -r publish --access public"
   },
   "repository": {
     "type": "git",
