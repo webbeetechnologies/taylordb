@@ -1,30 +1,66 @@
-import type { Filters } from '@taylordb/shared';
-import type { AnyDB, QueryNode } from './@types/internal-types.js';
+import { LinkColumnType } from '@taylordb/shared';
+import {
+  AnyDB,
+  Filter,
+  FilterableNode,
+  FilterOperator,
+} from './@types/internal-types.js';
+import {
+  ColumnNames,
+  LinkColumnNames,
+  NonLinkColumnNames,
+} from './@types/query-builder.js';
+import { InferDataType } from './@types/type-helpers.js';
 import { Executor } from './executor.js';
+import { SelectionBuilder } from './selection-builder.js';
 
 export class FilterableQueryBuilder<
   DB extends AnyDB,
   TableName extends keyof DB,
 > {
-  _node: Pick<QueryNode, 'filtersSet'>;
+  declare _node: FilterableNode;
   _executor: Executor;
 
-  constructor(node: Pick<QueryNode, 'filtersSet'>, executor: Executor) {
+  constructor(node: FilterableNode, executor: Executor) {
     this._node = node;
     this._executor = executor;
   }
 
+  where<TField extends LinkColumnNames<DB[TableName]> & string>(
+    field: TField,
+    operator: 'hasAnyOf' | 'hasAllOf' | 'hasNoneOf',
+    value: (
+      qb: FilterableQueryBuilder<
+        DB,
+        DB[TableName][TField] extends LinkColumnType<any>
+          ? DB[TableName][TField]['linkedTo']
+          : never
+      >,
+    ) => FilterableQueryBuilder<
+      DB,
+      DB[TableName][TField] extends LinkColumnType<any>
+        ? DB[TableName][TField]['linkedTo']
+        : never
+    >,
+  ): this;
   where<
-    C extends keyof DB[TableName],
-    O extends keyof DB[TableName][C]['filters'],
-  >(column: C, operator: O, value: DB[TableName][C]['filters'][O]): this;
-  where<
-    C extends (
-      builder: WhereQueryBuilder<DB, TableName>,
-    ) => FilterableQueryBuilder<DB, TableName>,
-  >(column: C): this;
-  where(column: any, operator?: any, value?: any): this {
-    if (typeof column === 'function') {
+    TField extends NonLinkColumnNames<DB[TableName]> & string,
+    TOperator extends keyof DB[TableName][TField]['filters'],
+  >(
+    field: TField,
+    operator: TOperator,
+    value: DB[TableName][TField]['filters'][TOperator],
+  ): this;
+  where(
+    fieldOrFn:
+      | ColumnNames<DB[TableName]>
+      | ((
+          qb: WhereQueryBuilder<DB, TableName>,
+        ) => FilterableQueryBuilder<DB, TableName>),
+    operator?: FilterOperator,
+    value?: unknown,
+  ): this {
+    if (typeof fieldOrFn === 'function') {
       const builder = new WhereQueryBuilder<DB, TableName>(
         {
           ...this._node,
@@ -32,51 +68,81 @@ export class FilterableQueryBuilder<
         },
         this._executor,
       );
-      const result = column(builder);
-      return new (this.constructor as any)(
-        {
-          ...this._node,
-          filtersSet: {
-            ...this._node.filtersSet,
-            filtersSet: [
-              ...this._node.filtersSet.filtersSet,
-              result._node.filtersSet,
-            ],
-          },
-        },
-        this._executor,
-      );
-    }
-
-    const newWhere: Filters<string> = {
-      field: column as string,
-      operator,
-      value,
-    };
-
-    return new (this.constructor as any)(
-      {
+      const result = fieldOrFn(builder);
+      const newNode: FilterableNode = {
         ...this._node,
         filtersSet: {
           ...this._node.filtersSet,
-          filtersSet: [...this._node.filtersSet.filtersSet, newWhere],
+          filtersSet: [
+            ...this._node.filtersSet.filtersSet,
+            result._node.filtersSet,
+          ],
         },
+      };
+      // @ts-expect-error cannot instantiate an abstract class
+      return new this.constructor(newNode, this._executor);
+    }
+
+    if (typeof value === 'function') {
+      const selectionBuilder = new SelectionBuilder<DB, TableName>(
+        this._executor,
+      );
+      const initialSubQueryBuilder = selectionBuilder.useLink(fieldOrFn as any);
+      const configuredSubQueryBuilder = value(initialSubQueryBuilder);
+
+      const newFilter: Filter = {
+        field: fieldOrFn as string,
+        operator: operator!,
+        value: ['cross-filter', configuredSubQueryBuilder._node.filtersSet],
+      };
+
+      const newNode: FilterableNode = {
+        ...this._node,
+        filtersSet: {
+          ...this._node.filtersSet,
+          filtersSet: [...this._node.filtersSet.filtersSet, newFilter],
+        },
+      };
+
+      // @ts-expect-error cannot instantiate an abstract class
+      return new this.constructor(newNode, this._executor);
+    }
+
+    const newFilter: Filter = {
+      field: fieldOrFn as string,
+      operator: operator!,
+      value,
+    };
+
+    const newNode: FilterableNode = {
+      ...this._node,
+      filtersSet: {
+        ...this._node.filtersSet,
+        filtersSet: [...this._node.filtersSet.filtersSet, newFilter],
       },
-      this._executor,
-    );
+    };
+
+    // @ts-expect-error cannot instantiate an abstract class
+    return new this.constructor(newNode, this._executor);
   }
 
-  orWhere<
-    C extends keyof DB[TableName],
-    O extends keyof DB[TableName][C]['filters'],
-  >(column: C, operator: O, value: DB[TableName][C]['filters'][O]): this;
   orWhere<C extends (builder: WhereQueryBuilder<DB, TableName>) => any>(
     column: C,
   ): this;
-  orWhere(column: any, operator?: any, value?: any): this {
+  orWhere<TField extends ColumnNames<DB[TableName]> & string>(
+    field: TField,
+    operator: FilterOperator,
+    value: InferDataType<DB[TableName][TField]>,
+  ): this;
+  orWhere(
+    fieldOrFn: ColumnNames<DB[TableName]> | ((...args: any[]) => any),
+    operator?: FilterOperator,
+    value?: unknown,
+  ): this {
+    // Keeping a basic implementation for orWhere from what was in the file
     const newFilters = this._node.filtersSet.filtersSet;
 
-    if (typeof column === 'function') {
+    if (typeof fieldOrFn === 'function') {
       const builder = new WhereQueryBuilder<DB, TableName>(
         {
           ...this._node,
@@ -84,13 +150,18 @@ export class FilterableQueryBuilder<
         },
         this._executor,
       );
-      const result = column(builder);
-      newFilters.push(result._node.filters);
+      const result = fieldOrFn(builder);
+      newFilters.push(result._node.filtersSet);
     } else {
-      newFilters.push({ field: column as string, operator, value });
+      newFilters.push({
+        field: fieldOrFn as string,
+        operator: operator!,
+        value,
+      });
     }
 
-    return new (this.constructor as any)(
+    // @ts-expect-error cannot instantiate an abstract class
+    return new this.constructor(
       {
         ...this._node,
         filtersSet: {

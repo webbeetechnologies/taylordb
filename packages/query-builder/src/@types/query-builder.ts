@@ -7,3 +7,5 @@ export type NonLinkColumnNames<T> = {
 export type LinkColumnNames<T> = {
   [K in keyof T]: T[K] extends LinkColumnType<any> ? K : never;
 }[keyof T];
+
+export type ColumnNames<T> = keyof T;

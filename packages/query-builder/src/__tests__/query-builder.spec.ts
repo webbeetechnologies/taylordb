@@ -1,5 +1,33 @@
 import { createQueryBuilder } from '../index.js';
-import { TaylorDatabase } from './taylorclient.types.js';
+import {
+  DateColumnType,
+  LinkColumnType,
+  NumberColumnType,
+  TaylorDatabase as TaylorDatabaseOriginal,
+  TextColumnType,
+} from './taylorclient.types.js';
+
+interface OrdersTable {
+  id: NumberColumnType;
+  createdAt: DateColumnType;
+  updatedAt: DateColumnType;
+  amount: NumberColumnType;
+  customer: LinkColumnType<'customers'>;
+}
+
+interface CustomersTable {
+  id: NumberColumnType;
+  createdAt: DateColumnType;
+  updatedAt: DateColumnType;
+  firstName: TextColumnType;
+  lastName: TextColumnType;
+  orders: LinkColumnType<'orders'>;
+}
+
+interface TaylorDatabase extends TaylorDatabaseOriginal {
+  orders: OrdersTable;
+  customers: CustomersTable;
+}
 
 describe('QueryBuilder', () => {
   // @ts-ignore
@@ -134,6 +162,40 @@ describe('QueryBuilder', () => {
       groupings: [{ field: 'firstName', direction: 'asc' }],
       aggregations: {
         id: ['sum'],
+      },
+    });
+  });
+
+  it('should compile a cross-filter query', () => {
+    const { variables } = qb
+      .selectFrom('customers')
+      .where('orders', 'hasAnyOf', qb => qb.where('amount', '>', 100))
+      .compile();
+
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'select',
+      tableName: 'customers',
+      filtersSet: {
+        conjunction: 'and',
+        filtersSet: [
+          {
+            field: 'orders',
+            operator: 'hasAnyOf',
+            value: [
+              'cross-filter',
+              {
+                conjunction: 'and',
+                filtersSet: [
+                  {
+                    field: 'amount',
+                    operator: '>',
+                    value: 100,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
     });
   });

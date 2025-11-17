@@ -1,5 +1,7 @@
 import {
   ColumnType,
+  FilterOperator,
+  Filters,
   MetadataWithTableName,
   ObjConfigurationVisibleField,
   SelectQueryMetaData,
@@ -24,3 +26,8 @@ export type RootQueryNode = Omit<
 };
 
 export type QueryNode = SelectionQueryNode | RootQueryNode;
+
+export type FilterableNode = Pick<QueryNode, 'filtersSet'>;
+
+export type Filter = Filters<string>;
+export type { FilterOperator };
