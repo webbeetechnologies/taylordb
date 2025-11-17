@@ -23,20 +23,20 @@ export class FilterableQueryBuilder<
     field: TField,
     operator: TOperator,
     value: DB[TableName][TField] extends LinkColumnType<any>
-      ? (
-          qb: FilterableQueryBuilder<
-            DB,
-            DB[TableName][TField] extends LinkColumnType<any>
-              ? DB[TableName][TField]['linkedTo']
-              : never
-          >,
-        ) =>
-          | FilterableQueryBuilder<
+      ?
+          | ((
+              qb: FilterableQueryBuilder<
+                DB,
+                DB[TableName][TField] extends LinkColumnType<any>
+                  ? DB[TableName][TField]['linkedTo']
+                  : never
+              >,
+            ) => FilterableQueryBuilder<
               DB,
               DB[TableName][TField] extends LinkColumnType<any>
                 ? DB[TableName][TField]['linkedTo']
                 : never
-            >
+            >)
           | DB[TableName][TField]['filters'][TOperator]
       : DB[TableName][TField]['filters'][TOperator],
   ): this;
