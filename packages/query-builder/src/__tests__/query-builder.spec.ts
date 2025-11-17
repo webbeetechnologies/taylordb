@@ -166,7 +166,7 @@ describe('QueryBuilder', () => {
     });
   });
 
-  it('should compile a cross-filter query', () => {
+  it('should compile a cross-table query', () => {
     const { variables } = qb
       .selectFrom('customers')
       .where('orders', 'hasAnyOf', qb => qb.where('amount', '>', 100))
@@ -182,7 +182,7 @@ describe('QueryBuilder', () => {
             field: 'orders',
             operator: 'hasAnyOf',
             value: [
-              'cross-filter',
+              'cross-table',
               {
                 conjunction: 'and',
                 filtersSet: [

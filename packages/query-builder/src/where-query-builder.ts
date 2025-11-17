@@ -87,7 +87,7 @@ export class FilterableQueryBuilder<
       const newFilter: Filter = {
         field: fieldOrFn as string,
         operator: operator!,
-        value: ['cross-filter', configuredSubQueryBuilder._node.filtersSet],
+        value: ['cross-table', configuredSubQueryBuilder._node.filtersSet],
       };
 
       const newNode: FilterableNode = {
