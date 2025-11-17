@@ -1,16 +1,6 @@
 import { LinkColumnType } from '@taylordb/shared';
-import {
-  AnyDB,
-  Filter,
-  FilterableNode,
-  FilterOperator,
-} from './@types/internal-types.js';
-import {
-  ColumnNames,
-  LinkColumnNames,
-  NonLinkColumnNames,
-} from './@types/query-builder.js';
-import { InferDataType } from './@types/type-helpers.js';
+import { AnyDB, Filter, FilterableNode } from './@types/internal-types.js';
+import { ColumnNames } from './@types/query-builder.js';
 import { Executor } from './executor.js';
 import { SelectionBuilder } from './selection-builder.js';
 
@@ -26,38 +16,42 @@ export class FilterableQueryBuilder<
     this._executor = executor;
   }
 
-  where<TField extends LinkColumnNames<DB[TableName]> & string>(
-    field: TField,
-    operator: 'hasAnyOf' | 'hasAllOf' | 'hasNoneOf',
-    value: (
-      qb: FilterableQueryBuilder<
-        DB,
-        DB[TableName][TField] extends LinkColumnType<any>
-          ? DB[TableName][TField]['linkedTo']
-          : never
-      >,
-    ) => FilterableQueryBuilder<
-      DB,
-      DB[TableName][TField] extends LinkColumnType<any>
-        ? DB[TableName][TField]['linkedTo']
-        : never
-    >,
-  ): this;
   where<
-    TField extends NonLinkColumnNames<DB[TableName]> & string,
+    TField extends ColumnNames<DB[TableName]> & string,
     TOperator extends keyof DB[TableName][TField]['filters'],
   >(
     field: TField,
     operator: TOperator,
-    value: DB[TableName][TField]['filters'][TOperator],
+    value: DB[TableName][TField] extends LinkColumnType<any>
+      ? (
+          qb: FilterableQueryBuilder<
+            DB,
+            DB[TableName][TField] extends LinkColumnType<any>
+              ? DB[TableName][TField]['linkedTo']
+              : never
+          >,
+        ) =>
+          | FilterableQueryBuilder<
+              DB,
+              DB[TableName][TField] extends LinkColumnType<any>
+                ? DB[TableName][TField]['linkedTo']
+                : never
+            >
+          | DB[TableName][TField]['filters'][TOperator]
+      : DB[TableName][TField]['filters'][TOperator],
   ): this;
+  where<
+    C extends (
+      builder: WhereQueryBuilder<DB, TableName>,
+    ) => WhereQueryBuilder<DB, TableName>,
+  >(column: C): this;
   where(
     fieldOrFn:
       | ColumnNames<DB[TableName]>
       | ((
           qb: WhereQueryBuilder<DB, TableName>,
         ) => FilterableQueryBuilder<DB, TableName>),
-    operator?: FilterOperator,
+    operator?: string,
     value?: unknown,
   ): this {
     if (typeof fieldOrFn === 'function') {
@@ -126,17 +120,38 @@ export class FilterableQueryBuilder<
     return new this.constructor(newNode, this._executor);
   }
 
-  orWhere<C extends (builder: WhereQueryBuilder<DB, TableName>) => any>(
-    column: C,
-  ): this;
-  orWhere<TField extends ColumnNames<DB[TableName]> & string>(
+  orWhere<
+    TField extends ColumnNames<DB[TableName]> & string,
+    TOperator extends keyof DB[TableName][TField]['filters'],
+  >(
     field: TField,
-    operator: FilterOperator,
-    value: InferDataType<DB[TableName][TField]>,
+    operator: TOperator,
+    value: DB[TableName][TField] extends LinkColumnType<any>
+      ? (
+          qb: FilterableQueryBuilder<
+            DB,
+            DB[TableName][TField] extends LinkColumnType<any>
+              ? DB[TableName][TField]['linkedTo']
+              : never
+          >,
+        ) =>
+          | FilterableQueryBuilder<
+              DB,
+              DB[TableName][TField] extends LinkColumnType<any>
+                ? DB[TableName][TField]['linkedTo']
+                : never
+            >
+          | DB[TableName][TField]['filters'][TOperator]
+      : DB[TableName][TField]['filters'][TOperator],
   ): this;
+  orWhere<
+    C extends (
+      builder: WhereQueryBuilder<DB, TableName>,
+    ) => WhereQueryBuilder<DB, TableName>,
+  >(column: C): this;
   orWhere(
     fieldOrFn: ColumnNames<DB[TableName]> | ((...args: any[]) => any),
-    operator?: FilterOperator,
+    operator?: string,
     value?: unknown,
   ): this {
     // Keeping a basic implementation for orWhere from what was in the file
