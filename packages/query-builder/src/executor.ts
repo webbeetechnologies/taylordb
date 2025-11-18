@@ -63,7 +63,9 @@ export class Executor {
     const jsonResponse = await response.json();
 
     if (jsonResponse.errors) {
-      throw new Error(`GraphQL errors: ${JSON.stringify(jsonResponse.errors)}`);
+      throw new Error(
+        `GraphQL errors: ${jsonResponse.errors.map(error => error.message).join('\n')}`,
+      );
     }
 
     if (jsonResponse.data) {
