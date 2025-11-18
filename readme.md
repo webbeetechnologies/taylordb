@@ -1,18 +1,22 @@
+<div align="center">
+  <img src="docs/media/logo.png" width="200" alt="TaylorDB Logo" />
+</div>
+
 # TaylorDB Query Builder
 
-<img src="docs/media/logo.png" width="200" />
-
-This is the official TypeScript query builder for TaylorDB. It provides a type-safe and intuitive API for building and executing queries against your TaylorDB database.
+The official TypeScript query builder for TaylorDB. It provides a type-safe, fluent, and intuitive API for building and executing queries against your TaylorDB database.
 
 ## Features
 
-- **Type-Safe Queries**: Leverage your database schema to get full type safety and autocompletion for your queries.
-- **Fluent API**: Chain methods together to build complex queries with ease.
-- **CRUD Operations**: Full support for `select`, `insert`, `update`, and `delete` operations.
-- **Advanced Filtering**: Filter your data with a rich set of operators and logical conjunctions.
+- **Type-Safe Queries**: Leverage your database schema for full type safety and autocompletion, catching errors at compile-time.
+- **Fluent API**: A clean, chainable interface for building complex queries with ease.
+- **Full CRUD Support**: Complete implementation for `select`, `insert`, `update`, and `delete` operations.
+- **Advanced Filtering**: Filter data with a rich set of operators, nested conditions, and cross-table filters on relations.
+- **Complex Selections**: Fetch related data using `with`, select specific columns, or get all columns with `selectAll`.
 - **Pagination and Sorting**: Easily paginate and sort your query results.
-- **Batch Queries**: Execute multiple queries in a single request for improved performance.
-- **Aggregation Queries**: Perform powerful aggregation queries with grouping and aggregate functions.
+- **Aggregation Queries**: Perform powerful aggregations with grouping and a variety of aggregate functions.
+- **Batch Operations**: Execute multiple queries in a single, efficient request.
+- **Real-time Subscriptions**: Subscribe to queries and receive live updates when data changes.
 
 ## Installation
 
@@ -22,17 +26,21 @@ npm install @taylordb/query-builder
 
 ## Getting Started
 
-First, you'll need to generate a `taylorclient.types.ts` file from your TaylorDB schema. You can do this using the TaylorDB CLI:
+### 1. Generate TypeScript Types
+
+First, you need to generate a `taylor.types.ts` file from your TaylorDB schema using the CLI. This file will contain the TypeScript definitions for your database schema, enabling the query builder's type-safety features.
 
 ```bash
 npx @taylordb/cli generate-schema
 ```
 
-Once you have your types file, you can create a new query builder instance:
+### 2. Create a Query Builder Instance
+
+Once you have your types file, you can create a new query builder instance.
 
 ```typescript
 import { createQueryBuilder } from '@taylordb/query-builder';
-import { TaylorDatabase } from './taylorclient.types';
+import { TaylorDatabase } from './taylor.types'; // Import the generated types
 
 const qb = createQueryBuilder<TaylorDatabase>({
   baseUrl: 'YOUR_TAYLORDB_BASE_URL',
@@ -42,42 +50,177 @@ const qb = createQueryBuilder<TaylorDatabase>({
 
 ## Usage
 
-### Selecting Data
+### Select Queries
+
+#### Basic Select
+
+Select specific columns from a table.
 
 ```typescript
 const customers = await qb
   .selectFrom('customers')
-  .select(['firstName', 'lastName'])
-  .where('firstName', '=', 'John')
-  .orderBy('lastName', 'asc')
-  .paginate(1, 10)
+  .select(['firstName', 'lastName', 'email'])
   .execute();
 ```
 
-### Inserting Data
+Use `selectAll()` to fetch all columns.
 
 ```typescript
-const newCustomer = await qb
-  .insertInto('customers')
-  .values({
-    firstName: 'Jane',
-    lastName: 'Doe',
+const allCustomerData = await qb
+  .selectFrom('customers')
+  .selectAll()
+  .execute();
+```
+
+#### Filtering
+
+Use `where` and `orWhere` to filter your results.
+
+```typescript
+const johns = await qb
+  .selectFrom('users')
+  .select(['name', 'email'])
+  .where('name', '=', 'John Doe')
+  .orWhere('email', '=', 'john.doe@example.com')
+  .execute();
+```
+
+You can also nest `where` clauses for complex logic.
+
+```typescript
+const users = await qb
+  .selectFrom('users')
+  .where(qb =>
+    qb.where('role', '=', 'admin').orWhere('lastActive', '>', '2023-01-01')
+  )
+  .execute();
+```
+
+#### Fetching Relations
+
+Include related records from linked tables using `with`.
+
+```typescript
+// Get users and all fields from their related posts
+const usersWithPosts = await qb
+  .selectFrom('users')
+  .select(['id', 'name'])
+  .with(['posts'])
+  .execute();
+```
+
+You can also provide a function to customize the subquery for the relation.
+
+```typescript
+// Get users and only the title of their published posts
+const usersWithPublishedPosts = await qb
+  .selectFrom('users')
+  .select(['id', 'name'])
+  .with({
+    posts: (qb) => qb.select(['title']).where('isPublished', '=', true),
   })
   .execute();
 ```
 
-### Updating Data
+#### Cross-Table Filtering
+
+Filter records based on conditions in a related table.
 
 ```typescript
-const updatedCustomer = await qb
-  .update('customers')
-  .set({ lastName: 'Smith' })
+// Get users who have at least one published post
+const usersWithPublishedPosts = await qb
+  .selectFrom('users')
+  .where('posts', 'hasAnyOf', qb => qb.where('isPublished', '=', true))
+  .execute();
+```
+
+#### Sorting and Pagination
+
+```typescript
+const users = await qb
+  .selectFrom('users')
+  .select(['id', 'name'])
+  .orderBy('name', 'asc')
+  .paginate(2, 25) // Page 2, 25 items per page
+  .execute();
+```
+
+### Insert Queries
+
+Insert single or multiple records. Use `returning` to get data back from the new records.
+
+```typescript
+const newUsers = await qb
+  .insertInto('users')
+  .values([
+    { name: 'John Doe', email: 'john.doe@example.com' },
+    { name: 'Jane Doe', email: 'jane.doe@example.com' },
+  ])
+  .returning(['id', 'name'])
+  .execute();
+```
+
+### Update Queries
+
+Update records matching a `where` clause.
+
+```typescript
+const { affectedRecords } = await qb
+  .update('users')
+  .set({ name: 'New Name' })
   .where('id', '=', 1)
   .execute();
 ```
 
-### Deleting Data
+### Delete Queries
+
+Delete records matching a `where` clause.
 
 ```typescript
-const result = await qb.deleteFrom('customers').where('id', '=', 1).execute();
+const { affectedRecords } = await qb
+  .deleteFrom('users')
+  .where('id', '=', 1)
+  .execute();
+```
+
+### Aggregation Queries
+
+Perform powerful aggregations on your data.
+
+```typescript
+const userStats = await qb
+  .aggregateFrom('users')
+  .groupBy('role', 'asc')
+  .withAggregates({
+    id: ['count'],
+    age: ['avg', 'sum'],
+  })
+  .execute();
+```
+
+### Batch Queries
+
+Execute multiple queries in a single request for improved performance.
+
+```typescript
+const [users, newUser] = await qb.batch([
+  qb.selectFrom('users').select(['id', 'name']),
+  qb.insertInto('users').values({ name: 'New User' }).returning(['id']),
+]).execute();
+```
+
+### Real-time Subscriptions
+
+Subscribe to queries and get real-time updates when data changes.
+
+```typescript
+const unsubscribe = qb
+  .selectFrom('users')
+  .select(['id', 'name'])
+  .subscribe((users) => {
+    console.log('Users updated:', users);
+  });
+
+// To stop listening for updates
+unsubscribe();
 ```
