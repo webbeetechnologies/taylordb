@@ -61,6 +61,11 @@ export class InsertQueryBuilder<
     return (await this.#executor.execute(this))[0];
   }
 
+  async executeTakeFirst(): Promise<Selection | null> {
+    const response = await this.execute();
+    return response[0] ?? null;
+  }
+
   compile(): { query: string; variables: Record<string, any> } {
     const query = 'mutation ($metadata: JSON) { execute(metadata: $metadata) }';
 
