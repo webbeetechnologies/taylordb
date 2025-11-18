@@ -85,7 +85,7 @@ importers:
     dependencies:
       '@taylordb/cli':
         specifier: ^0.5.0
-        version: link:../../packages/cli
+        version: 0.5.0(@types/node@18.19.130)
       '@taylordb/query-builder':
         specifier: workspace:*
         version: link:../../packages/query-builder
@@ -2209,6 +2209,24 @@ packages:
 
   /@socket.io/component-emitter@3.1.2:
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
+    dev: false
+
+  /@taylordb/cli@0.5.0(@types/node@18.19.130):
+    resolution: {integrity: sha512-kWXBeTpdvaepP6klkRhjw1EXHzCXf9lJGY12a9d1sm890WfDKnWpRHQ/YIXa1FuhD/hA7zxrjlLB5VyEMxx+Pw==}
+    hasBin: true
+    dependencies:
+      '@inquirer/prompts': 7.10.1(@types/node@18.19.130)
+      axios: 1.13.2
+      chalk: 5.6.2
+      commander: 8.3.0
+      conf: 15.0.2
+      inquirer: 12.11.1(@types/node@18.19.130)
+      json-to-graphql-query: 2.3.0
+      lodash: 4.17.21
+      ts-morph: 13.0.3
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
     dev: false
 
   /@tokenizer/inflate@0.2.7:
