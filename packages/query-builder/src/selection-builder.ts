@@ -19,7 +19,7 @@ export class SelectionBuilder<
   ) {
     return new QueryBuilder<
       DB,
-      DB[CurrentTableName][LinkName] extends LinkColumnType<any>
+      DB[CurrentTableName][LinkName] extends LinkColumnType<any, boolean>
         ? DB[CurrentTableName][LinkName]['linkedTo']
         : never,
       object,

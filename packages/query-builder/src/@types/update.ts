@@ -1,11 +1,15 @@
 import {
-  ColumnType,
   MetadataWithTableName,
   UpdateMutationMetaData,
 } from '@taylordb/shared';
+import { AnyDB } from './internal-types';
 
 export type UpdateNode = MetadataWithTableName<UpdateMutationMetaData>;
 
-export type Updatable<T> = {
-  [K in keyof T]?: T[K] extends ColumnType<any, any, infer I, any> ? I : never;
+type NotUpdatableKeys<T extends AnyDB[string]> = {
+  [K in keyof T]: T[K]['update'] extends never ? K : never;
+}[keyof T];
+
+export type Updatable<T extends AnyDB[string]> = {
+  [K in keyof Omit<T, NotUpdatableKeys<T>>]?: T[K]['update'];
 };

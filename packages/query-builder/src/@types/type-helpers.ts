@@ -3,10 +3,12 @@ import { QueryBuilder } from '../query-builder.js';
 import { AnyDB } from './internal-types.js';
 import { LinkColumnNames, NonLinkColumnNames } from './query-builder.js';
 
-export type InferDataType<TColumn> =
-  TColumn extends ColumnType<infer D, any, any, any> ? D : never;
+export type InferDataType<TColumn extends ColumnType<any, any, any, any, any>> =
+  TColumn['isRequired'] extends true
+    ? TColumn['raw']
+    : TColumn['raw'] | undefined;
 
-export type TableShape<TTable> = {
+export type TableShape<TTable extends AnyDB[string]> = {
   [K in keyof TTable]: InferDataType<TTable[K]>;
 };
 
@@ -57,7 +59,7 @@ export type ResolveWithPlain<
         ? TRelations[number]
         : TRelations]: {
         [P in K]: TableShape<
-          DB[DB[TName][P] extends LinkColumnType<infer L> ? L : never]
+          DB[DB[TName][P] extends LinkColumnType<infer L, any> ? L : never]
         >[];
       };
     }[TRelations extends readonly any[] ? TRelations[number] : TRelations]

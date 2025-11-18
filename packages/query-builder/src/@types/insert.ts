@@ -1,15 +1,32 @@
 import {
-  ColumnType,
   CreateMutationMetaData,
   MetadataWithTableName,
 } from '@taylordb/shared';
 
-import { QueryNode } from './internal-types.js';
+import { AnyDB, QueryNode } from './internal-types.js';
 
 export type InsertNode = MetadataWithTableName<CreateMutationMetaData> & {
   returning: (string | QueryNode)[];
 };
 
-export type Insertable<T> = {
-  [K in keyof T]?: T[K] extends ColumnType<any, any, infer I, any> ? I : never;
+type RequiredKeys<T extends AnyDB[string]> = {
+  [K in keyof T]: T[K]['isRequired'] extends true
+    ? T[K]['insert'] extends never
+      ? never
+      : K
+    : never;
+}[keyof T];
+
+type OptionalKeys<T extends AnyDB[string]> = {
+  [K in keyof T]: T[K]['isRequired'] extends false
+    ? T[K]['insert'] extends never
+      ? never
+      : K
+    : never;
+}[keyof T];
+
+export type Insertable<T extends AnyDB[string]> = {
+  [K in RequiredKeys<T>]: T[K]['insert'];
+} & {
+  [K in OptionalKeys<T>]?: T[K]['insert'];
 };

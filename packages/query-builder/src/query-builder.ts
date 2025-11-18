@@ -93,7 +93,7 @@ export class QueryBuilder<
       [K in LinkColumnNames<DB[TableName]>]?: (
         qb: QueryBuilder<
           DB,
-          DB[TableName][K] extends LinkColumnType<any>
+          DB[TableName][K] extends LinkColumnType<any, boolean>
             ? DB[TableName][K]['linkedTo']
             : never,
           object,

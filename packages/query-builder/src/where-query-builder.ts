@@ -22,18 +22,18 @@ export class FilterableQueryBuilder<
   >(
     field: TField,
     operator: TOperator,
-    value: DB[TableName][TField] extends LinkColumnType<any>
+    value: DB[TableName][TField] extends LinkColumnType<any, boolean>
       ?
           | ((
               qb: FilterableQueryBuilder<
                 DB,
-                DB[TableName][TField] extends LinkColumnType<any>
+                DB[TableName][TField] extends LinkColumnType<any, boolean>
                   ? DB[TableName][TField]['linkedTo']
                   : never
               >,
             ) => FilterableQueryBuilder<
               DB,
-              DB[TableName][TField] extends LinkColumnType<any>
+              DB[TableName][TField] extends LinkColumnType<any, boolean>
                 ? DB[TableName][TField]['linkedTo']
                 : never
             >)
@@ -126,18 +126,18 @@ export class FilterableQueryBuilder<
   >(
     field: TField,
     operator: TOperator,
-    value: DB[TableName][TField] extends LinkColumnType<any>
+    value: DB[TableName][TField] extends LinkColumnType<any, boolean>
       ? (
           qb: FilterableQueryBuilder<
             DB,
-            DB[TableName][TField] extends LinkColumnType<any>
+            DB[TableName][TField] extends LinkColumnType<any, boolean>
               ? DB[TableName][TField]['linkedTo']
               : never
           >,
         ) =>
           | FilterableQueryBuilder<
               DB,
-              DB[TableName][TField] extends LinkColumnType<any>
+              DB[TableName][TField] extends LinkColumnType<any, boolean>
                 ? DB[TableName][TField]['linkedTo']
                 : never
             >

@@ -24,7 +24,8 @@ export class AppService {
     const newChat = await this.qb
       .insertInto('chats')
       .values({
-        name,
+        messages: [],
+        name: undefined,
       })
       .execute();
 
