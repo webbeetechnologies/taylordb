@@ -15,8 +15,6 @@ export class AppService {
   }
 
   async createChat(createChatDto: CreateChatDto) {
-    const { name } = createChatDto;
-
     // First, create a user if they don't exist, or retrieve them.
     // For simplicity, we'll assume the user exists and has id = userId.
     // In a real app, you'd likely have a findOrCreate a user here.
@@ -25,7 +23,7 @@ export class AppService {
       .insertInto('chats')
       .values({
         messages: [],
-        name: undefined,
+        name: createChatDto.name,
       })
       .execute();
 
@@ -35,11 +33,14 @@ export class AppService {
   async createMessage(createMessageDto: CreateMessageDto) {
     const { content, chatId, userId } = createMessageDto;
 
-    const newMessage = await this.qb.insertInto('messages').values({
-      content,
-      chats: [chatId],
-      user: [userId],
-    });
+    const newMessage = await this.qb
+      .insertInto('messages')
+      .values({
+        content,
+        chats: [chatId],
+        user: [userId],
+      })
+      .execute();
 
     return newMessage;
   }
