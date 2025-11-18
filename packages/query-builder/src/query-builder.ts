@@ -29,6 +29,13 @@ import { FilterableQueryBuilder } from './where-query-builder.js';
 
 const DEFAULT_LIMIT = 50;
 
+/**
+ * The main query builder class for constructing and executing select queries.
+ * @template DB - The database type.
+ * @template TableName - The name of the table to query.
+ * @template Selection - The type of the selected fields.
+ * @template LinkName - The name of the link field if this is a subquery.
+ */
 export class QueryBuilder<
   DB extends AnyDB,
   TableName extends keyof DB,
@@ -45,6 +52,19 @@ export class QueryBuilder<
     };
   }
 
+  /**
+   * Selects a set of fields from the table.
+   * @param fields - An array of field names to select.
+   * @returns A new `QueryBuilder` instance with the specified fields selected.
+   *
+   * @example
+   * ```typescript
+   * const users = await qb
+   *   .selectFrom('users')
+   *   .select(['id', 'name'])
+   *   .execute();
+   * ```
+   */
   select<const TFields extends readonly NonLinkColumnNames<DB[TableName]>[]>(
     fields: TFields,
   ): QueryBuilder<
@@ -61,6 +81,18 @@ export class QueryBuilder<
     );
   }
 
+  /**
+   * Selects all fields from the table.
+   * @returns A new `QueryBuilder` instance with all fields selected.
+   *
+   * @example
+   * ```typescript
+   * const users = await qb
+   *   .selectFrom('users')
+   *   .selectAll()
+   *   .execute();
+   * ```
+   */
   selectAll(): QueryBuilder<
     DB,
     TableName,
@@ -77,6 +109,35 @@ export class QueryBuilder<
     );
   }
 
+  /**
+   * Includes related records from a linked table.
+   * This method has two overloads:
+   * 1. Pass an array of link field names to include all fields from the related records.
+   * 2. Pass an object to specify subqueries for each link field.
+   *
+   * @param relations - The relations to include.
+   * @returns A new `QueryBuilder` instance with the specified relations included.
+   *
+   * @example
+   * ```typescript
+   * const usersWithPosts = await qb
+   *   .selectFrom('users')
+   *   .select(['id', 'name'])
+   *   .with(['posts']) // Assuming 'posts' is a link field on the 'users' table
+   *   .execute();
+   * ```
+   *
+   * @example
+   * ```typescript
+   * const usersWithPublishedPosts = await qb
+   *   .selectFrom('users')
+   *   .select(['id', 'name'])
+   *   .with({
+   *     posts: (qb) => qb.select(['title', 'content']).where('isPublished', '=', true),
+   *   })
+   *   .execute();
+   * ```
+   */
   with<
     const TArg extends
       | (LinkColumnNames<DB[TableName]> & string)
@@ -154,6 +215,20 @@ export class QueryBuilder<
     );
   }
 
+  /**
+   * Sets the maximum number of records to return.
+   * @param count - The maximum number of records.
+   * @returns A new `QueryBuilder` instance with the limit applied.
+   *
+   * @example
+   * ```typescript
+   * const users = await qb
+   *   .selectFrom('users')
+   *   .select(['id', 'name'])
+   *   .limit(10)
+   *   .execute();
+   * ```
+   */
   limit(count: number): QueryBuilder<DB, TableName, Selection, LinkName> {
     return new QueryBuilder(
       {
@@ -164,6 +239,20 @@ export class QueryBuilder<
     );
   }
 
+  /**
+   * Sets the number of records to skip.
+   * @param count - The number of records to skip.
+   * @returns A new `QueryBuilder` instance with the offset applied.
+   *
+   * @example
+   * ```typescript
+   * const users = await qb
+   *   .selectFrom('users')
+   *   .select(['id', 'name'])
+   *   .offset(10)
+   *   .execute();
+   * ```
+   */
   offset(count: number): QueryBuilder<DB, TableName, Selection, LinkName> {
     return new QueryBuilder(
       {
@@ -174,6 +263,21 @@ export class QueryBuilder<
     );
   }
 
+  /**
+   * Paginates the results.
+   * @param page - The page number to retrieve.
+   * @param limit - The number of records per page.
+   * @returns A new `QueryBuilder` instance with pagination applied.
+   *
+   * @example
+   * ```typescript
+   * const users = await qb
+   *   .selectFrom('users')
+   *   .select(['id', 'name'])
+   *   .paginate(2, 25) // Retrieves page 2 with 25 records per page
+   *   .execute();
+   * ```
+   */
   paginate(
     page: number,
     limit: number,
@@ -181,6 +285,21 @@ export class QueryBuilder<
     return this.offset((page - 1) * limit).limit(limit);
   }
 
+  /**
+   * Sorts the results by a specified field.
+   * @param field - The field to sort by.
+   * @param direction - The sort direction ('asc' or 'desc').
+   * @returns A new `QueryBuilder` instance with the sorting applied.
+   *
+   * @example
+   * ```typescript
+   * const users = await qb
+   *   .selectFrom('users')
+   *   .select(['id', 'name'])
+   *   .orderBy('name', 'asc')
+   *   .execute();
+   * ```
+   */
   orderBy(
     field: keyof DB[TableName],
     direction: 'asc' | 'desc' = 'asc',
@@ -199,12 +318,37 @@ export class QueryBuilder<
     );
   }
 
+  /**
+   * Executes the select query.
+   * @returns A promise that resolves with an array of the selected records.
+   *
+   * @example
+   * ```typescript
+   * const users = await qb
+   *   .selectFrom('users')
+   *   .select(['id', 'name'])
+   *   .execute();
+   * ```
+   */
   async execute(): Promise<Selection[]> {
     const response = await this._executor.execute<Selection>(this);
 
     return response[0];
   }
 
+  /**
+   * Executes the select query and returns the first result.
+   * @returns A promise that resolves with the first record, or `null` if no records were found.
+   *
+   * @example
+   * ```typescript
+   * const user = await qb
+   *   .selectFrom('users')
+   *   .where('id', '=', 1)
+   *   .select(['id', 'name'])
+   *   .executeTakeFirst();
+   * ```
+   */
   async executeTakeFirst(): Promise<Selection | null> {
     const response = await this._executor.execute<Selection[]>(this);
 
@@ -285,12 +429,26 @@ export class QueryBuilder<
   }
 }
 
+/**
+ * The root query builder class that provides entry points for all query types.
+ */
 export class RootQueryBuilder<DB extends AnyDB> {
   #executor: Executor;
 
   constructor(config: { baseUrl: string; apiKey: string }) {
     this.#executor = new Executor(config.baseUrl, config.apiKey);
   }
+  /**
+   * Creates a new select query builder for the specified table.
+   * @param from - The name of the table to select from.
+   * @returns A new `QueryBuilder` instance.
+   *
+   * @example
+   * ```typescript
+   * const qb = createQueryBuilder<MyDatabase>({ ... });
+   * const userQuery = qb.selectFrom('users');
+   * ```
+   */
   selectFrom<
     TableName extends keyof Omit<
       DB,
@@ -310,6 +468,17 @@ export class RootQueryBuilder<DB extends AnyDB> {
     );
   }
 
+  /**
+   * Creates a new insert query builder for the specified table.
+   * @param into - The name of the table to insert into.
+   * @returns A new `InsertQueryBuilder` instance.
+   *
+   * @example
+   * ```typescript
+   * const qb = createQueryBuilder<MyDatabase>({ ... });
+   * const insertQuery = qb.insertInto('users');
+   * ```
+   */
   insertInto<
     TableName extends keyof Omit<
       DB,
@@ -328,6 +497,17 @@ export class RootQueryBuilder<DB extends AnyDB> {
     );
   }
 
+  /**
+   * Creates a new update query builder for the specified table.
+   * @param tableName - The name of the table to update.
+   * @returns A new `UpdateQueryBuilder` instance.
+   *
+   * @example
+   * ```typescript
+   * const qb = createQueryBuilder<MyDatabase>({ ... });
+   * const updateQuery = qb.update('users');
+   * ```
+   */
   update<
     TableName extends keyof Omit<
       DB,
@@ -346,6 +526,17 @@ export class RootQueryBuilder<DB extends AnyDB> {
     );
   }
 
+  /**
+   * Creates a new delete query builder for the specified table.
+   * @param tableName - The name of the table to delete from.
+   * @returns A new `DeleteQueryBuilder` instance.
+   *
+   * @example
+   * ```typescript
+   * const qb = createQueryBuilder<MyDatabase>({ ... });
+   * const deleteQuery = qb.deleteFrom('users');
+   * ```
+   */
   deleteFrom<
     TableName extends keyof Omit<
       DB,
@@ -364,6 +555,21 @@ export class RootQueryBuilder<DB extends AnyDB> {
     );
   }
 
+  /**
+   * Creates a new batch query builder.
+   * @param builders - An array of query builders to execute in a batch.
+   * @returns A new `BatchQueryBuilder` instance.
+   *
+   * @example
+   * ```typescript
+   * const qb = createQueryBuilder<MyDatabase>({ ... });
+   * const batchQuery = qb.batch([
+   *   qb.selectFrom('users').select(['id', 'name']),
+   *   qb.insertInto('users').values({ name: 'New User' }),
+   * ]);
+   * const [users, newUser] = await batchQuery.execute();
+   * ```
+   */
   batch<const TBuilders extends readonly AnyQueryBuilder[]>(
     builders: TBuilders,
   ): AreAllBuildersSubscribable<TBuilders> extends true
@@ -372,6 +578,17 @@ export class RootQueryBuilder<DB extends AnyDB> {
     return new BatchQueryBuilder(builders, this.#executor);
   }
 
+  /**
+   * Creates a new aggregation query builder for the specified table.
+   * @param tableName - The name of the table to aggregate from.
+   * @returns A new `AggregationQueryBuilder` instance.
+   *
+   * @example
+   * ```typescript
+   * const qb = createQueryBuilder<MyDatabase>({ ... });
+   * const aggregateQuery = qb.aggregateFrom('users');
+   * ```
+   */
   aggregateFrom<
     TableName extends keyof Omit<
       DB,

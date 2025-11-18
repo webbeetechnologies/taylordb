@@ -16,7 +16,8 @@
     "lint": "eslint .",
     "fix": "eslint . --fix",
     "format": "prettier --write .",
-    "doc:generate": "typedoc",
+    "docs:start": "cd website && pnpm start",
+    "docs:build": "cd website && pnpm build",
     "dev": "tsc -b --watch",
     "prepare": "husky",
     "publish": "pnpm build && pnpm -r publish --access public"
@@ -49,13 +50,14 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.20.6",
-    "typedoc": "^0.24.0",
-    "typedoc-plugin-markdown": "^3.14.0",
+    "typedoc": "latest",
+    "typedoc-plugin-markdown": "latest",
     "typescript": "^5.4.5",
     "typescript-eslint": "^8.46.4",
     "vite": "^5.2.0",
     "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22"
+    "@types/react-dom": "^18.2.22",
+    "docusaurus-plugin-typedoc": "latest"
   },
   "engines": {
     "node": ">=18.0.0"

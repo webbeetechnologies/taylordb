@@ -32,8 +32,8 @@
     "license": "ISC",
     "dependencies": {
         "@taylordb/shared": "workspace:*",
-        "json-to-graphql-query": "^2.2.5",
         "fast-json-patch": "^3.1.1",
+        "json-to-graphql-query": "^2.2.5",
         "socket.io-client": "^4.8.1",
         "zod": "^4.1.12"
     },

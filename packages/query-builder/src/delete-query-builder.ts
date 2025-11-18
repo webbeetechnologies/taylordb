@@ -3,6 +3,11 @@ import type { AnyDB } from './@types/internal-types.js';
 import { Executor } from './executor.js';
 import { FilterableQueryBuilder } from './where-query-builder.js';
 
+/**
+ * A query builder for deleting records from the database.
+ * @template DB - The database type.
+ * @template TableName - The name of the table to delete from.
+ */
 export class DeleteQueryBuilder<
   DB extends AnyDB,
   TableName extends keyof DB,
@@ -14,6 +19,18 @@ export class DeleteQueryBuilder<
     this.#node = node;
   }
 
+  /**
+   * Executes the delete query.
+   * @returns A promise that resolves with the number of affected records.
+   *
+   * @example
+   * ```typescript
+   * const { affectedRecords } = await qb
+   *   .deleteFrom('users')
+   *   .where('id', '=', 1)
+   *   .execute();
+   * ```
+   */
   async execute(): Promise<{ affectedRecords: number }> {
     const response =
       await this._executor.execute<{ affectedRecords: number }[]>(this);

@@ -25,6 +25,10 @@ export type AreAllBuildersSubscribable<
   TBuilders extends readonly AnyQueryBuilder[],
 > = TBuilders[number] extends AnySubscribableQueryBuilder ? true : false;
 
+/**
+ * A query builder for executing multiple queries in a single batch.
+ * @template TBuilders - An array of query builders to execute.
+ */
 export class BatchQueryBuilder<
   const TBuilders extends readonly AnyQueryBuilder[],
 > {
@@ -36,12 +40,44 @@ export class BatchQueryBuilder<
     this.#executor = executor;
   }
 
+  /**
+   * Executes the batch query.
+   * @returns A promise that resolves with an array of the results from each query in the batch.
+   *
+   * @example
+   * ```typescript
+   * const [users, newUser] = await qb.batch([
+   *   qb.selectFrom('users').select(['id', 'name']),
+   *   qb.insertInto('users').values({ name: 'New User' }).returning(['id', 'name']),
+   * ]).execute();
+   * ```
+   */
   async execute(): Promise<{
     -readonly [K in keyof TBuilders]: InferExecuteResult<TBuilders[K]>;
   }> {
     return this.#executor.execute(this);
   }
 
+  /**
+   * Subscribes to the results of the batch query.
+   * This is only possible if all queries in the batch are subscribable (select and aggregate).
+   * @param callback - A callback function that will be called with the results of the batch query.
+   * @returns A function to unsubscribe from the query.
+   *
+   * @example
+   * ```typescript
+   * const unsubscribe = qb.batch([
+   *   qb.selectFrom('users').select(['id', 'name']),
+   *   qb.aggregateFrom('users').groupBy('role').withAggregates({ id: ['count'] }),
+   * ]).subscribe(([users, userAggregates]) => {
+   *   console.log('Users:', users);
+   *   console.log('User Aggregates:', userAggregates);
+   * });
+   *
+   * // To stop listening for updates
+   * unsubscribe();
+   * ```
+   */
   subscribe(
     callback: (
       ...results: {

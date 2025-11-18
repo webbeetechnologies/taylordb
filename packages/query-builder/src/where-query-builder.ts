@@ -4,6 +4,12 @@ import { ColumnNames } from './@types/query-builder.js';
 import { Executor } from './executor.js';
 import { SelectionBuilder } from './selection-builder.js';
 
+/**
+ * A base class for query builders that support filtering.
+ * It provides the `where` and `orWhere` methods.
+ * @template DB - The database type.
+ * @template TableName - The name of the table to query.
+ */
 export class FilterableQueryBuilder<
   DB extends AnyDB,
   TableName extends keyof DB,
@@ -16,6 +22,41 @@ export class FilterableQueryBuilder<
     this._executor = executor;
   }
 
+  /**
+   * Adds a `where` clause to the query.
+   * This can be a simple condition, a nested query, or a cross-filter on a linked table.
+   *
+   * @param field - The field to filter on.
+   * @param operator - The filter operator.
+   * @param value - The value to filter by.
+   * @returns The query builder instance for chaining.
+   *
+   * @example
+   * ```typescript
+   * const users = await qb
+   *   .selectFrom('users')
+   *   .where('name', '=', 'John Doe')
+   *   .execute();
+   * ```
+   *
+   * @example
+   * ```typescript
+   * const users = await qb
+   *   .selectFrom('users')
+   *   .where((qb) =>
+   *     qb.where('name', '=', 'John Doe').orWhere('email', '=', 'john.doe@example.com')
+   *   )
+   *   .execute();
+   * ```
+   *
+   * @example
+   * ```typescript
+   * const users = await qb
+   *   .selectFrom('users')
+   *   .where('posts', 'hasAnyOf', (qb) => qb.where('isPublished', '=', true))
+   *   .execute();
+   * ```
+   */
   where<
     TField extends ColumnNames<DB[TableName]> & string,
     TOperator extends keyof DB[TableName][TField]['filters'],
@@ -120,6 +161,24 @@ export class FilterableQueryBuilder<
     return new this.constructor(newNode, this._executor);
   }
 
+  /**
+   * Adds an `orWhere` clause to the query.
+   * This is similar to `where`, but the condition will be joined with `OR`.
+   *
+   * @param field - The field to filter on.
+   * @param operator - The filter operator.
+   * @param value - The value to filter by.
+   * @returns The query builder instance for chaining.
+   *
+   * @example
+   * ```typescript
+   * const users = await qb
+   *   .selectFrom('users')
+   *   .where('name', '=', 'John Doe')
+   *   .orWhere('name', '=', 'Jane Doe')
+   *   .execute();
+   * ```
+   */
   orWhere<
     TField extends ColumnNames<DB[TableName]> & string,
     TOperator extends keyof DB[TableName][TField]['filters'],

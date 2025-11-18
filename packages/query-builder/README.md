@@ -111,3 +111,45 @@ const aggregates = await qb
   })
   .execute();
 ```
+
+## Recipes
+
+### Select with Relations
+
+You can use the `with` method to fetch related records from a linked table.
+
+```typescript
+// Assuming 'customers' has a link field 'orders' to the 'orders' table
+const customersWithOrders = await qb
+  .selectFrom('customers')
+  .select(['firstName', 'lastName'])
+  .with({
+    orders: qb => qb.select(['orderDate', 'total']),
+  })
+  .execute();
+```
+
+### Cross-Filters
+
+You can filter records in one table based on the values in a linked table.
+
+```typescript
+// Get all customers who have placed an order with a total greater than 100
+const highValueCustomers = await qb
+  .selectFrom('customers')
+  .where('orders', 'hasAnyOf', qb => qb.where('total', '>', 100))
+  .execute();
+```
+
+### Conditional Updates
+
+You can use `where` clauses to update only the records that match a specific condition.
+
+```typescript
+// Update the status of all orders placed before a certain date
+const { affectedRecords } = await qb
+  .update('orders')
+  .set({ status: 'archived' })
+  .where('orderDate', '<', '2023-01-01')
+  .execute();
+```
