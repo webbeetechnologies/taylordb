@@ -4,6 +4,6 @@
     "composite": true,
     "module": "NodeNext"
   },
-  "include": ["src/**/*", "sample/**/*"],
+  "include": ["src/**/*"],
   "references": [{ "path": "../shared" }]
 }

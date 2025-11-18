@@ -14,6 +14,8 @@ export default [
       '**/coverage/**',
       'github-actions-reporter.js',
       'packages/cli/src/templates/schema-default.template.hbs',
+      'website/**',
+      '**/docs/**',
     ],
   },
   {
