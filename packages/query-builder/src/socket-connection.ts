@@ -1,6 +1,19 @@
+import EventEmitter from 'eventemitter3';
 import jsonpatch from 'fast-json-patch';
 import { io, Socket } from 'socket.io-client';
-import { Executor } from './executor.js';
+import { withResolver } from './with-resolver.js';
+
+const generateUUID = () => {
+  if (globalThis.crypto && globalThis.crypto.randomUUID) {
+    return globalThis.crypto.randomUUID();
+  }
+  // A simple fallback for environments without crypto.randomUUID
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
 
 export type DriverSubscriptionResponse = {
   id: string;
@@ -14,20 +27,21 @@ type Subscription = {
   callback: (data: any) => void;
 };
 
-export class SubscriptionManager {
+export class SocketConnection extends EventEmitter {
   #socket: Socket | null = null;
   #subscriptions = new Map<string, Subscription>();
   #isConnecting = false;
 
   constructor(
-    private executor: Executor,
     private config: {
       baseUrl: string;
       apiKey: string;
       timeZone?: string;
       clientId?: string;
     },
-  ) {}
+  ) {
+    super();
+  }
 
   async #connect() {
     if (this.#socket || this.#isConnecting) {
@@ -43,6 +57,7 @@ export class SubscriptionManager {
         auth: {
           token: this.config.apiKey,
           'time-zone': this.config.timeZone || 'UTC',
+          schema: 'readable',
           'client-id': this.config.clientId,
         },
         query: {},
@@ -59,12 +74,50 @@ export class SubscriptionManager {
         this.#socket.on('connect_error', err => {
           reject(err);
         });
+        this.#socket.on('query-response', (response: any) => {
+          this.emit(response.queryId, response.data);
+        });
       });
 
       this.#socket.emit('subscribe', { clientId: this.config.clientId });
     } finally {
       this.#isConnecting = false;
     }
+  }
+
+  public async rawRequest<T>(
+    query: string,
+    variables: Record<string, any>,
+    headers?: Record<string, string>,
+    transactionId?: string,
+  ): Promise<T> {
+    await this.#connect();
+    const queryId = generateUUID();
+
+    const { promise, resolve } = withResolver<T>();
+
+    this.once(queryId, (response: any) => {
+      resolve(response);
+    });
+
+    if (!headers) {
+      headers = {};
+    }
+
+    headers = {
+      ...headers,
+      schema: 'readable',
+    };
+
+    this.emit('query', {
+      query,
+      variables,
+      queryId,
+      ...(transactionId ? { transactionId } : {}),
+      ...(headers ? { options: { ...headers } } : {}),
+    });
+
+    return promise;
   }
 
   public async subscribe<TResult>(
@@ -80,7 +133,7 @@ export class SubscriptionManager {
       },
     }));
 
-    const result = await this.executor.rawRequest<{
+    const result = await this.rawRequest<{
       plugins: {
         subscriptions: {
           subscribe: { subscriptionId: string; data: any }[];
@@ -132,7 +185,7 @@ export class SubscriptionManager {
           this.#subscriptions.delete(id);
         }
 
-        await this.executor.rawRequest(
+        await this.rawRequest(
           `query RemoveSubscription ($subscriptionIds: [String]) {
             plugins {
               subscriptions {
@@ -144,6 +197,14 @@ export class SubscriptionManager {
         );
       },
     };
+  }
+
+  public emit(event: string | symbol, ...args: any[]): boolean {
+    if (event === 'query') {
+      this.#socket?.emit('query', ...args);
+      return true;
+    }
+    return super.emit(event, ...args);
   }
 
   #handlePatch(response: { patches: DriverSubscriptionResponse[] }) {

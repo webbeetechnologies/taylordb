@@ -1,5 +1,5 @@
 import { AnySubscribableQueryBuilder } from './batch-query-builder.js';
-import { SubscriptionManager } from './subscription-manager.js';
+import { SocketConnection } from './socket-connection.js';
 
 interface Compilable {
   compile(): { query: string; variables: Record<string, any> };
@@ -20,21 +20,21 @@ const generateUUID = () => {
 export class Executor {
   #baseUrl: string;
   #apiKey: string;
-  #subscriptionManager: SubscriptionManager;
+  #socketConnection: SocketConnection;
   #transactionId?: string;
 
   constructor(
     baseUrl: string,
     apiKey: string,
     transactionId?: string,
-    subscriptionManager?: SubscriptionManager,
+    socketConnection?: SocketConnection,
   ) {
     this.#baseUrl = baseUrl;
     this.#apiKey = apiKey;
     this.#transactionId = transactionId;
-    this.#subscriptionManager =
-      subscriptionManager ??
-      new SubscriptionManager(this, {
+    this.#socketConnection =
+      socketConnection ??
+      new SocketConnection({
         baseUrl,
         apiKey,
         clientId: generateUUID(),
@@ -50,7 +50,7 @@ export class Executor {
       this.#baseUrl,
       this.#apiKey,
       transactionId,
-      this.#subscriptionManager,
+      this.#socketConnection,
     );
   }
 
@@ -64,42 +64,12 @@ export class Executor {
     variables: Record<string, any>,
     headers?: Record<string, string>,
   ): Promise<T> {
-    const response = await fetch(this.#baseUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.#apiKey}`,
-        schema: 'readable',
-        ...(this.#transactionId ? { transactionid: this.#transactionId } : {}),
-        ...(headers ? { ...headers } : {}),
-      },
-      body: JSON.stringify({ query, variables }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        `Request failed with status ${response.status}: ${errorText}`,
-      );
-    }
-
-    const jsonResponse = await response.json();
-
-    if (jsonResponse.errors) {
-      throw new Error(
-        `GraphQL errors: ${jsonResponse.errors.map(error => error.message).join('\n')}`,
-      );
-    }
-
-    if (jsonResponse.data) {
-      const [firstKey] = Object.keys(jsonResponse.data);
-      if (Array.isArray(jsonResponse.data[firstKey])) {
-        return jsonResponse.data[firstKey] as T;
-      }
-      return jsonResponse.data;
-    }
-
-    throw new Error('Unexpected response format');
+    return this.#socketConnection.rawRequest(
+      query,
+      variables,
+      headers,
+      this.#transactionId,
+    );
   }
 
   subscribe<TResult>(
@@ -107,6 +77,6 @@ export class Executor {
     callback: (result: TResult) => void,
   ) {
     const metadatas = builders.map(b => (b as any)._prepareMetadata());
-    return this.#subscriptionManager.subscribe(metadatas, callback);
+    return this.#socketConnection.subscribe(metadatas, callback);
   }
 }
