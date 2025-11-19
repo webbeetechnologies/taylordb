@@ -1,10 +1,11 @@
 import { createQueryBuilder } from '@taylordb/query-builder';
 import { useEffect, useState } from 'react';
-import { TaylorDatabase } from '../taylor.types';
+import { TableRaws, TaylorDatabase } from '../taylor.types';
 
 type RootQueryBuilder = ReturnType<typeof createQueryBuilder<TaylorDatabase>>;
 
-type Chat = { id: number; name: string };
+type Chat = Pick<TableRaws<'chats'>, 'id' | 'name'>;
+
 type ChatListProps = {
   qb: RootQueryBuilder;
   currentChat: Chat | null;
