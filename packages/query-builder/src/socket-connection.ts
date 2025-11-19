@@ -66,13 +66,18 @@ export class SocketConnection extends EventEmitter {
           query: {},
         });
 
-        this.#socket.on('connect', () => {
-          this.#socket?.emit('listen', { clientId: this.config.clientId });
+        this.#socket.on('successful', () => {
           this.#socket?.on('patch', this.#handlePatch.bind(this));
+
           this.#socket?.on('query-response', (response: any) => {
+            console.log('[LOGGED] First response came');
             this.emit(response.queryId, response);
           });
+
           this.#socket?.emit('subscribe', { clientId: this.config.clientId });
+
+          console.log('[LOGGED] connected');
+
           resolve();
         });
 
@@ -107,6 +112,8 @@ export class SocketConnection extends EventEmitter {
     const { promise, resolve } = withResolver<T>();
 
     this.once(queryId, (response: any) => {
+      console.log('[LOGGED] the first response');
+
       if (response.errors) {
         throw new Error(JSON.stringify(response.errors));
       }
@@ -127,6 +134,8 @@ export class SocketConnection extends EventEmitter {
       ...headers,
       schema: 'readable',
     };
+
+    console.log('[LOGGED] the first request');
 
     this.emit('query', {
       query,
