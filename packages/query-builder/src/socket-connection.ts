@@ -101,7 +101,12 @@ export class SocketConnection extends EventEmitter {
         throw new Error(JSON.stringify(response.errors));
       }
 
-      resolve(response.data);
+      const firstKey = Object.keys(response.data)[0];
+      if (firstKey) {
+        resolve(response.data[firstKey]);
+      } else {
+        resolve(response.data);
+      }
     });
 
     if (!headers) {
@@ -138,10 +143,8 @@ export class SocketConnection extends EventEmitter {
     }));
 
     const result = await this.rawRequest<{
-      plugins: {
-        subscriptions: {
-          subscribe: { subscriptionId: string; data: any }[];
-        };
+      subscriptions: {
+        subscribe: { subscriptionId: string; data: any }[];
       };
     }>(
       `
@@ -160,7 +163,7 @@ export class SocketConnection extends EventEmitter {
       { 'client-id': this.config.clientId },
     );
 
-    const subscriptions = result.plugins.subscriptions.subscribe;
+    const subscriptions = result.subscriptions.subscribe;
     const initialData = subscriptions.map(s => s.data);
 
     for (const sub of subscriptions) {
