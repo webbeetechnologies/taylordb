@@ -30,7 +30,7 @@ type Subscription = {
 export class SocketConnection extends EventEmitter {
   #socket: Socket | null = null;
   #subscriptions = new Map<string, Subscription>();
-  #isConnecting = false;
+  #connectionPromise: Promise<void> | null = null;
 
   constructor(
     private config: {
@@ -43,46 +43,56 @@ export class SocketConnection extends EventEmitter {
     super();
   }
 
-  async #connect() {
-    if (this.#socket || this.#isConnecting) {
-      return;
+  #connect(): Promise<void> {
+    if (this.#socket?.connected) {
+      return Promise.resolve();
     }
-    this.#isConnecting = true;
 
-    try {
-      const socketUrl = this.config.baseUrl
-        .replace(/^http/, 'ws')
-        .replace('api', 'bamboo');
-      this.#socket = io(socketUrl, {
-        auth: {
-          token: this.config.apiKey,
-          'time-zone': this.config.timeZone || 'UTC',
-          schema: 'readable',
-          'client-id': this.config.clientId,
-        },
-        query: {},
-      });
+    if (this.#connectionPromise) {
+      return this.#connectionPromise;
+    }
 
-      this.#socket.emit('listen', { clientId: this.config.clientId });
-      this.#socket.on('patch', this.#handlePatch.bind(this));
+    this.#connectionPromise = new Promise((resolve, reject) => {
+      try {
+        const socketUrl = this.config.baseUrl
+          .replace(/^http/, 'ws')
+          .replace('api', 'bamboo');
+        this.#socket = io(socketUrl, {
+          auth: {
+            token: this.config.apiKey,
+            'time-zone': this.config.timeZone || 'UTC',
+            'client-id': this.config.clientId,
+          },
+          query: {},
+        });
 
-      await new Promise<void>((resolve, reject) => {
-        if (!this.#socket) return reject('Socket not initialized');
         this.#socket.on('connect', () => {
+          this.#socket?.emit('listen', { clientId: this.config.clientId });
+          this.#socket?.on('patch', this.#handlePatch.bind(this));
+          this.#socket?.on('query-response', (response: any) => {
+            this.emit(response.queryId, response);
+          });
+          this.#socket?.emit('subscribe', { clientId: this.config.clientId });
           resolve();
         });
+
+        this.#socket.on('disconnect', () => {
+          this.#socket = null;
+          this.#connectionPromise = null;
+        });
+
         this.#socket.on('connect_error', err => {
+          this.#socket = null;
+          this.#connectionPromise = null;
           reject(err);
         });
-        this.#socket.on('query-response', (response: any) => {
-          this.emit(response.queryId, response);
-        });
-      });
+      } catch (error) {
+        this.#connectionPromise = null;
+        reject(error);
+      }
+    });
 
-      this.#socket.emit('subscribe', { clientId: this.config.clientId });
-    } finally {
-      this.#isConnecting = false;
-    }
+    return this.#connectionPromise;
   }
 
   public async rawRequest<T>(
