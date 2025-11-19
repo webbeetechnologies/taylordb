@@ -432,11 +432,11 @@ export class QueryBuilder<
 /**
  * The root query builder class that provides entry points for all query types.
  */
-export class RootQueryBuilder<DB extends AnyDB> {
+export class BaseRootQueryBuilder<DB extends AnyDB> {
   #executor: Executor;
 
-  constructor(config: { baseUrl: string; apiKey: string }) {
-    this.#executor = new Executor(config.baseUrl, config.apiKey);
+  constructor(executor: Executor) {
+    this.#executor = executor;
   }
   /**
    * Creates a new select query builder for the specified table.
@@ -607,6 +607,50 @@ export class RootQueryBuilder<DB extends AnyDB> {
   }
 }
 
+export class RootQueryBuilder<
+  DB extends AnyDB,
+> extends BaseRootQueryBuilder<DB> {
+  #executor: Executor;
+
+  constructor(executor: Executor) {
+    super(executor);
+    this.#executor = executor;
+  }
+
+  async transaction<T>(
+    callback: (qb: BaseRootQueryBuilder<DB>) => Promise<T>,
+  ): Promise<T> {
+    if (this.#executor.isInTransaction) {
+      throw new Error('Nested transactions are not supported.');
+    }
+    const { startTransaction: transactionId } =
+      await this.#executor.rawRequest<{
+        startTransaction: string;
+      }>('mutation { startTransaction }', {});
+
+    const transactionalExecutor =
+      this.#executor.withTransactionId(transactionId);
+    const transactionalQb = new BaseRootQueryBuilder<DB>(transactionalExecutor);
+
+    try {
+      const result = await callback(transactionalQb);
+
+      await transactionalExecutor.rawRequest(
+        'mutation { commitTransaction }',
+        {},
+      );
+
+      return result;
+    } catch (error) {
+      await transactionalExecutor.rawRequest(
+        'mutation { rollbackTransaction }',
+        {},
+      );
+      throw error;
+    }
+  }
+}
+
 const QBConfigSchema = z.object({
   baseUrl: z.string().url(),
   apiKey: z.string().nonempty(),
@@ -617,5 +661,6 @@ export function createQueryBuilder<DB extends AnyDB>(config: {
   apiKey: string;
 }) {
   QBConfigSchema.parse(config);
-  return new RootQueryBuilder<DB>(config);
+  const executor = new Executor(config.baseUrl, config.apiKey);
+  return new RootQueryBuilder<DB>(executor);
 }

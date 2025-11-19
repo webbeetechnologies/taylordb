@@ -160,14 +160,17 @@ export const ChatPanel = ({ qb, currentUser, currentChat }: ChatPanelProps) => {
     }
 
     try {
-      await qb
-        .insertInto('messages')
-        .values({
-          content: newMessage,
-          user: [currentUser.id],
-          chats: [currentChat.id],
-        })
-        .execute();
+      await qb.transaction(qb => {
+        return qb
+          .insertInto('messages')
+          .values({
+            content: newMessage,
+            user: [currentUser.id],
+            chats: [currentChat.id],
+          })
+          .execute();
+      });
+
       setNewMessage('');
     } catch (error) {
       console.error('Failed to send message:', error);

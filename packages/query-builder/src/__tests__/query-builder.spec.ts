@@ -200,4 +200,143 @@ describe('QueryBuilder', () => {
       },
     });
   });
+
+  it('should handle a successful transaction', async () => {
+    const mockFetch = jest.fn();
+    global.fetch = mockFetch;
+
+    const transactionId = 'test-transaction-id';
+
+    // Mock startTransaction
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ data: { startTransaction: transactionId } }),
+      ),
+    );
+    // Mock execute
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ data: { execute: [] } })),
+    );
+    // Mock commitTransaction
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ data: { commitTransaction: true } })),
+    );
+
+    await qb.transaction(txQb => {
+      return txQb
+        .insertInto('customers')
+        .values({ firstName: 'John', lastName: 'Doe' })
+        .execute();
+    });
+
+    expect(mockFetch).toHaveBeenCalledTimes(3);
+
+    // Check startTransaction call
+    const startTransactionCall = mockFetch.mock.calls[0];
+    expect(JSON.parse(startTransactionCall[1].body).query).toBe(
+      'mutation { startTransaction }',
+    );
+
+    // Check execute call
+    const executeCall = mockFetch.mock.calls[1];
+    expect(executeCall[1].headers).toHaveProperty(
+      'transaction-id',
+      transactionId,
+    );
+    expect(JSON.parse(executeCall[1].body).variables.metadata[0]).toMatchObject(
+      {
+        type: 'create',
+        tableName: 'customers',
+      },
+    );
+
+    // Check commitTransaction call
+    const commitTransactionCall = mockFetch.mock.calls[2];
+    expect(JSON.parse(commitTransactionCall[1].body).query).toBe(
+      'mutation { commitTransaction }',
+    );
+    expect(commitTransactionCall[1].headers).toHaveProperty(
+      'transaction-id',
+      transactionId,
+    );
+  });
+
+  it('should handle a failed transaction and rollback', async () => {
+    const mockFetch = jest.fn();
+    global.fetch = mockFetch;
+
+    const transactionId = 'test-transaction-id-fail';
+    const errorMessage = 'Something went wrong';
+
+    // Mock startTransaction
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ data: { startTransaction: transactionId } }),
+      ),
+    );
+    // Mock execute to throw an error
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ errors: [{ message: errorMessage }] })),
+    );
+    // Mock rollbackTransaction
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ data: { rollbackTransaction: true } })),
+    );
+
+    await expect(
+      qb.transaction(txQb => {
+        return txQb
+          .insertInto('customers')
+          .values({ firstName: 'John', lastName: 'Doe' })
+          .execute();
+      }),
+    ).rejects.toThrow(errorMessage);
+
+    expect(mockFetch).toHaveBeenCalledTimes(3);
+
+    // Check startTransaction call
+    const startTransactionCall = mockFetch.mock.calls[0];
+    expect(JSON.parse(startTransactionCall[1].body).query).toBe(
+      'mutation { startTransaction }',
+    );
+
+    // Check execute call
+    const executeCall = mockFetch.mock.calls[1];
+    expect(executeCall[1].headers).toHaveProperty(
+      'transaction-id',
+      transactionId,
+    );
+
+    // Check rollbackTransaction call
+    const rollbackTransactionCall = mockFetch.mock.calls[2];
+    expect(JSON.parse(rollbackTransactionCall[1].body).query).toBe(
+      'mutation { rollbackTransaction }',
+    );
+    expect(rollbackTransactionCall[1].headers).toHaveProperty(
+      'transaction-id',
+      transactionId,
+    );
+  });
+
+  it('should not have transaction method within a transaction', async () => {
+    const mockFetch = jest.fn();
+    global.fetch = mockFetch;
+
+    const transactionId = 'test-transaction-id-no-nested';
+
+    // Mock startTransaction and commitTransaction
+    mockFetch
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({ data: { startTransaction: transactionId } }),
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ data: { commitTransaction: true } })),
+      );
+
+    await qb.transaction(async txQb => {
+      expect(txQb).not.toHaveProperty('transaction');
+    });
+  });
 });

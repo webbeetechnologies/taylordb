@@ -21,15 +21,37 @@ export class Executor {
   #baseUrl: string;
   #apiKey: string;
   #subscriptionManager: SubscriptionManager;
+  #transactionId?: string;
 
-  constructor(baseUrl: string, apiKey: string) {
+  constructor(
+    baseUrl: string,
+    apiKey: string,
+    transactionId?: string,
+    subscriptionManager?: SubscriptionManager,
+  ) {
     this.#baseUrl = baseUrl;
     this.#apiKey = apiKey;
-    this.#subscriptionManager = new SubscriptionManager(this, {
-      baseUrl,
-      apiKey,
-      clientId: generateUUID(),
-    });
+    this.#transactionId = transactionId;
+    this.#subscriptionManager =
+      subscriptionManager ??
+      new SubscriptionManager(this, {
+        baseUrl,
+        apiKey,
+        clientId: generateUUID(),
+      });
+  }
+
+  get isInTransaction(): boolean {
+    return !!this.#transactionId;
+  }
+
+  withTransactionId(transactionId: string) {
+    return new Executor(
+      this.#baseUrl,
+      this.#apiKey,
+      transactionId,
+      this.#subscriptionManager,
+    );
   }
 
   async execute<T>(builder: Compilable): Promise<T> {
@@ -48,6 +70,7 @@ export class Executor {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.#apiKey}`,
         schema: 'readable',
+        ...(this.#transactionId ? { transactionid: this.#transactionId } : {}),
         ...(headers ? { ...headers } : {}),
       },
       body: JSON.stringify({ query, variables }),
