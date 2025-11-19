@@ -75,7 +75,7 @@ export class SocketConnection extends EventEmitter {
           reject(err);
         });
         this.#socket.on('query-response', (response: any) => {
-          this.emit(response.queryId, response.data);
+          this.emit(response.queryId, response);
         });
       });
 
@@ -97,7 +97,11 @@ export class SocketConnection extends EventEmitter {
     const { promise, resolve } = withResolver<T>();
 
     this.once(queryId, (response: any) => {
-      resolve(response);
+      if (response.errors) {
+        throw new Error(JSON.stringify(response.errors));
+      }
+
+      resolve(response.data);
     });
 
     if (!headers) {
