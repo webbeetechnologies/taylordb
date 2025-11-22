@@ -1,4 +1,8 @@
-import { FieldWithDirection, LinkColumnType } from '@taylordb/shared';
+import {
+  ALinkColumnType,
+  Attachment,
+  FieldWithDirection,
+} from '@taylordb/shared';
 import { z } from 'zod';
 import { AggregateNode } from './@types/aggregate.js';
 import {
@@ -28,6 +32,8 @@ import { UpdateQueryBuilder } from './update-query-builder.js';
 import { FilterableQueryBuilder } from './where-query-builder.js';
 
 const DEFAULT_LIMIT = 50;
+
+const MEDIA_UPLOAD_URL = 'https://media.taylordb.ai/media-collection';
 
 /**
  * The main query builder class for constructing and executing select queries.
@@ -154,7 +160,7 @@ export class QueryBuilder<
       [K in LinkColumnNames<DB[TableName]>]?: (
         qb: QueryBuilder<
           DB,
-          DB[TableName][K] extends LinkColumnType<any, boolean>
+          DB[TableName][K] extends ALinkColumnType<any, any, any, any, boolean>
             ? DB[TableName][K]['linkedTo']
             : never,
           object,
@@ -433,10 +439,10 @@ export class QueryBuilder<
  * The root query builder class that provides entry points for all query types.
  */
 export class BaseRootQueryBuilder<DB extends AnyDB> {
-  #executor: Executor;
+  protected _executor: Executor;
 
   constructor(executor: Executor) {
-    this.#executor = executor;
+    this._executor = executor;
   }
   /**
    * Creates a new select query builder for the specified table.
@@ -464,7 +470,7 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
         type: 'select',
         queryType: 'root',
       },
-      this.#executor,
+      this._executor,
     );
   }
 
@@ -493,7 +499,7 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
         returning: [],
         type: 'create',
       },
-      this.#executor,
+      this._executor,
     );
   }
 
@@ -522,7 +528,7 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
         filtersSet: { conjunction: 'and', filtersSet: [] },
         type: 'update',
       },
-      this.#executor,
+      this._executor,
     );
   }
 
@@ -551,7 +557,7 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
         filtersSet: { conjunction: 'and', filtersSet: [] },
         type: 'delete',
       },
-      this.#executor,
+      this._executor,
     );
   }
 
@@ -575,7 +581,7 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
   ): AreAllBuildersSubscribable<TBuilders> extends true
     ? BatchQueryBuilder<TBuilders>
     : Omit<BatchQueryBuilder<TBuilders>, 'subscribe'> {
-    return new BatchQueryBuilder(builders, this.#executor);
+    return new BatchQueryBuilder(builders, this._executor);
   }
 
   /**
@@ -603,33 +609,55 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
       groupings: [],
       aggregations: {},
     };
-    return new AggregationQueryBuilder<DB, TableName>(node, this.#executor);
+    return new AggregationQueryBuilder<DB, TableName>(node, this._executor);
+  }
+
+  async uploadAttachments(
+    files: { file: Blob; name: string }[],
+  ): Promise<Attachment[]> {
+    const formData = new FormData();
+    files.forEach(({ file, name }) => {
+      formData.append('files', file, name);
+    });
+
+    const response = await fetch(MEDIA_UPLOAD_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${this._executor.getApiKey()}`,
+        baseId: this._executor.getBaseId(),
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Attachment upload failed: ${response.statusText}`);
+    }
+
+    const responseData = await response.json();
+    return responseData.map((data: any) => new Attachment(data));
   }
 }
 
 export class RootQueryBuilder<
   DB extends AnyDB,
 > extends BaseRootQueryBuilder<DB> {
-  #executor: Executor;
-
   constructor(executor: Executor) {
     super(executor);
-    this.#executor = executor;
   }
 
   async transaction<T>(
     callback: (qb: BaseRootQueryBuilder<DB>) => Promise<T>,
   ): Promise<T> {
-    if (this.#executor.isInTransaction) {
+    if (this._executor.isInTransaction) {
       throw new Error('Nested transactions are not supported.');
     }
     const { startTransaction: transactionId } =
-      await this.#executor.rawRequest<{
+      await this._executor.rawRequest<{
         startTransaction: string;
       }>('mutation { startTransaction }', {});
 
     const transactionalExecutor =
-      this.#executor.withTransactionId(transactionId);
+      this._executor.withTransactionId(transactionId);
     const transactionalQb = new BaseRootQueryBuilder<DB>(transactionalExecutor);
 
     try {
@@ -658,9 +686,10 @@ const QBConfigSchema = z.object({
 
 export function createQueryBuilder<DB extends AnyDB>(config: {
   baseUrl: string;
+  baseId: string;
   apiKey: string;
 }) {
   QBConfigSchema.parse(config);
-  const executor = new Executor(config.baseUrl, config.apiKey);
+  const executor = new Executor(config.baseUrl, config.apiKey, config.baseId);
   return new RootQueryBuilder<DB>(executor);
 }

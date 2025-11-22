@@ -1,4 +1,4 @@
-import type { LinkColumnType } from '@taylordb/shared';
+import type { ALinkColumnType } from '@taylordb/shared';
 import type { AnyDB } from './@types/internal-types.js';
 import { LinkColumnNames } from './@types/query-builder.js';
 import { Executor } from './executor.js';
@@ -30,7 +30,13 @@ export class SelectionBuilder<
   ) {
     return new QueryBuilder<
       DB,
-      DB[CurrentTableName][LinkName] extends LinkColumnType<any, boolean>
+      DB[CurrentTableName][LinkName] extends ALinkColumnType<
+        any,
+        any,
+        any,
+        any,
+        boolean
+      >
         ? DB[CurrentTableName][LinkName]['linkedTo']
         : never,
       object,

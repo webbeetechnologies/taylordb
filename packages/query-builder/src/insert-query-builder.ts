@@ -3,8 +3,11 @@ import type { AnyDB, QueryNode } from './@types/internal-types.js';
 import { NonLinkColumnNames } from './@types/query-builder.js';
 import { ResolveSelection } from './@types/type-helpers.js';
 import { Executor } from './executor.js';
+import { FieldsProcessor } from './fields-processor.js';
 import { QueryBuilder } from './query-builder.js';
 import { SelectionBuilder } from './selection-builder.js';
+
+const fieldsProcessor = new FieldsProcessor();
 
 /**
  * A query builder for creating new records in the database.
@@ -49,10 +52,15 @@ export class InsertQueryBuilder<
   values(
     values: Insertable<DB[TableName]> | Insertable<DB[TableName]>[],
   ): InsertQueryBuilder<DB, TableName, Selection> {
+    const records = Array.isArray(values) ? values : [values];
+    const createdRecords = records.map(record =>
+      fieldsProcessor.process(record),
+    );
+
     return new InsertQueryBuilder(
       {
         ...this.#node,
-        createdRecords: Array.isArray(values) ? values : [values],
+        createdRecords,
       },
       this.#executor,
     );

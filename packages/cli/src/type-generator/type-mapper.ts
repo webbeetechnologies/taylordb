@@ -39,7 +39,7 @@ export class TypeMapper {
         return `LinkColumnType<'collaboratorsTable', ${isRequired ? 'true' : 'false'}>`;
 
       case 'attachment':
-        return `LinkColumnType<'attachmentTable', ${isRequired ? 'true' : 'false'}>`;
+        return `AttachmentColumnType<${isRequired ? 'true' : 'false'}>`;
 
       case 'select':
         return `LinkColumnType<'selectTable', ${isRequired ? 'true' : 'false'}>`;

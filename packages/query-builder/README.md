@@ -13,6 +13,8 @@ This package contains the official TypeScript query builder for TaylorDB. It pro
 - **Pagination and Sorting**: Easily paginate and sort your query results.
 - **Batch Queries**: Execute multiple queries in a single request for improved performance.
 - **Aggregation Queries**: Perform powerful aggregation queries with grouping and aggregate functions.
+- **Transaction Support**: Execute multiple operations in a single atomic transaction.
+- **Attachment Uploads**: Upload files and link them to your records.
 
 ## Getting Started
 
@@ -82,6 +84,73 @@ You can delete data from a table using the `deleteFrom` method.
 
 ```typescript
 const result = await qb.deleteFrom('customers').where('id', '=', 1).execute();
+```
+
+### Transactions
+
+You can execute a series of operations within a single atomic transaction. If any operation within the transaction fails, all previous operations will be rolled back.
+
+```typescript
+const newCustomer = await qb.transaction(async tx => {
+  const customer = await tx
+    .insertInto('customers')
+    .values({
+      firstName: 'John',
+      lastName: 'Doe',
+    })
+    .executeTakeFirst();
+
+  if (!customer) {
+    throw new Error('Customer creation failed.');
+  }
+
+  await tx
+    .insertInto('orders')
+    .values({
+      customerId: customer.id,
+      orderDate: new Date().toISOString(),
+      total: 100,
+    })
+    .execute();
+
+  return customer;
+});
+```
+
+### Handling Attachments
+
+You can upload files and associate them with your records using the `uploadAttachments` method. This is useful for handling things like user avatars, product images, or any other file-based data.
+
+First, upload the file(s) to get `Attachment` instances:
+
+```typescript
+const filesToUpload = [
+  { file: new Blob(['file content']), name: 'avatar.png' },
+];
+const attachments = await qb.uploadAttachments(filesToUpload);
+```
+
+Then, you can use the returned `Attachment` instances when creating or updating records. The query builder will automatically convert them into the correct format.
+
+```typescript
+// Create a new customer with an avatar
+const newCustomer = await qb
+  .insertInto('customers')
+  .values({
+    firstName: 'Jane',
+    lastName: 'Doe',
+    avatar: attachments[0], // Use the Attachment instance
+  })
+  .executeTakeFirst();
+
+// Update an existing customer's avatar
+const { affectedRecords } = await qb
+  .update('customers')
+  .set({
+    avatar: attachments[0], // Use the Attachment instance
+  })
+  .where('id', '=', 1)
+  .execute();
 ```
 
 ### Batch Queries

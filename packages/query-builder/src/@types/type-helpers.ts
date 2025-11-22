@@ -1,4 +1,4 @@
-import { ColumnType, LinkColumnType } from '@taylordb/shared';
+import { ALinkColumnType, ColumnType } from '@taylordb/shared';
 import { QueryBuilder } from '../query-builder.js';
 import { AnyDB } from './internal-types.js';
 import { LinkColumnNames, NonLinkColumnNames } from './query-builder.js';
@@ -59,7 +59,15 @@ export type ResolveWithPlain<
         ? TRelations[number]
         : TRelations]: {
         [P in K]: TableShape<
-          DB[DB[TName][P] extends LinkColumnType<infer L, any> ? L : never]
+          DB[DB[TName][P] extends ALinkColumnType<
+            infer L,
+            any,
+            any,
+            any,
+            boolean
+          >
+            ? L
+            : never]
         >[];
       };
     }[TRelations extends readonly any[] ? TRelations[number] : TRelations]

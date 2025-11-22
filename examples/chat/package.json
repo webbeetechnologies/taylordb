@@ -10,10 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@taylordb/cli": "^0.5.0",
     "@taylordb/query-builder": "workspace:*",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.554.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-voice-visualizer": "^2.0.8",
+    "reactjs-file-preview": "^1.0.11"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

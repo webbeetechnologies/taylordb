@@ -1,4 +1,4 @@
-import { LinkColumnType } from '@taylordb/shared';
+import { ALinkColumnType } from '@taylordb/shared';
 import { AnyDB, Filter, FilterableNode } from './@types/internal-types.js';
 import { ColumnNames } from './@types/query-builder.js';
 import { Executor } from './executor.js';
@@ -63,18 +63,36 @@ export class FilterableQueryBuilder<
   >(
     field: TField,
     operator: TOperator,
-    value: DB[TableName][TField] extends LinkColumnType<any, boolean>
+    value: DB[TableName][TField] extends ALinkColumnType<
+      any,
+      any,
+      any,
+      any,
+      boolean
+    >
       ?
           | ((
               qb: FilterableQueryBuilder<
                 DB,
-                DB[TableName][TField] extends LinkColumnType<any, boolean>
+                DB[TableName][TField] extends ALinkColumnType<
+                  any,
+                  any,
+                  any,
+                  any,
+                  boolean
+                >
                   ? DB[TableName][TField]['linkedTo']
                   : never
               >,
             ) => FilterableQueryBuilder<
               DB,
-              DB[TableName][TField] extends LinkColumnType<any, boolean>
+              DB[TableName][TField] extends ALinkColumnType<
+                any,
+                any,
+                any,
+                any,
+                boolean
+              >
                 ? DB[TableName][TField]['linkedTo']
                 : never
             >)
@@ -185,18 +203,36 @@ export class FilterableQueryBuilder<
   >(
     field: TField,
     operator: TOperator,
-    value: DB[TableName][TField] extends LinkColumnType<any, boolean>
+    value: DB[TableName][TField] extends ALinkColumnType<
+      any,
+      any,
+      any,
+      any,
+      boolean
+    >
       ? (
           qb: FilterableQueryBuilder<
             DB,
-            DB[TableName][TField] extends LinkColumnType<any, boolean>
+            DB[TableName][TField] extends ALinkColumnType<
+              any,
+              any,
+              any,
+              any,
+              boolean
+            >
               ? DB[TableName][TField]['linkedTo']
               : never
           >,
         ) =>
           | FilterableQueryBuilder<
               DB,
-              DB[TableName][TField] extends LinkColumnType<any, boolean>
+              DB[TableName][TField] extends ALinkColumnType<
+                any,
+                any,
+                any,
+                any,
+                boolean
+              >
                 ? DB[TableName][TField]['linkedTo']
                 : never
             >

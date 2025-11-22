@@ -1,7 +1,10 @@
 import type { AnyDB } from './@types/internal-types.js';
 import type { Updatable, UpdateNode } from './@types/update.js';
 import { Executor } from './executor.js';
+import { FieldsProcessor } from './fields-processor.js';
 import { FilterableQueryBuilder } from './where-query-builder.js';
+
+const fieldsProcessor = new FieldsProcessor();
 
 /**
  * A query builder for updating records in the database.
@@ -34,10 +37,12 @@ export class UpdateQueryBuilder<
    * ```
    */
   set(values: Updatable<DB[TableName]>): UpdateQueryBuilder<DB, TableName> {
+    const newValues = fieldsProcessor.process(values);
+
     return new UpdateQueryBuilder<DB, TableName>(
       {
         ...this.#node,
-        values,
+        values: newValues,
       },
       this._executor,
     );

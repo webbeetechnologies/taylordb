@@ -21,24 +21,36 @@ export class Executor {
   #baseUrl: string;
   #apiKey: string;
   #socketConnection: SocketConnection;
+  #baseId: string;
   #transactionId?: string;
 
   constructor(
     baseUrl: string,
     apiKey: string,
+    baseId: string,
     transactionId?: string,
     socketConnection?: SocketConnection,
   ) {
     this.#baseUrl = baseUrl;
     this.#apiKey = apiKey;
+    this.#baseId = baseId;
     this.#transactionId = transactionId;
     this.#socketConnection =
       socketConnection ??
       new SocketConnection({
         baseUrl,
         apiKey,
+        baseId,
         clientId: generateUUID(),
       });
+  }
+
+  public getApiKey(): string {
+    return this.#apiKey;
+  }
+
+  public getBaseId(): string {
+    return this.#baseId;
   }
 
   get isInTransaction(): boolean {
@@ -49,6 +61,7 @@ export class Executor {
     return new Executor(
       this.#baseUrl,
       this.#apiKey,
+      this.#baseId,
       transactionId,
       this.#socketConnection,
     );

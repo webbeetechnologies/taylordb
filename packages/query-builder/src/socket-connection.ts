@@ -36,6 +36,7 @@ export class SocketConnection extends EventEmitter {
     private config: {
       baseUrl: string;
       apiKey: string;
+      baseId: string;
       timeZone?: string;
       clientId?: string;
     },
@@ -54,9 +55,8 @@ export class SocketConnection extends EventEmitter {
 
     this.#connectionPromise = new Promise((resolve, reject) => {
       try {
-        const socketUrl = this.config.baseUrl
-          .replace(/^http/, 'ws')
-          .replace('api', 'bamboo');
+        const socketUrl = `${this.config.baseUrl.replace(/^http/, 'ws')}/bamboo/${this.config.baseId}`;
+
         this.#socket = io(socketUrl, {
           auth: {
             token: this.config.apiKey,
