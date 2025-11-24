@@ -521,6 +521,7 @@ describe('QueryBuilder', () => {
         method: 'POST',
         headers: {
           Authorization: 'Bearer test-api-key',
+          baseId: 'test-base-id',
         },
       }),
     );
