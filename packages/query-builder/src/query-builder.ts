@@ -394,7 +394,10 @@ export class QueryBuilder<
         ...(this._node.filtersSet.filtersSet.length > 0
           ? { filtersSet: this._node.filtersSet }
           : {}),
-        ...(this._node.pagination ? { pagination: this._node.pagination } : {}),
+        ...(this._node.pagination &&
+        Object.keys(this._node.pagination).length > 0
+          ? { pagination: this._node.pagination }
+          : {}),
         ...(this._node.sorting ? { sorting: this._node.sorting } : {}),
       };
     }
@@ -416,7 +419,10 @@ export class QueryBuilder<
         ...(this._node.filtersSet.filtersSet.length > 0
           ? { filtersSet: this._node.filtersSet }
           : {}),
-        ...(this._node.pagination ? { pagination: this._node.pagination } : {}),
+        ...(this._node.pagination &&
+        Object.keys(this._node.pagination).length > 0
+          ? { pagination: this._node.pagination }
+          : {}),
         ...(this._node.sorting ? { sorting: this._node.sorting } : {}),
       };
     }

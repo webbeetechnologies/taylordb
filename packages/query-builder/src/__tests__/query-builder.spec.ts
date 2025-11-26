@@ -92,6 +92,14 @@ describe('QueryBuilder', () => {
     });
   });
 
+  it('should not include pagination property if not used', async () => {
+    await qb.selectFrom('customers').select(['firstName']).where('firstName', '=', 'John').execute();
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+    expect(variables.metadata[0]).not.toHaveProperty('pagination');
+  });
+
   it('should apply limit to a select query', async () => {
     await qb.selectFrom('customers').select(['firstName']).limit(5).execute();
 
