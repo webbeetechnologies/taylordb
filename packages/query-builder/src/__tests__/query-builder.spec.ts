@@ -92,6 +92,67 @@ describe('QueryBuilder', () => {
     });
   });
 
+  it('should apply limit to a select query', async () => {
+    await qb.selectFrom('customers').select(['firstName']).limit(5).execute();
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'select',
+      tableName: 'customers',
+      fields: ['firstName'],
+      pagination: { limit: 5 },
+    });
+  });
+
+  it('should apply offset to a select query', async () => {
+    await qb.selectFrom('customers').select(['firstName']).offset(10).execute();
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'select',
+      tableName: 'customers',
+      fields: ['firstName'],
+      pagination: { offset: 10 },
+    });
+  });
+
+  it('should apply limit and offset to a select query', async () => {
+    await qb
+      .selectFrom('customers')
+      .select(['firstName'])
+      .limit(5)
+      .offset(10)
+      .execute();
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'select',
+      tableName: 'customers',
+      fields: ['firstName'],
+      pagination: { limit: 5, offset: 10 },
+    });
+  });
+
+  it('should apply pagination with a different page', async () => {
+    await qb
+      .selectFrom('customers')
+      .select(['firstName'])
+      .paginate(3, 15)
+      .execute();
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'select',
+      tableName: 'customers',
+      fields: ['firstName'],
+      pagination: { limit: 15, offset: 30 },
+    });
+  });
+
   it('should compile an insert query and execute', async () => {
     await qb
       .insertInto('customers')

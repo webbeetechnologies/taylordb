@@ -31,8 +31,6 @@ import { SelectionBuilder } from './selection-builder.js';
 import { UpdateQueryBuilder } from './update-query-builder.js';
 import { FilterableQueryBuilder } from './where-query-builder.js';
 
-const DEFAULT_LIMIT = 50;
-
 const MEDIA_UPLOAD_URL = 'https://media.taylordb.ai/media-collection';
 
 /**
@@ -54,7 +52,7 @@ export class QueryBuilder<
     super(node, executor);
     this._node = {
       ...node,
-      pagination: { limit: DEFAULT_LIMIT, offset: 0, ...node.pagination },
+      pagination: { ...node.pagination },
     };
   }
 
