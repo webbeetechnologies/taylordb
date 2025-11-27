@@ -8,7 +8,7 @@ import { setTokenCommand } from './commands/set-token';
 
 const program = new Command();
 
-program.name('taylordb').description('CLI for TaylorDB').version('0.6.3');
+program.name('taylordb').description('CLI for TaylorDB').version('0.6.4');
 
 program.addCommand(loginCommand);
 program.addCommand(logoutCommand);
