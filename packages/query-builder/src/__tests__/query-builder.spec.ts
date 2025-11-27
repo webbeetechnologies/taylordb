@@ -93,7 +93,11 @@ describe('QueryBuilder', () => {
   });
 
   it('should not include pagination property if not used', async () => {
-    await qb.selectFrom('customers').select(['firstName']).where('firstName', '=', 'John').execute();
+    await qb
+      .selectFrom('customers')
+      .select(['firstName'])
+      .where('firstName', '=', 'John')
+      .execute();
 
     expect(mockRawRequest).toHaveBeenCalledTimes(1);
     const variables = mockRawRequest.mock.calls[0][1];

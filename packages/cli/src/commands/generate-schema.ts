@@ -6,6 +6,9 @@ import { taylorApi, umsApi } from '../lib/api';
 import { AppGetResponse, BambooModelsResponse } from '../lib/types';
 import { TaylorTypeGenerator } from '../type-generator/taylor-type-generator';
 
+const UUID_REGEX =
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
 export const generateSchemaCommand = new Command('generate-schema')
   .description('Generate a schema from a TaylorDB instance')
   .argument('<appUrl>', 'The URL of the TaylorDB application')
@@ -14,33 +17,38 @@ export const generateSchemaCommand = new Command('generate-schema')
     console.log(chalk.blue(`Generating schema from ${appUrl}...`));
 
     try {
-      const appId = parseInt(appUrl.split('/').pop() || '', 10);
-      if (isNaN(appId)) {
-        throw new Error('Invalid app URL. Could not parse appId.');
-      }
+      let appDbId: string;
 
-      // Fetch the appDbId from the umsApi
-      const appQuery = {
-        query: {
-          app: {
-            get: {
-              __args: {
-                filters: {
-                  id: appId,
+      if (UUID_REGEX.test(appUrl)) {
+        appDbId = appUrl;
+      } else {
+        const appId = parseInt(appUrl.split('/').pop() || '', 10);
+        if (isNaN(appId)) {
+          throw new Error('Invalid app URL. Could not parse appId.');
+        }
+
+        // Fetch the appDbId from the umsApi
+        const appQuery = {
+          query: {
+            app: {
+              get: {
+                __args: {
+                  filters: {
+                    id: appId,
+                  },
                 },
+                appDbId: true,
               },
-              appDbId: true,
             },
           },
-        },
-      };
-      const appQueryString = jsonToGraphQLQuery(appQuery, { pretty: true });
-      const appResponse = await umsApi.post<{ data: AppGetResponse }>('', {
-        query: appQueryString,
-      });
+        };
+        const appQueryString = jsonToGraphQLQuery(appQuery, { pretty: true });
+        const appResponse = await umsApi.post<{ data: AppGetResponse }>('', {
+          query: appQueryString,
+        });
 
-      const appDbId = appResponse.data.data.app.get.appDbId;
-
+        appDbId = appResponse.data.data.app.get.appDbId;
+      }
       // Fetch the schema from the apyApi
       const bambooQuery = {
         query: {
