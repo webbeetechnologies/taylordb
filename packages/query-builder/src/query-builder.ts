@@ -57,6 +57,40 @@ export class QueryBuilder<
   }
 
   /**
+   * Counts the number of records that match the query.
+   * @returns A promise that resolves with the total number of records.
+   *
+   * @example
+   * ```typescript
+   * const totalUsers = await qb
+   *  .selectFrom('users')
+   *  .where('age', '>', 30)
+   *  .count();
+   * ```
+   */
+  async count(): Promise<number> {
+    if (!this.isRootQueryNode(this._node)) {
+      throw new Error('count() can only be used on a root query.');
+    }
+    const query = 'mutation ($metadata: JSON) { execute(metadata: $metadata) }';
+
+    const metadata = {
+      type: 'pagination',
+      tableName: this._node.tableName,
+      ...(this._node.filtersSet.filtersSet.length > 0
+        ? { filtersSet: this._node.filtersSet }
+        : {}),
+      ...(this._node.pagination ? { pagination: this._node.pagination } : {}),
+      ...(this._node.sorting ? { sorting: this._node.sorting } : {}),
+    };
+
+    const response = await this._executor.rawRequest<{
+      execute: [{ total: number }];
+    }>(query, { metadata: [metadata] });
+    return response.execute[0].total;
+  }
+
+  /**
    * Selects a set of fields from the table.
    * @param fields - An array of field names to select.
    * @returns A new `QueryBuilder` instance with the specified fields selected.

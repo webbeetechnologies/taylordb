@@ -118,6 +118,7 @@ export const generateSchemaCommand = new Command('generate-schema')
         schemaData,
         output,
         path.join(__dirname, '../templates/schema-default.template.hbs'),
+        appDbId,
       );
 
       await taylorTypeGenerator.build();

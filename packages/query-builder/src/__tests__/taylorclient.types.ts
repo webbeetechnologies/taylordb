@@ -5,6 +5,65 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+interface FileInformation {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  destination: string;
+  filename: string;
+  path: string;
+  size: number;
+  format: string;
+  width: number;
+  height: number;
+}
+
+interface UploadResponse {
+  collectionName: string;
+  fileInformation: FileInformation;
+  metadata: {
+    thumbnails: any[];
+    clips: any[];
+  };
+  baseId: string;
+  storageAdaptor: string;
+  _id: string;
+  __v: number;
+}
+
+export interface AttachmentColumnValue {
+  url: string;
+  fileType: string;
+  size: number;
+}
+
+export class Attachment {
+  public readonly collectionName: string;
+  public readonly fileInformation: FileInformation;
+  public readonly metadata: { thumbnails: any[]; clips: any[] };
+  public readonly baseId: string;
+  public readonly storageAdaptor: string;
+  public readonly _id: string;
+
+  constructor(data: UploadResponse) {
+    this.collectionName = data.collectionName;
+    this.fileInformation = data.fileInformation;
+    this.metadata = data.metadata;
+    this.baseId = data.baseId;
+    this.storageAdaptor = data.storageAdaptor;
+    this._id = data._id;
+  }
+
+  toColumnValue(): AttachmentColumnValue {
+    return {
+      url: this.fileInformation.path,
+      fileType: this.fileInformation.mimetype,
+      size: this.fileInformation.size,
+    };
+  }
+}
+
 type IsWithinOperatorValue =
   | 'pastWeek'
   | 'pastMonth'
@@ -67,6 +126,8 @@ type TextFilters = {
   startsWith: string;
   endsWith: string;
   doesNotContain: string;
+  isEmpty: never;
+  isNotEmpty: never;
 };
 
 type LinkFilters = {
@@ -75,6 +136,22 @@ type LinkFilters = {
   isExactly: number[];
   '=': number;
   hasNoneOf: number[];
+  contains: string;
+  doesNotContain: string;
+  isEmpty: never;
+  isNotEmpty: never;
+};
+
+type SelectFilters<O extends readonly string[]> = {
+  hasAnyOf: O[number][];
+  hasAllOf: O[number][];
+  isExactly: O[number][];
+  '=': O[number];
+  hasNoneOf: O[number][];
+  contains: string;
+  doesNotContain: string;
+  isEmpty: never;
+  isNotEmpty: never;
 };
 
 type LinkAggregations = {
@@ -86,12 +163,15 @@ type LinkAggregations = {
 
 type NumberFilters = {
   '=': number;
+  '!=': number;
   '>': number;
   '>=': number;
   '<': number;
   '<=': number;
   hasAnyOf: number[];
   hasNoneOf: number[];
+  isEmpty: never;
+  isNotEmpty: never;
 };
 
 type NumberAggregations = {
@@ -153,16 +233,48 @@ export type TextColumnType<R extends boolean> = ColumnType<
   TextFilters
 >;
 
-export type LinkColumnType<T extends string, R extends boolean> = ColumnType<
+export type ALinkColumnType<
+  T extends string,
+  S,
+  U,
+  I,
+  R extends boolean,
+  F extends { [key: string]: any } = LinkFilters,
+  A extends LinkAggregations = LinkAggregations,
+> = ColumnType<S, U, I, R, F, A> & {
+  linkedTo: T;
+};
+
+export type LinkColumnType<
+  T extends string,
+  R extends boolean,
+> = ALinkColumnType<
+  T,
   object,
   number | number[] | { newIds: number[]; deletedIds: number[] },
   number | number[],
+  R
+>;
+
+export type SingleSelectColumnType<
+  O extends readonly string[],
+  R extends boolean,
+> = ALinkColumnType<
+  'selectTable',
+  O[number],
+  O[number] | O[number][],
+  O[number] | O[number][],
   R,
-  LinkFilters,
-  LinkAggregations
-> & {
-  linkedTo: T;
-};
+  SelectFilters<O>
+>;
+
+export type AttachmentColumnType<R extends boolean> = ALinkColumnType<
+  'attachmentTable',
+  Attachment[],
+  Attachment[] | { newIds: number[]; deletedIds: number[] } | number[],
+  Attachment[] | number[],
+  R
+>;
 
 export type NumberColumnType<R extends boolean> = ColumnType<
   number,

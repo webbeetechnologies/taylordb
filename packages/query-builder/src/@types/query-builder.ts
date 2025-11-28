@@ -7,7 +7,15 @@ export type NonLinkColumnNames<T> = {
 }[keyof T];
 
 export type LinkColumnNames<T> = {
-  [K in keyof T]: T[K] extends ALinkColumnType<any, any, any, any, boolean>
+  [K in keyof T]: T[K] extends ALinkColumnType<
+    any,
+    any,
+    any,
+    any,
+    boolean,
+    any,
+    any
+  >
     ? K
     : never;
 }[keyof T];

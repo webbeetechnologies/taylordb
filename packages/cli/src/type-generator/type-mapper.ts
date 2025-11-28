@@ -2,7 +2,10 @@ import { BambooField } from '../lib/types';
 import { TaylorTypeGenerator } from './taylor-type-generator';
 
 export class TypeMapper {
-  constructor(private readonly taylorTypeGenerator: TaylorTypeGenerator) {}
+  constructor(
+    private readonly taylorTypeGenerator: TaylorTypeGenerator,
+    private readonly optionsMap: Map<string, { id: number; name: string }[]>,
+  ) {}
 
   map(column: BambooField) {
     const isRequired = column.options['isRequired'] === true;
@@ -42,7 +45,24 @@ export class TypeMapper {
         return `AttachmentColumnType<${isRequired ? 'true' : 'false'}>`;
 
       case 'select':
-        return `LinkColumnType<'selectTable', ${isRequired ? 'true' : 'false'}>`;
+        if (column.options['isSingle']) {
+          const options = this.optionsMap.get(column.options.on);
+          if (options) {
+            const tableName = this.taylorTypeGenerator.tablesSchema.find(
+              table => table.fields.some(field => field.id === column.id),
+            )!.name;
+            const constName = this.taylorTypeGenerator.getSingleSelectConstName(
+              tableName,
+              column.name,
+            );
+            return `SingleSelectColumnType<typeof ${constName}, ${
+              isRequired ? 'true' : 'false'
+            }>`;
+          }
+        }
+        return `LinkColumnType<'selectTable', ${
+          isRequired ? 'true' : 'false'
+        }>`;
 
       case 'createdAt':
       case 'updatedAt':
