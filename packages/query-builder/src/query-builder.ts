@@ -1,11 +1,8 @@
-import {
-  ALinkColumnType,
-  Attachment,
-  FieldWithDirection,
-} from '@taylordb/shared';
+import { Attachment, FieldWithDirection } from '@taylordb/shared';
 import { z } from 'zod';
 import { AggregateNode } from './@types/aggregate.js';
 import {
+  AbstractLinkColumn,
   AnyDB,
   QueryNode,
   RootQueryNode,
@@ -192,7 +189,7 @@ export class QueryBuilder<
       [K in LinkColumnNames<DB[TableName]>]?: (
         qb: QueryBuilder<
           DB,
-          DB[TableName][K] extends ALinkColumnType<any, any, any, any, boolean>
+          DB[TableName][K] extends AbstractLinkColumn
             ? DB[TableName][K]['linkedTo']
             : never,
           object,

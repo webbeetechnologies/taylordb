@@ -118,7 +118,7 @@ export const ChatList = ({
     const subscription = qb
       .selectFrom('chats')
       .where('participants', 'hasAnyOf', [currentUser.id])
-      .where('messages', 'isNotEmpty', null)
+      .where('messages', 'isNotEmpty')
       .select(['id', 'name', 'updatedAt'])
       .with({
         messages: qb =>
@@ -127,7 +127,7 @@ export const ChatList = ({
             .orderBy('createdAt', 'desc')
             .limit(1)
             .with({
-              type: qb => qb.select(['name']),
+              type: qb => qb.select(['name', 'id']),
               sender: qb => qb.select(['id']),
             }),
         participants: qb =>

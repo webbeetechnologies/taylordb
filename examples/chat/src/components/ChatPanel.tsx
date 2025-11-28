@@ -11,6 +11,7 @@ import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
 import { FilePreview } from 'reactjs-file-preview';
 import {
   AttachmentColumnValue,
+  MessagesTypeOptions,
   TableRaws,
   TaylorDatabase,
 } from '../taylor.types';
@@ -76,7 +77,7 @@ export const ChatPanel = ({
                   sender: [currentUser.id],
                   chats: [currentChat.id],
                   voice: attachments,
-                  type: [5], // NOTE: Hardcoded ID for 'audio' type
+                  type: ['audio'], // NOTE: Hardcoded ID for 'audio' type
                 })
                 .execute();
             }
@@ -168,7 +169,7 @@ export const ChatPanel = ({
         content: newMessage,
         sender: [currentUser.id],
         chats: [currentChat.id],
-        type: [1], // NOTE: Hardcoded ID for 'text' type
+        type: ['text'], // NOTE: Hardcoded ID for 'text' type
       })
       .execute();
 
@@ -185,11 +186,11 @@ export const ChatPanel = ({
       setIsUploading(true);
       try {
         // NOTE: Hardcoded IDs for message types
-        let messageTypeId = 4; // default to 'file'
+        let messageTypeId: (typeof MessagesTypeOptions)[number] = 'file'; // default to 'file'
         if (file.type.startsWith('image/')) {
-          messageTypeId = 2; // 'image'
+          messageTypeId = 'image'; // 'image'
         } else if (file.type.startsWith('video/')) {
-          messageTypeId = 3; // 'video'
+          messageTypeId = 'video'; // 'video'
         }
 
         const attachments = await qb.uploadAttachments([

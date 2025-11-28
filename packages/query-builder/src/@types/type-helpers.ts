@@ -64,7 +64,9 @@ export type ResolveWithPlain<
             any,
             any,
             any,
-            boolean
+            boolean,
+            any,
+            any
           >
             ? L
             : never]

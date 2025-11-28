@@ -1,5 +1,9 @@
-import { ALinkColumnType } from '@taylordb/shared';
-import { AnyDB, Filter, FilterableNode } from './@types/internal-types.js';
+import {
+  AbstractLinkColumn,
+  AnyDB,
+  Filter,
+  FilterableNode,
+} from './@types/internal-types.js';
 import { ColumnNames } from './@types/query-builder.js';
 import { Executor } from './executor.js';
 import { SelectionBuilder } from './selection-builder.js';
@@ -63,41 +67,25 @@ export class FilterableQueryBuilder<
   >(
     field: TField,
     operator: TOperator,
-    value: DB[TableName][TField] extends ALinkColumnType<
-      any,
-      any,
-      any,
-      any,
-      boolean
-    >
+    value?: DB[TableName][TField] extends AbstractLinkColumn
       ?
           | ((
               qb: FilterableQueryBuilder<
                 DB,
-                DB[TableName][TField] extends ALinkColumnType<
-                  any,
-                  any,
-                  any,
-                  any,
-                  boolean
-                >
+                DB[TableName][TField] extends AbstractLinkColumn
                   ? DB[TableName][TField]['linkedTo']
                   : never
               >,
             ) => FilterableQueryBuilder<
               DB,
-              DB[TableName][TField] extends ALinkColumnType<
-                any,
-                any,
-                any,
-                any,
-                boolean
-              >
+              DB[TableName][TField] extends AbstractLinkColumn
                 ? DB[TableName][TField]['linkedTo']
                 : never
             >)
           | DB[TableName][TField]['filters'][TOperator]
-      : DB[TableName][TField]['filters'][TOperator],
+      : DB[TableName][TField]['filters'][TOperator] extends never
+        ? undefined
+        : DB[TableName][TField]['filters'][TOperator],
   ): this;
   where<
     C extends (
@@ -203,36 +191,18 @@ export class FilterableQueryBuilder<
   >(
     field: TField,
     operator: TOperator,
-    value: DB[TableName][TField] extends ALinkColumnType<
-      any,
-      any,
-      any,
-      any,
-      boolean
-    >
+    value: DB[TableName][TField] extends AbstractLinkColumn
       ? (
           qb: FilterableQueryBuilder<
             DB,
-            DB[TableName][TField] extends ALinkColumnType<
-              any,
-              any,
-              any,
-              any,
-              boolean
-            >
+            DB[TableName][TField] extends AbstractLinkColumn
               ? DB[TableName][TField]['linkedTo']
               : never
           >,
         ) =>
           | FilterableQueryBuilder<
               DB,
-              DB[TableName][TField] extends ALinkColumnType<
-                any,
-                any,
-                any,
-                any,
-                boolean
-              >
+              DB[TableName][TField] extends AbstractLinkColumn
                 ? DB[TableName][TField]['linkedTo']
                 : never
             >

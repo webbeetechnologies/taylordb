@@ -1,4 +1,5 @@
 import {
+  ALinkColumnType,
   ColumnType,
   Filters,
   MetadataWithTableName,
@@ -29,3 +30,13 @@ export type QueryNode = SelectionQueryNode | RootQueryNode;
 export type FilterableNode = Pick<QueryNode, 'filtersSet'>;
 
 export type Filter = Filters<string>;
+
+export type AbstractLinkColumn = ALinkColumnType<
+  any,
+  any,
+  any,
+  any,
+  boolean,
+  any,
+  any
+>;

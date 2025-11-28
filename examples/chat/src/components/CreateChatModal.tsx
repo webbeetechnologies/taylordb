@@ -67,8 +67,9 @@ export const CreateChatModal = ({
         .values({
           name: finalChatName,
           participants,
-          type: [isGroupChat ? 2 : 1], // 7 for Group, 6 for Private
+          type: [isGroupChat ? 'group' : 'private'], // 7 for Group, 6 for Private
         })
+        .returning(['name', 'id'])
         .executeTakeFirst();
 
       if (newChat) {
