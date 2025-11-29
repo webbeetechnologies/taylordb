@@ -115,6 +115,12 @@ export const ChatList = ({
   useEffect(() => {
     if (!currentUser) return;
 
+    qb.selectFrom('chats')
+      .count()
+      .then(r => {
+        console.log(r);
+      });
+
     const subscription = qb
       .selectFrom('chats')
       .where('participants', 'hasAnyOf', [currentUser.id])

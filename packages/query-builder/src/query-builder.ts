@@ -81,10 +81,13 @@ export class QueryBuilder<
       ...(this._node.sorting ? { sorting: this._node.sorting } : {}),
     };
 
-    const response = await this._executor.rawRequest<{
-      execute: [{ total: number }];
-    }>(query, { metadata: [metadata] });
-    return response.execute[0].total;
+    const response = await this._executor.rawRequest<{ total: number }[]>(
+      query,
+      {
+        metadata: [metadata],
+      },
+    );
+    return response[0].total;
   }
 
   /**
