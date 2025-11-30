@@ -29,10 +29,11 @@ export class TypeMapper {
       case 'duration':
       case 'decimalSerial':
       case 'serial':
+      case 'currency':
         return `NumberColumnType<${isRequired ? 'true' : 'false'}>`;
 
       case 'checkbox':
-        return 'CheckboxColumnType';
+        return `CheckboxColumnType<${isRequired ? 'true' : 'false'}>`;
 
       case 'link':
         return `LinkColumnType<'${this.findNameBySlug(column.options.on)}', ${isRequired ? 'true' : 'false'}>`;
