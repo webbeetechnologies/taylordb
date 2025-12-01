@@ -251,8 +251,8 @@ export type LinkColumnType<
 > = ALinkColumnType<
   T,
   object,
-  number | number[] | { newIds: number[]; deletedIds: number[] },
-  number | number[],
+  number[] | { newIds: number[]; deletedIds: number[] },
+  number[],
   R
 >;
 
@@ -269,9 +269,9 @@ export type SingleSelectColumnType<
   R extends boolean,
 > = ALinkColumnType<
   'selectTable',
-  O[number],
-  O[number] | O[number][],
-  O[number] | O[number][],
+  O[number][],
+  O[number][],
+  O[number][],
   R,
   SelectFilters<O>
 >;
