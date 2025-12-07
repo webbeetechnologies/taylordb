@@ -73,8 +73,24 @@ export class TypeMapper {
       case 'date':
         return `DateColumnType<${isRequired ? 'true' : 'false'}>`;
 
-      default:
-        return null;
+      default: {
+        switch (column.returnType) {
+          case 'string':
+            return `TextColumnType<${isRequired ? 'true' : 'false'}>`;
+
+          case 'number':
+            return `NumberColumnType<${isRequired ? 'true' : 'false'}>`;
+
+          case 'boolean':
+            return `CheckboxColumnType<${isRequired ? 'true' : 'false'}>`;
+
+          case 'date':
+            return `DateColumnType<${isRequired ? 'true' : 'false'}>`;
+
+          default:
+            return null;
+        }
+      }
     }
   }
 
