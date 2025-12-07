@@ -170,7 +170,7 @@ describe('QueryBuilder', () => {
   });
 
   it('should count the records', async () => {
-    mockRawRequest.mockResolvedValue({ execute: [{ total: 123 }] });
+    mockRawRequest.mockResolvedValue([{ total: 123 }]);
     const count = await qb
       .selectFrom('customers')
       .where('firstName', '=', 'John')
