@@ -251,21 +251,9 @@ export type LinkColumnType<
 > = ALinkColumnType<
   T,
   object,
-  number | number[] | { newIds: number[]; deletedIds: number[] },
-  number | number[],
+  number[] | { newIds: number[]; deletedIds: number[] },
+  number[],
   R
->;
-
-export type SingleSelectColumnType<
-  O extends readonly string[],
-  R extends boolean,
-> = ALinkColumnType<
-  'selectTable',
-  O[number],
-  O[number] | O[number][],
-  O[number] | O[number][],
-  R,
-  SelectFilters<O>
 >;
 
 export type AttachmentColumnType<R extends boolean> = ALinkColumnType<
@@ -275,6 +263,11 @@ export type AttachmentColumnType<R extends boolean> = ALinkColumnType<
   Attachment[] | number[],
   R
 >;
+
+export type SingleSelectColumnType<
+  O extends readonly string[],
+  R extends boolean,
+> = ColumnType<O[number][], O[number][], O[number][], R, SelectFilters<O>>;
 
 export type NumberColumnType<R extends boolean> = ColumnType<
   number,

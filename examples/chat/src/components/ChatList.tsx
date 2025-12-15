@@ -125,15 +125,14 @@ export const ChatList = ({
       .selectFrom('chats')
       .where('participants', 'hasAnyOf', [currentUser.id])
       .where('messages', 'isNotEmpty')
-      .select(['id', 'name', 'updatedAt'])
+      .select(['id', 'name', 'updatedAt', 'type'])
       .with({
         messages: qb =>
           qb
-            .select(['content', 'createdAt', 'id'])
+            .select(['content', 'createdAt', 'id', 'type'])
             .orderBy('createdAt', 'desc')
             .limit(1)
             .with({
-              type: qb => qb.select(['name', 'id']),
               sender: qb => qb.select(['id']),
             }),
         participants: qb =>
@@ -144,7 +143,6 @@ export const ChatList = ({
           qb
             .where('user', 'hasAnyOf', [currentUser.id])
             .with({ lastSeenMessage: qb => qb.select(['id']) }),
-        type: qb => qb.select(['name']),
       })
       .subscribe(async (chatsData: any[]) => {
         const sortedChats = orderBy(

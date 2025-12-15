@@ -137,13 +137,12 @@ export const ChatPanel = ({
 
     const subscription = qb
       .selectFrom('messages')
-      .select(['id', 'content', 'createdAt'])
+      .select(['id', 'content', 'createdAt', 'type'])
       .where('chats', 'hasAnyOf', [currentChat.id])
       .with({
         sender: qb => qb.select(['id', 'name', 'avatar' as any]),
         attachments: qb => qb.select(['url', 'name', 'fileType', 'size']),
         voice: qb => qb.select(['url', 'name', 'fileType', 'size']),
-        type: qb => qb.select(['name']),
       })
       .orderBy('createdAt', 'asc')
       .subscribe(messagesData => {
