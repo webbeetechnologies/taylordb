@@ -60,7 +60,7 @@ export class TaylorTypeGenerator {
                 {
                   name: this.getSingleSelectConstName(table.name, field.name),
                   initializer: `[${options
-                    .map(o => `'${o.name}'`)
+                    .map(o => `'${o.name.replace(/'/g, "\\'")}'`)
                     .join(', ')}] as const`,
                 },
               ],
