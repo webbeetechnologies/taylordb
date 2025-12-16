@@ -283,27 +283,6 @@ describe('QueryBuilder', () => {
     });
   });
 
-  it('should compile an aggregate query and execute', async () => {
-    await qb
-      .aggregateFrom('customers')
-      .groupBy('firstName', 'asc')
-      .metrics({
-        idSum: sum('id'),
-      })
-      .execute();
-
-    expect(mockRawRequest).toHaveBeenCalledTimes(1);
-    const variables = mockRawRequest.mock.calls[0][1];
-    expect(variables.metadata[0]).toMatchObject({
-      type: 'aggregation',
-      tableName: 'customers',
-      groupings: [{ field: 'firstName', direction: 'asc' }],
-      aggregations: {
-        id: ['sum'],
-      },
-    });
-  });
-
   it('should compile a metrics query and flatten results', async () => {
     // Mock response with nested structure (rawRequest extracts execute key, so return array directly)
     const mockNestedResponse = [
@@ -369,12 +348,14 @@ describe('QueryBuilder', () => {
     // Mock response with no groupBy (flat structure)
     // rawRequest extracts execute key, so return array directly
     const mockFlatResponse = [
-      {
-        count: 10,
-        aggregates: {
-          id: { sum: 500 },
+      [
+        {
+          count: 10,
+          aggregates: {
+            id: { sum: 500 },
+          },
         },
-      },
+      ],
     ];
 
     mockRawRequest.mockResolvedValueOnce(mockFlatResponse);

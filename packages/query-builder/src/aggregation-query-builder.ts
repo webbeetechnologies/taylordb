@@ -2,7 +2,7 @@ import type {
   FieldWithDirection,
   GroupingConfiguration,
 } from '@taylordb/shared';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty.js';
 import type {
   AggregateNode,
   AggregateRecord,
