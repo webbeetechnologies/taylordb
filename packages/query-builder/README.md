@@ -171,12 +171,15 @@ const [customers, newCustomer] = await qb
 You can perform powerful aggregation queries using the `aggregateFrom` method. You can group by one or more fields and specify aggregate functions to apply.
 
 ```typescript
+import { count, sum } from '@taylordb/query-builder';
+
 const aggregates = await qb
   .aggregateFrom('customers')
   .groupBy('firstName', 'asc')
   .groupBy('lastName', 'desc')
-  .withAggregates({
-    id: ['count', 'sum'],
+  .metrics({
+    idCount: count('id'),
+    idSum: sum('id'),
   })
   .execute();
 ```

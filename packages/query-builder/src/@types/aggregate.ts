@@ -43,7 +43,7 @@ export type AggregateRecord<
       aggregates: Aggregates<DB, TName, TAggregations>;
     }
   : {
-      field: Head<TGroupBy>;
+      slug: Head<TGroupBy>;
       value: InferDataType<DB[TName][Head<TGroupBy>]>;
       count: number;
       aggregates: Aggregates<DB, TName, TAggregations>;
@@ -57,3 +57,29 @@ export type AggregateNode = Omit<
   MetadataWithTableName<AggregationQueryMetaData>,
   'fields'
 >;
+
+/**
+ * Flat metrics response type.
+ * This represents a single row in the flattened aggregation results.
+ */
+export type MetricsRecord<
+  DB extends AnyDB,
+  TName extends keyof DB,
+  TGroupBy extends readonly (keyof DB[TName] & string)[],
+  TMetrics extends Record<string, { field: string; aggregation: string }>,
+> = {
+  [K in TGroupBy[number]]: InferDataType<DB[TName][K]>;
+} & {
+  [K in keyof TMetrics]: TMetrics[K] extends {
+    field: infer F;
+    aggregation: infer A;
+  }
+    ? F extends keyof DB[TName] & string
+      ? A extends keyof DB[TName][F]['aggregations']
+        ? DB[TName][F]['aggregations'][A]
+        : A extends 'count'
+          ? number
+          : number
+      : number
+    : number;
+};

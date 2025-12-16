@@ -2,8 +2,14 @@ import type {
   FieldWithDirection,
   GroupingConfiguration,
 } from '@taylordb/shared';
-import type { AggregateNode, AggregateRecord } from './@types/aggregate.js';
+import { isEmpty } from 'lodash';
+import type {
+  AggregateNode,
+  AggregateRecord,
+  MetricsRecord,
+} from './@types/aggregate.js';
 import type { AnyDB } from './@types/internal-types.js';
+import type { AggregationHelper } from './aggregation-helpers.js';
 import { Executor } from './executor.js';
 import { FilterableQueryBuilder } from './where-query-builder.js';
 
@@ -22,12 +28,15 @@ export class AggregationQueryBuilder<
     [K in keyof DB[TableName] &
       string]?: readonly (keyof DB[TableName][K]['aggregations'])[];
   } = object,
+  TMetrics extends Record<string, AggregationHelper> | undefined = undefined,
 > extends FilterableQueryBuilder<DB, TableName> {
   #node: AggregateNode;
+  #metrics?: TMetrics;
 
-  constructor(node: AggregateNode, executor: Executor) {
+  constructor(node: AggregateNode, executor: Executor, metrics?: TMetrics) {
     super(node, executor);
     this.#node = node;
+    this.#metrics = metrics;
   }
 
   /**
@@ -41,7 +50,7 @@ export class AggregationQueryBuilder<
    * const userCounts = await qb
    *   .aggregateFrom('users')
    *   .groupBy('role')
-   *   .withAggregates({ id: ['count'] })
+   *   .metrics({ count: count('id') })
    *   .execute();
    * ```
    */
@@ -52,51 +61,68 @@ export class AggregationQueryBuilder<
     DB,
     TableName,
     [...TGroupBy, TField],
-    TAggregations
+    TAggregations,
+    TMetrics
   > {
     const newGrouping: GroupingConfiguration<string> = {
       field,
       direction,
     };
 
-    return new AggregationQueryBuilder(
+    return new AggregationQueryBuilder<
+      DB,
+      TableName,
+      [...TGroupBy, TField],
+      TAggregations,
+      TMetrics
+    >(
       {
         ...this.#node,
         groupings: [...(this.#node.groupings || []), newGrouping],
       },
       this._executor,
+      this.#metrics,
     );
   }
 
   /**
-   * Specifies the aggregations to perform.
-   * @param aggregates - An object where the keys are field names and the values are arrays of aggregation functions.
-   * @returns A new `AggregationQueryBuilder` instance with the aggregations applied.
+   * Specifies the metrics to compute using helper functions.
+   * Returns a flat array of records with groupBy fields and metrics at the top level.
+   * @param metrics - An object where keys are metric names and values are aggregation helper functions.
+   * @returns A new `AggregationQueryBuilder` instance with the metrics applied.
    *
    * @example
    * ```typescript
    * const userStats = await qb
    *   .aggregateFrom('users')
-   *   .withAggregates({
-   *     id: ['count'],
-   *     age: ['avg', 'sum'],
+   *   .groupBy('role', 'asc')
+   *   .groupBy('permission', 'desc')
+   *   .metrics({
+   *     idCount: count('id'),
+   *     ageAvg: avg('age'),
+   *     ageSum: sum('age')
    *   })
    *   .execute();
    * ```
    */
-  withAggregates<
-    const T extends {
-      [K in keyof DB[TableName] &
-        string]?: readonly (keyof DB[TableName][K]['aggregations'])[];
-    },
-  >(
-    aggregates: T,
-  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations & T> {
-    const newAggregates = { ...this.#node.aggregations };
-    for (const key in aggregates) {
-      newAggregates[key] = aggregates[key]!.map(
-        aggregate => aggregate as string,
-      );
+  metrics<const T extends Record<string, AggregationHelper>>(
+    metrics: T,
+  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations, T> {
+    // Convert metrics format to aggregations format for the backend
+    const newAggregates: Record<string, string[]> = {
+      ...this.#node.aggregations,
+    };
+    for (const metricName in metrics) {
+      const helper = metrics[metricName]!;
+      const field = helper.field;
+      const aggregation = helper.aggregation;
+
+      if (!newAggregates[field]) {
+        newAggregates[field] = [];
+      }
+      if (!newAggregates[field]!.includes(aggregation)) {
+        newAggregates[field]!.push(aggregation);
+      }
     }
 
     return new AggregationQueryBuilder(
@@ -105,6 +131,7 @@ export class AggregationQueryBuilder<
         aggregations: newAggregates,
       },
       this._executor,
+      metrics as T,
     );
   }
 
@@ -115,13 +142,14 @@ export class AggregationQueryBuilder<
    */
   limit(
     count: number,
-  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations> {
+  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations, TMetrics> {
     return new AggregationQueryBuilder(
       {
         ...this.#node,
         pagination: { ...this.#node.pagination, limit: count },
       },
       this._executor,
+      this.#metrics,
     );
   }
 
@@ -132,13 +160,14 @@ export class AggregationQueryBuilder<
    */
   offset(
     count: number,
-  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations> {
+  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations, TMetrics> {
     return new AggregationQueryBuilder(
       {
         ...this.#node,
         pagination: { ...this.#node.pagination, offset: count },
       },
       this._executor,
+      this.#metrics,
     );
   }
 
@@ -151,7 +180,7 @@ export class AggregationQueryBuilder<
   paginate(
     page: number,
     limit: number,
-  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations> {
+  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations, TMetrics> {
     return this.offset((page - 1) * limit).limit(limit);
   }
 
@@ -164,7 +193,7 @@ export class AggregationQueryBuilder<
   orderBy(
     field: keyof DB[TableName],
     direction: 'asc' | 'desc' = 'asc',
-  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations> {
+  ): AggregationQueryBuilder<DB, TableName, TGroupBy, TAggregations, TMetrics> {
     const newSorting: FieldWithDirection<string> = {
       field: field as string,
       direction,
@@ -176,30 +205,142 @@ export class AggregationQueryBuilder<
         sorting: [...(this.#node.sorting || []), newSorting],
       },
       this._executor,
+      this.#metrics,
     );
   }
 
   /**
    * Executes the aggregation query.
    * @returns A promise that resolves with an array of the aggregation results.
+   * If metrics were specified, returns a flat array. Otherwise, returns the nested structure.
    *
    * @example
    * ```typescript
    * const userCounts = await qb
    *   .aggregateFrom('users')
    *   .groupBy('role')
-   *   .withAggregates({ id: ['count'] })
+   *   .metrics({ count: count('id') })
    *   .execute();
    * ```
    */
   async execute(): Promise<
-    AggregateRecord<DB, TableName, TGroupBy, TAggregations>[]
+    TMetrics extends Record<string, AggregationHelper>
+      ? MetricsRecord<DB, TableName, TGroupBy, TMetrics>[]
+      : AggregateRecord<DB, TableName, TGroupBy, TAggregations>[]
   > {
     const response =
       await this._executor.execute<
-        AggregateRecord<DB, TableName, TGroupBy, TAggregations>[]
+        AggregateRecord<DB, TableName, TGroupBy, TAggregations>[][]
       >(this);
-    return response;
+
+    // If metrics are used, flatten the nested structure
+    if (this.#metrics) {
+      return this._flattenMetrics(
+        response[0],
+        this.#node.groupings
+          ?.filter(
+            (g): g is { field: string; direction: string } =>
+              'field' in g && !('formula' in g),
+          )
+          .map(g => g.field) || [],
+        this.#metrics,
+      ) as any;
+    }
+
+    return response as any;
+  }
+
+  /**
+   * Flattens the nested AggregateRecord structure into a flat array of metrics records.
+   */
+  private _flattenMetrics<TMetrics extends Record<string, AggregationHelper>>(
+    records: AggregateRecord<DB, TableName, TGroupBy, TAggregations>[],
+    groupByFields: string[],
+    metrics: TMetrics,
+  ): MetricsRecord<DB, TableName, TGroupBy, TMetrics>[] {
+    const result: MetricsRecord<DB, TableName, TGroupBy, TMetrics>[] = [];
+
+    const flatten = (
+      record: AggregateRecord<DB, TableName, TGroupBy, TAggregations>,
+      path: Record<string, any>,
+    ) => {
+      if ('slug' in record && 'value' in record) {
+        const currentPath = {
+          ...path,
+          [record.slug]: record.value,
+        };
+
+        if (
+          'children' in record &&
+          Array.isArray(record.children) &&
+          !isEmpty(record.children)
+        ) {
+          // Has children, recurse
+          for (const child of record.children) {
+            flatten(child, currentPath);
+          }
+        } else {
+          // Leaf node, create flat record
+          const flatRecord: any = { ...currentPath };
+
+          // Add metrics
+          for (const metricName in metrics) {
+            const helper = metrics[metricName]!;
+            const field = helper.field;
+            const aggregation = helper.aggregation;
+
+            // Extract the metric value from aggregates
+            if (
+              record.aggregates &&
+              field in record.aggregates &&
+              record.aggregates[field] &&
+              typeof record.aggregates[field] === 'object' &&
+              aggregation in (record.aggregates[field] as any)
+            ) {
+              flatRecord[metricName] = (record.aggregates[field] as any)[
+                aggregation
+              ];
+            } else {
+              flatRecord[metricName] = null;
+            }
+          }
+
+          result.push(flatRecord);
+        }
+      } else {
+        // No groupBy, just metrics
+        const flatRecord: any = {};
+
+        // Add metrics
+        for (const metricName in metrics) {
+          const helper = metrics[metricName]!;
+          const field = helper.field;
+          const aggregation = helper.aggregation;
+
+          if (
+            record.aggregates &&
+            field in record.aggregates &&
+            record.aggregates[field] &&
+            typeof record.aggregates[field] === 'object' &&
+            aggregation in (record.aggregates[field] as any)
+          ) {
+            flatRecord[metricName] = (record.aggregates[field] as any)[
+              aggregation
+            ];
+          } else {
+            flatRecord[metricName] = null;
+          }
+        }
+
+        result.push(flatRecord);
+      }
+    };
+
+    for (const record of records) {
+      flatten(record, {});
+    }
+
+    return result;
   }
 
   /**
@@ -212,7 +353,7 @@ export class AggregationQueryBuilder<
    * const unsubscribe = qb
    *   .aggregateFrom('users')
    *   .groupBy('role')
-   *   .withAggregates({ id: ['count'] })
+   *   .metrics({ count: count('id') })
    *   .subscribe((userCounts) => {
    *     console.log('User counts by role:', userCounts);
    *   });
@@ -223,10 +364,28 @@ export class AggregationQueryBuilder<
    */
   subscribe(
     callback: (
-      result: AggregateRecord<DB, TableName, TGroupBy, TAggregations>[],
+      result: TMetrics extends Record<string, AggregationHelper>
+        ? MetricsRecord<DB, TableName, TGroupBy, TMetrics>[]
+        : AggregateRecord<DB, TableName, TGroupBy, TAggregations>[],
     ) => void,
   ) {
-    return this._executor.subscribe([this], callback);
+    return this._executor.subscribe([this], (rawResult: any) => {
+      if (this.#metrics) {
+        const flattened = this._flattenMetrics(
+          rawResult,
+          this.#node.groupings
+            ?.filter(
+              (g): g is { field: string; direction: string } =>
+                'field' in g && !('formula' in g),
+            )
+            .map(g => g.field) || [],
+          this.#metrics,
+        );
+        callback(flattened as any);
+      } else {
+        callback(rawResult);
+      }
+    });
   }
 
   compile(): { query: string; variables: Record<string, any> } {

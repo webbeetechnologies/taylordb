@@ -19,7 +19,7 @@ type User = {
 const qb = createQueryBuilder<TaylorDatabase>({
   baseUrl: 'http://localhost:8090',
   baseId: '2afc6865-e139-42b1-bf63-5b783bb4736d',
-  apiKey: 'cb0fz9hxt5yri1r8qrn1omfvrhgc4i2y67pq7abuk7kwcr7xrsx29bh480mivdtf',
+  apiKey: 'f18pcwq2lrifc54wmxsegel1zwravswom9j0nxqe2rys1jpsvtc9ut8bh39i8hmc',
 });
 
 function App() {

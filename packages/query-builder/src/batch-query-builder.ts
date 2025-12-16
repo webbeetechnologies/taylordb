@@ -68,7 +68,7 @@ export class BatchQueryBuilder<
    * ```typescript
    * const unsubscribe = qb.batch([
    *   qb.selectFrom('users').select(['id', 'name']),
-   *   qb.aggregateFrom('users').groupBy('role').withAggregates({ id: ['count'] }),
+   *   qb.aggregateFrom('users').groupBy('role').metrics({ count: count('id') }),
    * ]).subscribe(([users, userAggregates]) => {
    *   console.log('Users:', users);
    *   console.log('User Aggregates:', userAggregates);
