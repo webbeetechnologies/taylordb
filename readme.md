@@ -192,6 +192,49 @@ users.forEach((user, index) => {
 });
 ```
 
+#### Counting Records
+
+Use the `count()` method to get the total number of records that match your query. This is useful for pagination, statistics, or checking if records exist.
+
+```typescript
+// Count all users
+const totalUsers = await qb
+  .selectFrom('users')
+  .count();
+
+console.log(`Total users: ${totalUsers}`);
+
+// Count with filters
+const activeUsers = await qb
+  .selectFrom('users')
+  .where('status', '=', 'active')
+  .where('age', '>', 18)
+  .count();
+
+console.log(`Active adult users: ${activeUsers}`);
+
+// Count with relations filter
+const usersWithPosts = await qb
+  .selectFrom('users')
+  .where('posts', 'isNotEmpty')
+  .count();
+
+console.log(`Users with posts: ${usersWithPosts}`);
+
+// Count respects all filters, pagination, and sorting
+// (though pagination limits don't affect the count result)
+const paginatedCount = await qb
+  .selectFrom('users')
+  .where('role', '=', 'admin')
+  .orderBy('createdAt', 'desc')
+  .limit(10) // This doesn't affect the count
+  .count();
+
+console.log(`Total admins: ${paginatedCount}`);
+```
+
+**Note**: The `count()` method returns a `Promise<number>` directly (not an array), and it respects all filters, pagination, and sorting you've applied to the query.
+
 ### Insert Queries
 
 Insert single or multiple records. Use `returning` to get data back from the new records.

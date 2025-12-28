@@ -70,13 +70,10 @@ export class SocketConnection extends EventEmitter {
           this.#socket?.on('patch', this.#handlePatch.bind(this));
 
           this.#socket?.on('query-response', (response: any) => {
-            console.log('[LOGGED] First response came');
             this.emit(response.queryId, response);
           });
 
           this.#socket?.emit('subscribe', { clientId: this.config.clientId });
-
-          console.log('[LOGGED] connected');
 
           resolve();
         });
@@ -109,20 +106,22 @@ export class SocketConnection extends EventEmitter {
     await this.#connect();
     const queryId = generateUUID();
 
-    const { promise, resolve } = withResolver<T>();
+    const { promise, resolve } = withResolver<
+      { errors: Error[] } | { data: T }
+    >();
 
     this.once(queryId, (response: any) => {
-      console.log('[LOGGED] the first response');
-
       if (response.errors) {
-        throw new Error(JSON.stringify(response.errors));
+        resolve({
+          errors: response.errors,
+        });
       }
 
       const firstKey = Object.keys(response.data)[0];
       if (firstKey) {
-        resolve(response.data[firstKey]);
+        resolve({ data: response.data[firstKey] });
       } else {
-        resolve(response.data);
+        resolve({ data: response.data });
       }
     });
 
@@ -135,8 +134,6 @@ export class SocketConnection extends EventEmitter {
       schema: 'readable',
     };
 
-    console.log('[LOGGED] the first request');
-
     this.emit('query', {
       query,
       variables,
@@ -145,7 +142,13 @@ export class SocketConnection extends EventEmitter {
       ...(headers ? { options: { ...headers } } : {}),
     });
 
-    return promise;
+    const response = await promise;
+
+    if ('errors' in response) {
+      throw new Error(JSON.stringify(response.errors));
+    }
+
+    return response.data;
   }
 
   public async subscribe<TResult>(
