@@ -115,6 +115,7 @@ export class SocketConnection extends EventEmitter {
         resolve({
           errors: response.errors,
         });
+        return;
       }
 
       const firstKey = Object.keys(response.data)[0];
