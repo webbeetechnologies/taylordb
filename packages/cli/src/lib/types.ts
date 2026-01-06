@@ -1,7 +1,7 @@
 export interface AppGetResponse {
-  app: {
-    get: {
-      appDbId: string;
+  server: {
+    getBaseById: {
+      baseDbId: string;
     };
   };
 }

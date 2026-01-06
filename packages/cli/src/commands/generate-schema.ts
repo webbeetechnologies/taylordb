@@ -30,14 +30,12 @@ export const generateSchemaCommand = new Command('generate-schema')
         // Fetch the appDbId from the umsApi
         const appQuery = {
           query: {
-            app: {
-              get: {
+            server: {
+              getBaseById: {
                 __args: {
-                  filters: {
-                    id: appId,
-                  },
+                  id: appId,
                 },
-                appDbId: true,
+                baseDbId: true,
               },
             },
           },
@@ -47,7 +45,7 @@ export const generateSchemaCommand = new Command('generate-schema')
           query: appQueryString,
         });
 
-        appDbId = appResponse.data.data.app.get.appDbId;
+        appDbId = appResponse.data.data.server.getBaseById.baseDbId;
       }
       // Fetch the schema from the apyApi
       const bambooQuery = {
