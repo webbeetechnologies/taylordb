@@ -1,9 +1,10 @@
 import {
   AggregationQueryMetaData,
+  ALinkColumnType,
   MetadataWithTableName,
 } from '@taylordb/shared';
 import { AnyDB } from './internal-types.js';
-import { InferDataType } from './type-helpers.js';
+import { InferDataType, TableShape } from './type-helpers.js';
 
 export type AggregationValue = number | null | object | undefined;
 
@@ -29,6 +30,25 @@ type Tail<T extends readonly any[]> = T extends readonly [any, ...infer R]
   ? R
   : never;
 
+type InferGroupType<
+  DB extends AnyDB,
+  TName extends keyof DB,
+  K extends keyof DB[TName],
+> =
+  DB[TName][K] extends ALinkColumnType<
+    infer L,
+    any,
+    any,
+    any,
+    infer R,
+    any,
+    any
+  >
+    ? R extends true
+      ? TableShape<DB[L]>
+      : TableShape<DB[L]> | null
+    : InferDataType<DB[TName][K]>;
+
 export type AggregateRecord<
   DB extends AnyDB,
   TName extends keyof DB,
@@ -44,7 +64,7 @@ export type AggregateRecord<
     }
   : {
       slug: Head<TGroupBy>;
-      value: InferDataType<DB[TName][Head<TGroupBy>]>;
+      value: InferGroupType<DB, TName, Head<TGroupBy>>;
       count: number;
       aggregates: Aggregates<DB, TName, TAggregations>;
     } & (Tail<TGroupBy> extends readonly []
@@ -68,7 +88,7 @@ export type MetricsRecord<
   TGroupBy extends readonly (keyof DB[TName] & string)[],
   TMetrics extends Record<string, { field: string; aggregation: string }>,
 > = {
-  [K in TGroupBy[number]]: InferDataType<DB[TName][K]>;
+  [K in TGroupBy[number]]: InferGroupType<DB, TName, K>;
 } & {
   [K in keyof TMetrics]: TMetrics[K] extends {
     field: infer F;
