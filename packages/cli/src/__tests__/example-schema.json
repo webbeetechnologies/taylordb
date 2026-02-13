@@ -1,0 +1,3200 @@
+{
+  "data": {
+    "bambooModels": {
+      "records": [
+        {
+          "id": 5,
+          "name": "backlog",
+          "slug": "_backlog_tbl7XZK80aGQXr92h",
+          "title": "Backlog",
+          "fields": [
+            {
+              "id": 25,
+              "name": "title",
+              "slug": "_title_fld3pu8InihPEraIv",
+              "title": "Title",
+              "type": "singleLineText",
+              "options": {},
+              "returnType": "string"
+            },
+            {
+              "id": 30,
+              "name": "status",
+              "slug": "_status_fldiw9iaUA0tkdpsB",
+              "title": "Status",
+              "type": "select",
+              "options": {
+                "on": "_niifwbfnmpmcpeOptions",
+                "alias": "niifwbfnmpmcpe",
+                "choices": [
+                  {
+                    "id": 1721738239,
+                    "name": "Needs improvement 🤔",
+                    "color": "blue3",
+                    "position": 1
+                  },
+                  {
+                    "id": 1721738248,
+                    "name": "Irreproducible 🙅‍♂️",
+                    "color": "violet5",
+                    "position": 2
+                  },
+                  {
+                    "id": 1721738249,
+                    "name": "Reopen",
+                    "color": "violet2",
+                    "position": 3
+                  },
+                  {
+                    "id": 1721738250,
+                    "name": "On Hold",
+                    "color": "pink5",
+                    "position": 4
+                  },
+                  {
+                    "id": 1721738251,
+                    "name": "dev testing",
+                    "color": "orange4",
+                    "position": 5
+                  },
+                  {
+                    "id": 1721738252,
+                    "name": "Delegate 🌟🤝",
+                    "color": "violet2",
+                    "position": 6
+                  },
+                  {
+                    "id": 1721738253,
+                    "name": "🌈 Brainstorming",
+                    "color": "red3",
+                    "position": 7
+                  },
+                  {
+                    "id": 1721738254,
+                    "name": "Ice Box",
+                    "color": "blue2",
+                    "position": 8
+                  },
+                  {
+                    "id": 1721738255,
+                    "name": "Backlog",
+                    "color": "blue1",
+                    "position": 9
+                  },
+                  {
+                    "id": 1721738256,
+                    "name": "Iteration 🔄",
+                    "color": "orange2",
+                    "position": 10
+                  },
+                  {
+                    "id": 1721738258,
+                    "name": "Needs Discussion",
+                    "color": "red5",
+                    "position": 11
+                  },
+                  {
+                    "id": 1721738240,
+                    "name": "In progress 👩‍💻",
+                    "color": "orange1",
+                    "position": 12
+                  },
+                  {
+                    "id": 1721738259,
+                    "name": "Reproduced and unassigned",
+                    "color": "grey5",
+                    "position": 13
+                  },
+                  {
+                    "id": 1721738260,
+                    "name": "Ready for release",
+                    "color": "pink3",
+                    "position": 14
+                  },
+                  {
+                    "id": 1721738261,
+                    "name": "Released",
+                    "color": "violet3",
+                    "position": 15
+                  },
+                  {
+                    "id": 1721738262,
+                    "name": "Assigned. Never started",
+                    "color": "violet5",
+                    "position": 16
+                  },
+                  {
+                    "id": 1721738263,
+                    "name": "Not a bug 🪲",
+                    "color": "grey5",
+                    "position": 17
+                  },
+                  {
+                    "id": 1723535285,
+                    "name": "Pending",
+                    "color": "violet3",
+                    "position": 18
+                  },
+                  {
+                    "id": 1727421395,
+                    "name": "done",
+                    "color": "mint4",
+                    "position": 19
+                  },
+                  {
+                    "id": 1724650998,
+                    "name": "Not Needed",
+                    "color": "violet3",
+                    "position": 20
+                  },
+                  {
+                    "id": 1727421396,
+                    "name": "done",
+                    "color": "orange5",
+                    "position": 21
+                  },
+                  {
+                    "id": 1721738241,
+                    "name": "Doing today 🌞",
+                    "color": "pink2",
+                    "position": 22
+                  },
+                  {
+                    "id": 1721738242,
+                    "name": "Done  🎉",
+                    "color": "green1",
+                    "position": 23
+                  },
+                  {
+                    "id": 1721738243,
+                    "name": "Trash 🗑",
+                    "color": "grey2",
+                    "position": 24
+                  },
+                  {
+                    "id": 1721738244,
+                    "name": "Blocked",
+                    "color": "red5",
+                    "position": 25
+                  },
+                  {
+                    "id": 1721738245,
+                    "name": "Code review",
+                    "color": "grey5",
+                    "position": 26
+                  },
+                  {
+                    "id": 1721738246,
+                    "name": "Investigating 🔎",
+                    "color": "orange3",
+                    "position": 27
+                  },
+                  {
+                    "id": 1721738247,
+                    "name": "In Testing 💪",
+                    "color": "violet4",
+                    "position": 28
+                  }
+                ],
+                "isSingle": true,
+                "onDelete": "cascade",
+                "choiceIds": [
+                  {
+                    "id": 5
+                  },
+                  {
+                    "id": 1
+                  },
+                  {
+                    "id": 4
+                  },
+                  {
+                    "id": 2
+                  },
+                  {
+                    "id": 3
+                  },
+                  {
+                    "id": 6
+                  },
+                  {
+                    "id": 7
+                  },
+                  {
+                    "id": 8
+                  },
+                  {
+                    "id": 9
+                  },
+                  {
+                    "id": 10
+                  },
+                  {
+                    "id": 11
+                  },
+                  {
+                    "id": 12
+                  },
+                  {
+                    "id": 13
+                  },
+                  {
+                    "id": 14
+                  },
+                  {
+                    "id": 15
+                  },
+                  {
+                    "id": 16
+                  },
+                  {
+                    "id": 17
+                  },
+                  {
+                    "id": 18
+                  },
+                  {
+                    "id": 1700509384920
+                  },
+                  {
+                    "id": 1700637651969
+                  },
+                  {
+                    "id": 1701185150743
+                  },
+                  {
+                    "id": 1701264295035
+                  },
+                  {
+                    "id": 1702313364031
+                  },
+                  {
+                    "id": 1711034670
+                  },
+                  {
+                    "id": 1717145240420
+                  }
+                ],
+                "foreignKey": "f_key",
+                "oppositeLink": "reverseLink",
+                "withColorCode": true
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 35,
+              "name": "prio",
+              "slug": "_prio_fld0L73G6b8mGGdms",
+              "title": "Prio",
+              "type": "select",
+              "options": {
+                "on": "_xrhmgmzlbhvnztOptions",
+                "alias": "xrhmgmzlbhvnzt",
+                "choices": [
+                  {
+                    "id": 1721738264,
+                    "name": "Low",
+                    "color": "grey5",
+                    "position": 1
+                  },
+                  {
+                    "id": 1721738265,
+                    "name": "Medium",
+                    "color": "orange4",
+                    "position": 2
+                  },
+                  {
+                    "id": 1721738266,
+                    "name": "🙀 High",
+                    "color": "orange5",
+                    "position": 3
+                  },
+                  {
+                    "id": 1721738267,
+                    "name": "🙀🙀🙀 Highest",
+                    "color": "red5",
+                    "position": 4
+                  },
+                  {
+                    "id": 1721738268,
+                    "name": "Doing today 🌞",
+                    "color": "violet3",
+                    "position": 5
+                  },
+                  {
+                    "id": 1721738272,
+                    "name": "Important",
+                    "color": "red2",
+                    "position": 6
+                  }
+                ],
+                "isSingle": true,
+                "onDelete": "cascade",
+                "choiceIds": [
+                  {
+                    "id": 1
+                  },
+                  {
+                    "id": 2
+                  },
+                  {
+                    "id": 3
+                  },
+                  {
+                    "id": 4
+                  },
+                  {
+                    "id": 1703145935974
+                  }
+                ],
+                "foreignKey": "f_key",
+                "oppositeLink": "reverseLink",
+                "withColorCode": true
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 36,
+              "name": "est",
+              "slug": "_est_fldNZyvrcvIrKkY6w",
+              "title": "Est.",
+              "type": "duration",
+              "options": {
+                "format": "h:mm",
+                "allowNegativeNumber": true
+              },
+              "returnType": "number"
+            },
+            {
+              "id": 38,
+              "name": "responsible",
+              "slug": "_responsible_fldx3WU0sqbcfcxcF",
+              "title": "Responsible",
+              "type": "collaborators",
+              "options": {
+                "on": "bambooCollaborators",
+                "alias": "responsibleFldx3Wu0SqbcfcxcF1721725162267",
+                "isSingle": true,
+                "onDelete": "set null",
+                "foreignKey": "f_key",
+                "oppositeLink": "responsibleFldx3Wu0SqbcfcxcF1721725162267Reverse"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 40,
+              "name": "createdAt",
+              "slug": "_createdAt_fldDOn3pJLk7uhfhp",
+              "title": "Created at",
+              "type": "createdAt",
+              "options": {
+                "dateFormat": "MM/dd/yyyy",
+                "timeFormat": "HH:mm",
+                "includeTime": true,
+                "displayTimeZone": false
+              },
+              "returnType": "date"
+            },
+            {
+              "id": 41,
+              "name": "modifiedAt",
+              "slug": "_modifiedAt_fld5i8pfRgMTxXk2s",
+              "title": "Modified at",
+              "type": "modifiedAt",
+              "options": {
+                "listensTo": [],
+                "dateFormat": "MM/dd/yyyy",
+                "timeFormat": "HH:mm",
+                "includeTime": true,
+                "displayTimeZone": false
+              },
+              "returnType": "date"
+            },
+            {
+              "id": 42,
+              "name": "description",
+              "slug": "_description_fldtSUeYjritv7r8m",
+              "title": "description",
+              "type": "longText",
+              "options": {
+                "astFieldName": "descriptionFldtSUeYjritv7R8MAst",
+                "enableRichText": true,
+                "markdownFieldName": "_description_fldtSUeYjritv7r8m",
+                "plainTextFieldName": "descriptionFldtSUeYjritv7R8MPlain"
+              },
+              "returnType": "string"
+            },
+            {
+              "id": 43,
+              "name": "createdBy",
+              "slug": "_createdBy_fldJUT7cOMPEI2HRm",
+              "title": "Created By",
+              "type": "createdBy",
+              "options": {
+                "on": "bambooCollaborators",
+                "alias": "defaultCreatedByGttvyhgauxenqc",
+                "onDelete": "set null",
+                "foreignKey": "f_key"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 44,
+              "name": null,
+              "slug": "_statusModified_flduAC4gOiaf302rz",
+              "title": "Status modified",
+              "type": "modifiedAt",
+              "options": {
+                "listensTo": [
+                  "_status_fldiw9iaUA0tkdpsB"
+                ],
+                "dateFormat": "MM/dd/yyyy",
+                "timeFormat": "HH:mm",
+                "includeTime": true,
+                "displayTimeZone": false
+              },
+              "returnType": null
+            },
+            {
+              "id": 45,
+              "name": "isToday",
+              "slug": "_isToday_fldrJ0AblKGSVR7DS",
+              "title": "Is today",
+              "type": "formula",
+              "options": {
+                "formula": "IF(\n    OR(\n        AND(\n            OR(\n                ABS(DATETIME_DIFF(_statusModified_flduAC4gOiaf302rz, TODAY(), 'days')) = 0,\n                ABS(DATETIME_DIFF({_createdAt_fldDOn3pJLk7uhfhp}, TODAY(), 'days')) <= 1\n            ),\n            OR(\n                _status_fldiw9iaUA0tkdpsB='Done  🎉',\n                _status_fldiw9iaUA0tkdpsB='Code review',\n                {_status_fldiw9iaUA0tkdpsB} = 'In Testing 💪'\n            )\n        ),\n        _status_fldiw9iaUA0tkdpsB='Doing today 🌞',\n        _status_fldiw9iaUA0tkdpsB='dev testing',\n        _status_fldiw9iaUA0tkdpsB='In progress 👩‍💻',\n        _status_fldiw9iaUA0tkdpsB='Blocked',\n        _status_fldiw9iaUA0tkdpsB='Needs improvement 🤔',\n        _status_fldiw9iaUA0tkdpsB='Reproduced and unassigned'\n    ),\n    1,\n    0\n)",
+                "uiFormula": "IF(\n    OR(\n        AND(\n            OR(\n                ABS(DATETIME_DIFF(Status modified, TODAY(), 'days')) = 0,\n                ABS(DATETIME_DIFF({Created at}, TODAY(), 'days')) <= 1\n            ),\n            OR(\n                Status='Done  🎉',\n                Status='Code review',\n                {Status} = 'In Testing 💪'\n            )\n        ),\n        Status='Doing today 🌞',\n        Status='dev testing',\n        Status='In progress 👩‍💻',\n        Status='Blocked',\n        Status='Needs improvement 🤔',\n        Status='Reproduced and unassigned'\n    ),\n    1,\n    0\n)",
+                "returnType": "number"
+              },
+              "returnType": "number"
+            },
+            {
+              "id": 46,
+              "name": "isTodayyesterday",
+              "slug": "_isTodayyesterday_fldjnO3WB1fdDqdk7",
+              "title": "Is today/yesterday",
+              "type": "formula",
+              "options": {
+                "formula": "IF(OR(AND(DATETIME_DIFF(_statusModified_flduAC4gOiaf302rz, TODAY(), 'days')>-1, OR(_status_fldiw9iaUA0tkdpsB='Done  🎉', _status_fldiw9iaUA0tkdpsB='Code review')),_status_fldiw9iaUA0tkdpsB='Doing today 🌞', _status_fldiw9iaUA0tkdpsB='In progress 👩‍💻',_status_fldiw9iaUA0tkdpsB='Blocked',_status_fldiw9iaUA0tkdpsB='Needs improvement 🤔',_status_fldiw9iaUA0tkdpsB='In Testing 💪'), 1, 0)",
+                "uiFormula": "IF(OR(AND(DATETIME_DIFF(Status modified, TODAY(), 'days')>-1, OR(Status='Done  🎉', Status='Code review')),Status='Doing today 🌞', Status='In progress 👩‍💻',Status='Blocked',Status='Needs improvement 🤔',Status='In Testing 💪'), 1, 0)",
+                "returnType": "number"
+              },
+              "returnType": "number"
+            },
+            {
+              "id": 47,
+              "name": "lastModified",
+              "slug": "_lastModified_fldTkFWaBj8bmAD3E",
+              "title": "Last Modified",
+              "type": "modifiedAt",
+              "options": {
+                "listensTo": [],
+                "dateFormat": "MM/dd/yyyy",
+                "timeFormat": "HH:mm",
+                "includeTime": true,
+                "displayTimeZone": false
+              },
+              "returnType": "date"
+            },
+            {
+              "id": 52,
+              "name": "type",
+              "slug": "_type_fldfkZvalerGJKNVr",
+              "title": "Type",
+              "type": "select",
+              "options": {
+                "on": "_bffyrjryjnlovuOptions",
+                "alias": "bffyrjryjnlovu",
+                "choices": [
+                  {
+                    "id": 1721738270,
+                    "name": "Backend Bug",
+                    "color": "red5",
+                    "position": 1
+                  },
+                  {
+                    "id": 1721738271,
+                    "name": "Frontend Bug",
+                    "color": "violet5",
+                    "position": 2
+                  },
+                  {
+                    "id": 1721738272,
+                    "name": "Todo",
+                    "color": "violet2",
+                    "position": 3
+                  },
+                  {
+                    "id": 1721738273,
+                    "name": "Feature",
+                    "color": "green5",
+                    "position": 4
+                  },
+                  {
+                    "id": 1721738274,
+                    "name": "View Issues",
+                    "color": "blue3",
+                    "position": 5
+                  },
+                  {
+                    "id": 1721738275,
+                    "name": "Navigation Issues",
+                    "color": "green2",
+                    "position": 6
+                  },
+                  {
+                    "id": 1721738276,
+                    "name": "Field Issues",
+                    "color": "orange4",
+                    "position": 7
+                  },
+                  {
+                    "id": 1721738277,
+                    "name": "Subscription Issues",
+                    "color": "blue2",
+                    "position": 8
+                  },
+                  {
+                    "id": 1721738278,
+                    "name": "Application State Issues",
+                    "color": "red5",
+                    "position": 9
+                  },
+                  {
+                    "id": 1721738279,
+                    "name": "UI inconsistencies ",
+                    "color": "blue1",
+                    "position": 10
+                  },
+                  {
+                    "id": 1721738280,
+                    "name": "Filter Issues",
+                    "color": "blue5",
+                    "position": 11
+                  },
+                  {
+                    "id": 1721738281,
+                    "name": "Importer Issues",
+                    "color": "pink2",
+                    "position": 12
+                  },
+                  {
+                    "id": 1721738282,
+                    "name": "Authentication Issues",
+                    "color": "orange2",
+                    "position": 13
+                  },
+                  {
+                    "id": 1721738283,
+                    "name": "Dashboard API Issues",
+                    "color": "violet3",
+                    "position": 14
+                  },
+                  {
+                    "id": 1721738284,
+                    "name": "UI improvement",
+                    "color": "green1",
+                    "position": 15
+                  },
+                  {
+                    "id": 1721738285,
+                    "name": "Email Issues",
+                    "color": "orange5",
+                    "position": 16
+                  },
+                  {
+                    "id": 1721738286,
+                    "name": "Base import",
+                    "color": "orange4",
+                    "position": 17
+                  },
+                  {
+                    "id": 1721738287,
+                    "name": "UX Bugs",
+                    "color": "red3",
+                    "position": 18
+                  },
+                  {
+                    "id": 1721738288,
+                    "name": "Chat Issues",
+                    "color": "orange1",
+                    "position": 19
+                  },
+                  {
+                    "id": 1721738289,
+                    "name": "Sharing Issues",
+                    "color": "grey4",
+                    "position": 20
+                  },
+                  {
+                    "id": 1721738290,
+                    "name": "User Management Issues",
+                    "color": "grey2",
+                    "position": 21
+                  },
+                  {
+                    "id": 1721738291,
+                    "name": "Onboarding Issue",
+                    "color": "pink2",
+                    "position": 22
+                  },
+                  {
+                    "id": 1721738292,
+                    "name": "Dashboard Issues",
+                    "color": "pink5",
+                    "position": 23
+                  },
+                  {
+                    "id": 1721738293,
+                    "name": "Inline Editing Issues",
+                    "color": "pink3",
+                    "position": 24
+                  },
+                  {
+                    "id": 1721738294,
+                    "name": "Design Inconsistency",
+                    "color": "grey5",
+                    "position": 25
+                  },
+                  {
+                    "id": 1721738295,
+                    "name": "Copy&Paste",
+                    "color": "blue4",
+                    "position": 26
+                  },
+                  {
+                    "id": 1721738296,
+                    "name": "Bug",
+                    "color": "orange3",
+                    "position": 27
+                  },
+                  {
+                    "id": 1721738297,
+                    "name": "Slowness",
+                    "color": "violet5",
+                    "position": 28
+                  },
+                  {
+                    "id": 1721738298,
+                    "name": "Icon Issues",
+                    "color": "violet4",
+                    "position": 29
+                  },
+                  {
+                    "id": 1721738299,
+                    "name": "Diff Issues",
+                    "color": "violet3",
+                    "position": 30
+                  },
+                  {
+                    "id": 1721738300,
+                    "name": "https://www.loom.com/share/fbc379199af74a259db6ef723540e394",
+                    "color": "violet3",
+                    "position": 31
+                  }
+                ],
+                "isSingle": true,
+                "onDelete": "cascade",
+                "choiceIds": [
+                  {
+                    "id": 1
+                  },
+                  {
+                    "id": 2
+                  },
+                  {
+                    "id": 3
+                  },
+                  {
+                    "id": 4
+                  },
+                  {
+                    "id": 5
+                  },
+                  {
+                    "id": 6
+                  },
+                  {
+                    "id": 7
+                  },
+                  {
+                    "id": 8
+                  },
+                  {
+                    "id": 9
+                  },
+                  {
+                    "id": 10
+                  },
+                  {
+                    "id": 11
+                  },
+                  {
+                    "id": 12
+                  },
+                  {
+                    "id": 13
+                  },
+                  {
+                    "id": 14
+                  },
+                  {
+                    "id": 15
+                  },
+                  {
+                    "id": 16
+                  },
+                  {
+                    "id": 17
+                  },
+                  {
+                    "id": 18
+                  },
+                  {
+                    "id": 19
+                  },
+                  {
+                    "id": 20
+                  },
+                  {
+                    "id": 21
+                  },
+                  {
+                    "id": 22
+                  },
+                  {
+                    "id": 23
+                  },
+                  {
+                    "id": 24
+                  },
+                  {
+                    "id": 25
+                  },
+                  {
+                    "id": 26
+                  },
+                  {
+                    "id": 27
+                  },
+                  {
+                    "id": 28
+                  },
+                  {
+                    "id": 29
+                  },
+                  {
+                    "id": 30
+                  },
+                  {
+                    "id": 1700466568659
+                  }
+                ],
+                "foreignKey": "f_key",
+                "oppositeLink": "reverseLink",
+                "withColorCode": true
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 54,
+              "name": "coResponsible",
+              "slug": "_coResponsible_fldzxQotcigtEbcMw",
+              "title": "Co-Responsible",
+              "type": "collaborators",
+              "options": {
+                "on": "bambooCollaborators",
+                "alias": "coResponsibleFldzxQotcigtEbcMw1721725162642",
+                "isSingle": false,
+                "onDelete": "set null",
+                "foreignKey": "f_key",
+                "oppositeLink": "coResponsibleFldzxQotcigtEbcMw1721725162642Reverse"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 56,
+              "name": "sprint",
+              "slug": "_sprint_fldlwUPCUiLSJ8Btb",
+              "title": "Sprint",
+              "type": "link",
+              "options": {
+                "on": "_sprints_tblpqNBlrUYE9gEdW",
+                "type": "manyToMany",
+                "alias": "wchxiqgmyocqpy",
+                "onDelete": "cascade",
+                "foreignKey": "f_key",
+                "oppositeLink": "_backlog_fldKW4EChaI0UO7Gm"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 58,
+              "name": "epic",
+              "slug": "_epic_fld2vzBPStYfyR5X1",
+              "title": "Epic",
+              "type": "link",
+              "options": {
+                "on": "_epics_tblJueXY5EqXZtRih",
+                "type": "manyToMany",
+                "alias": "pzjcrnmbvpenqf",
+                "isSingle": true,
+                "onDelete": "cascade",
+                "foreignKey": "f_key",
+                "oppositeLink": "_backlog_fld0cDH0WBj0SqP6i"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 65,
+              "name": "attachment",
+              "slug": "_attachment",
+              "title": "Attachment",
+              "type": "attachment",
+              "options": {
+                "on": "_attachmentAttachmentsEubrthyzomqthh",
+                "alias": "ygxtzasnccfckn",
+                "onDelete": "cascade",
+                "foreignKey": "f_key",
+                "oppositeLink": "reverseLink"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 66,
+              "name": "modifiedBy",
+              "slug": "_modifiedBy",
+              "title": "Modified By",
+              "type": "modifiedBy",
+              "options": {
+                "on": "bambooCollaborators",
+                "alias": "ryayvnrlcnmodlmodifiedById",
+                "onDelete": "set null",
+                "fieldsMap": {
+                  "_est_fldNZyvrcvIrKkY6w": {
+                    "id": 9,
+                    "slug": "_est_fldNZyvrcvIrKkY6w",
+                    "type": "duration",
+                    "title": "Est.",
+                    "filters": [
+                      "=",
+                      "!=",
+                      ">",
+                      ">=",
+                      "<",
+                      "<=",
+                      "isAnyOf",
+                      "isNoneOf",
+                      "isNull",
+                      "isNotNull"
+                    ],
+                    "options": {
+                      "format": "h:mm",
+                      "allowNegativeNumber": true
+                    },
+                    "isBroken": false,
+                    "fieldType": "duration",
+                    "returnType": "number",
+                    "description": "",
+                    "returnField": {
+                      "name": "_est_fldNZyvrcvIrKkY6w",
+                      "type": "duration",
+                      "filters": [
+                        "=",
+                        "!=",
+                        ">",
+                        ">=",
+                        "<",
+                        "<=",
+                        "isAnyOf",
+                        "isNoneOf",
+                        "isNull",
+                        "isNotNull"
+                      ],
+                      "options": {
+                        "format": "h:mm",
+                        "allowNegativeNumber": true
+                      },
+                      "isBroken": false,
+                      "fieldType": "duration",
+                      "returnType": "number",
+                      "description": "",
+                      "canBeUpdated": true,
+                      "isCalculated": false,
+                      "isAutoGenerated": false,
+                      "canBeAPrimaryField": true
+                    },
+                    "isCalculated": false,
+                    "isAutoGenerated": false
+                  },
+                  "_epic_fld2vzBPStYfyR5X1": {
+                    "id": 106,
+                    "slug": "_epic_fld2vzBPStYfyR5X1",
+                    "type": "link",
+                    "title": "Epic",
+                    "filters": [
+                      "hasAnyOf",
+                      "hasAllOf",
+                      "isExactly",
+                      "isNoneOf",
+                      "contains",
+                      "doesNotContain",
+                      "isEmpty",
+                      "isNotEmpty"
+                    ],
+                    "options": {
+                      "on": "_epics_tblJueXY5EqXZtRih",
+                      "type": "manyToMany",
+                      "alias": "rfZlgsRlAykLIk",
+                      "onDelete": "cascade",
+                      "foreignKey": "f_key",
+                      "oppositeLink": "_backlog_fld0cDH0WBj0SqP6i"
+                    },
+                    "isBroken": false,
+                    "fieldType": "link",
+                    "returnType": "json",
+                    "description": "",
+                    "returnField": {
+                      "name": "_epic_fld2vzBPStYfyR5X1",
+                      "type": "link",
+                      "filters": [
+                        "hasAnyOf",
+                        "hasAllOf",
+                        "isExactly",
+                        "isNoneOf",
+                        "contains",
+                        "doesNotContain",
+                        "isEmpty",
+                        "isNotEmpty"
+                      ],
+                      "options": {
+                        "on": "_epics_tblJueXY5EqXZtRih",
+                        "type": "manyToMany",
+                        "alias": "rfZlgsRlAykLIk",
+                        "onDelete": "cascade",
+                        "foreignKey": "f_key",
+                        "oppositeLink": "_backlog_fld0cDH0WBj0SqP6i"
+                      },
+                      "isBroken": false,
+                      "fieldType": "link",
+                      "returnType": "json",
+                      "description": "",
+                      "canBeUpdated": true,
+                      "isCalculated": false,
+                      "isAutoGenerated": false,
+                      "canBeAPrimaryField": false
+                    },
+                    "isCalculated": false,
+                    "isAutoGenerated": false
+                  },
+                  "_prio_fld0L73G6b8mGGdms": {
+                    "id": 8,
+                    "slug": "_prio_fld0L73G6b8mGGdms",
+                    "type": "select",
+                    "title": "Prio",
+                    "filters": [
+                      "hasAnyOf",
+                      "hasAllOf",
+                      "isExactly",
+                      "isNoneOf",
+                      "contains",
+                      "doesNotContain",
+                      "isEmpty",
+                      "isNotEmpty"
+                    ],
+                    "options": {
+                      "on": "_xohhrnviCjCsRrOptions",
+                      "alias": "xohhrnviCjCsRr",
+                      "choices": [
+                        {
+                          "id": 1,
+                          "name": "Low",
+                          "color": "grey5"
+                        },
+                        {
+                          "id": 2,
+                          "name": "Medium",
+                          "color": "orange4"
+                        },
+                        {
+                          "id": 3,
+                          "name": "🙀 High",
+                          "color": "orange5"
+                        },
+                        {
+                          "id": 4,
+                          "name": "🙀🙀🙀 Highest",
+                          "color": "red5"
+                        },
+                        {
+                          "id": 1698658695057,
+                          "name": "2023 POWERTHROUGH CW40-45",
+                          "color": "violet3"
+                        }
+                      ],
+                      "isSingle": true,
+                      "onDelete": "cascade",
+                      "choiceIds": [
+                        {
+                          "id": "selvIH4A5sA5at5FQ"
+                        },
+                        {
+                          "id": "selWYb6trsMLm1nnA"
+                        },
+                        {
+                          "id": "selXRTIu6P2oZKPC4"
+                        },
+                        {
+                          "id": "selpeK3Be6tIzSKUn"
+                        }
+                      ],
+                      "foreignKey": "f_key",
+                      "withColorCode": true
+                    },
+                    "isBroken": false,
+                    "fieldType": "select",
+                    "returnType": "json",
+                    "description": "",
+                    "returnField": {
+                      "name": "_prio_fld0L73G6b8mGGdms",
+                      "type": "select",
+                      "filters": [
+                        "hasAnyOf",
+                        "hasAllOf",
+                        "isExactly",
+                        "isNoneOf",
+                        "contains",
+                        "doesNotContain",
+                        "isEmpty",
+                        "isNotEmpty"
+                      ],
+                      "options": {
+                        "on": "_xohhrnviCjCsRrOptions",
+                        "alias": "xohhrnviCjCsRr",
+                        "choices": [
+                          {
+                            "id": 1,
+                            "name": "Low",
+                            "color": "grey5"
+                          },
+                          {
+                            "id": 2,
+                            "name": "Medium",
+                            "color": "orange4"
+                          },
+                          {
+                            "id": 3,
+                            "name": "🙀 High",
+                            "color": "orange5"
+                          },
+                          {
+                            "id": 4,
+                            "name": "🙀🙀🙀 Highest",
+                            "color": "red5"
+                          },
+                          {
+                            "id": 1698658695057,
+                            "name": "2023 POWERTHROUGH CW40-45",
+                            "color": "violet3"
+                          }
+                        ],
+                        "isSingle": true,
+                        "onDelete": "cascade",
+                        "choiceIds": [
+                          {
+                            "id": "selvIH4A5sA5at5FQ"
+                          },
+                          {
+                            "id": "selWYb6trsMLm1nnA"
+                          },
+                          {
+                            "id": "selXRTIu6P2oZKPC4"
+                          },
+                          {
+                            "id": "selpeK3Be6tIzSKUn"
+                          }
+                        ],
+                        "foreignKey": "f_key",
+                        "withColorCode": true
+                      },
+                      "isBroken": false,
+                      "fieldType": "select",
+                      "returnType": "json",
+                      "description": "",
+                      "canBeUpdated": true,
+                      "isCalculated": false,
+                      "isAutoGenerated": false,
+                      "canBeAPrimaryField": false
+                    },
+                    "isCalculated": false,
+                    "isAutoGenerated": false
+                  },
+                  "_type_fldfkZvalerGJKNVr": {
+                    "id": 28,
+                    "slug": "_type_fldfkZvalerGJKNVr",
+                    "type": "select",
+                    "title": "Type",
+                    "filters": [
+                      "hasAnyOf",
+                      "hasAllOf",
+                      "isExactly",
+                      "isNoneOf",
+                      "contains",
+                      "doesNotContain",
+                      "isEmpty",
+                      "isNotEmpty"
+                    ],
+                    "options": {
+                      "on": "_wQZdSwlHwxfApAOptions",
+                      "alias": "wQZdSwlHwxfApA",
+                      "choices": [
+                        {
+                          "id": 1,
+                          "name": "Backend Bug",
+                          "color": "red5"
+                        },
+                        {
+                          "id": 2,
+                          "name": "Frontend Bug",
+                          "color": "violet5"
+                        },
+                        {
+                          "id": 3,
+                          "name": "Todo",
+                          "color": "violet2"
+                        },
+                        {
+                          "id": 4,
+                          "name": "Feature",
+                          "color": "green5"
+                        },
+                        {
+                          "id": 5,
+                          "name": "View Issues",
+                          "color": "blue3"
+                        },
+                        {
+                          "id": 6,
+                          "name": "Navigation Issues",
+                          "color": "green2"
+                        },
+                        {
+                          "id": 7,
+                          "name": "Field Issues",
+                          "color": "orange4"
+                        },
+                        {
+                          "id": 8,
+                          "name": "Subscription Issues",
+                          "color": "blue2"
+                        },
+                        {
+                          "id": 9,
+                          "name": "Application State Issues",
+                          "color": "red5"
+                        },
+                        {
+                          "id": 10,
+                          "name": "UI inconsistencies ",
+                          "color": "blue1"
+                        },
+                        {
+                          "id": 11,
+                          "name": "Filter Issues",
+                          "color": "blue5"
+                        },
+                        {
+                          "id": 12,
+                          "name": "Importer Issues",
+                          "color": "pink2"
+                        },
+                        {
+                          "id": 13,
+                          "name": "Authentication Issues",
+                          "color": "orange2"
+                        },
+                        {
+                          "id": 14,
+                          "name": "Dashboard API Issues",
+                          "color": "violet3"
+                        },
+                        {
+                          "id": 15,
+                          "name": "UI improvement",
+                          "color": "green1"
+                        },
+                        {
+                          "id": 16,
+                          "name": "Email Issues",
+                          "color": "orange5"
+                        },
+                        {
+                          "id": 17,
+                          "name": "Base import",
+                          "color": "orange4"
+                        },
+                        {
+                          "id": 18,
+                          "name": "UX Bugs",
+                          "color": "red3"
+                        },
+                        {
+                          "id": 19,
+                          "name": "Chat Issues",
+                          "color": "orange1"
+                        },
+                        {
+                          "id": 20,
+                          "name": "Sharing Issues",
+                          "color": "grey4"
+                        },
+                        {
+                          "id": 21,
+                          "name": "User Management Issues",
+                          "color": "grey2"
+                        },
+                        {
+                          "id": 22,
+                          "name": "Onboarding Issue",
+                          "color": "pink2"
+                        },
+                        {
+                          "id": 23,
+                          "name": "Dashboard Issues",
+                          "color": "pink5"
+                        },
+                        {
+                          "id": 24,
+                          "name": "Inline Editing Issues",
+                          "color": "pink3"
+                        },
+                        {
+                          "id": 25,
+                          "name": "Design Inconsistency",
+                          "color": "grey5"
+                        },
+                        {
+                          "id": 26,
+                          "name": "Copy&Paste",
+                          "color": "blue4"
+                        },
+                        {
+                          "id": 27,
+                          "name": "Bug",
+                          "color": "orange3"
+                        },
+                        {
+                          "id": 28,
+                          "name": "Slowness",
+                          "color": "violet5"
+                        },
+                        {
+                          "id": 29,
+                          "name": "Icon Issues",
+                          "color": "violet4"
+                        },
+                        {
+                          "id": 30,
+                          "name": "Diff Issues",
+                          "color": "violet3"
+                        }
+                      ],
+                      "isSingle": true,
+                      "onDelete": "cascade",
+                      "choiceIds": [
+                        {
+                          "id": "selaH5Xr2gsIEUrdl"
+                        },
+                        {
+                          "id": "selw1RtfH7QU1UYHh"
+                        },
+                        {
+                          "id": "selyKuZSzpRChUb8B"
+                        },
+                        {
+                          "id": "selyviVF8SBFzEcVn"
+                        },
+                        {
+                          "id": "selAp6zBDU1t3JUVq"
+                        },
+                        {
+                          "id": "sel9e8GXFJdY0IU6v"
+                        },
+                        {
+                          "id": "selNwSBGXfnfWxm1z"
+                        },
+                        {
+                          "id": "selQBqCkhud9RGZJE"
+                        },
+                        {
+                          "id": "selFKcdrAxzOOnOfk"
+                        },
+                        {
+                          "id": "sel2rLjfaqZRaGMPa"
+                        },
+                        {
+                          "id": "selcHpKNxTEuU7rC8"
+                        },
+                        {
+                          "id": "selFjZqmRDcOCdL2w"
+                        },
+                        {
+                          "id": "selD5XYRgmvbe26EI"
+                        },
+                        {
+                          "id": "sel9f5AkVtn623koO"
+                        },
+                        {
+                          "id": "selc31MbCg5o0I5eP"
+                        },
+                        {
+                          "id": "selJrf0sEMGCfD3hX"
+                        },
+                        {
+                          "id": "selSNnIq9HUrg2G4R"
+                        },
+                        {
+                          "id": "selxSfpRI6jwbyFPT"
+                        },
+                        {
+                          "id": "selpE2tzm8Ifmq7XH"
+                        },
+                        {
+                          "id": "sel3EinPhu5T1fz1n"
+                        },
+                        {
+                          "id": "selbQa17bcDgnmjp3"
+                        },
+                        {
+                          "id": "selxaF9Ye7S6SeJuz"
+                        },
+                        {
+                          "id": "seltJQdnhVL3K9PtH"
+                        },
+                        {
+                          "id": "selpE1qruTl5JqkOT"
+                        },
+                        {
+                          "id": "selSGS8PdQWbug0AT"
+                        },
+                        {
+                          "id": "sellHxFt62rg0PVti"
+                        },
+                        {
+                          "id": "selhH1LmFR3ygZmU9"
+                        },
+                        {
+                          "id": "selIbWB6IuaMjGwvC"
+                        },
+                        {
+                          "id": "selGOnJZlhbzDTXvy"
+                        }
+                      ],
+                      "foreignKey": "f_key",
+                      "withColorCode": true
+                    },
+                    "isBroken": false,
+                    "fieldType": "select",
+                    "returnType": "json",
+                    "description": "",
+                    "returnField": {
+                      "name": "_type_fldfkZvalerGJKNVr",
+                      "type": "select",
+                      "filters": [
+                        "hasAnyOf",
+                        "hasAllOf",
+                        "isExactly",
+                        "isNoneOf",
+                        "contains",
+                        "doesNotContain",
+                        "isEmpty",
+                        "isNotEmpty"
+                      ],
+                      "options": {
+                        "on": "_wQZdSwlHwxfApAOptions",
+                        "alias": "wQZdSwlHwxfApA",
+                        "choices": [
+                          {
+                            "id": 1,
+                            "name": "Backend Bug",
+                            "color": "red5"
+                          },
+                          {
+                            "id": 2,
+                            "name": "Frontend Bug",
+                            "color": "violet5"
+                          },
+                          {
+                            "id": 3,
+                            "name": "Todo",
+                            "color": "violet2"
+                          },
+                          {
+                            "id": 4,
+                            "name": "Feature",
+                            "color": "green5"
+                          },
+                          {
+                            "id": 5,
+                            "name": "View Issues",
+                            "color": "blue3"
+                          },
+                          {
+                            "id": 6,
+                            "name": "Navigation Issues",
+                            "color": "green2"
+                          },
+                          {
+                            "id": 7,
+                            "name": "Field Issues",
+                            "color": "orange4"
+                          },
+                          {
+                            "id": 8,
+                            "name": "Subscription Issues",
+                            "color": "blue2"
+                          },
+                          {
+                            "id": 9,
+                            "name": "Application State Issues",
+                            "color": "red5"
+                          },
+                          {
+                            "id": 10,
+                            "name": "UI inconsistencies ",
+                            "color": "blue1"
+                          },
+                          {
+                            "id": 11,
+                            "name": "Filter Issues",
+                            "color": "blue5"
+                          },
+                          {
+                            "id": 12,
+                            "name": "Importer Issues",
+                            "color": "pink2"
+                          },
+                          {
+                            "id": 13,
+                            "name": "Authentication Issues",
+                            "color": "orange2"
+                          },
+                          {
+                            "id": 14,
+                            "name": "Dashboard API Issues",
+                            "color": "violet3"
+                          },
+                          {
+                            "id": 15,
+                            "name": "UI improvement",
+                            "color": "green1"
+                          },
+                          {
+                            "id": 16,
+                            "name": "Email Issues",
+                            "color": "orange5"
+                          },
+                          {
+                            "id": 17,
+                            "name": "Base import",
+                            "color": "orange4"
+                          },
+                          {
+                            "id": 18,
+                            "name": "UX Bugs",
+                            "color": "red3"
+                          },
+                          {
+                            "id": 19,
+                            "name": "Chat Issues",
+                            "color": "orange1"
+                          },
+                          {
+                            "id": 20,
+                            "name": "Sharing Issues",
+                            "color": "grey4"
+                          },
+                          {
+                            "id": 21,
+                            "name": "User Management Issues",
+                            "color": "grey2"
+                          },
+                          {
+                            "id": 22,
+                            "name": "Onboarding Issue",
+                            "color": "pink2"
+                          },
+                          {
+                            "id": 23,
+                            "name": "Dashboard Issues",
+                            "color": "pink5"
+                          },
+                          {
+                            "id": 24,
+                            "name": "Inline Editing Issues",
+                            "color": "pink3"
+                          },
+                          {
+                            "id": 25,
+                            "name": "Design Inconsistency",
+                            "color": "grey5"
+                          },
+                          {
+                            "id": 26,
+                            "name": "Copy&Paste",
+                            "color": "blue4"
+                          },
+                          {
+                            "id": 27,
+                            "name": "Bug",
+                            "color": "orange3"
+                          },
+                          {
+                            "id": 28,
+                            "name": "Slowness",
+                            "color": "violet5"
+                          },
+                          {
+                            "id": 29,
+                            "name": "Icon Issues",
+                            "color": "violet4"
+                          },
+                          {
+                            "id": 30,
+                            "name": "Diff Issues",
+                            "color": "violet3"
+                          }
+                        ],
+                        "isSingle": true,
+                        "onDelete": "cascade",
+                        "choiceIds": [
+                          {
+                            "id": "selaH5Xr2gsIEUrdl"
+                          },
+                          {
+                            "id": "selw1RtfH7QU1UYHh"
+                          },
+                          {
+                            "id": "selyKuZSzpRChUb8B"
+                          },
+                          {
+                            "id": "selyviVF8SBFzEcVn"
+                          },
+                          {
+                            "id": "selAp6zBDU1t3JUVq"
+                          },
+                          {
+                            "id": "sel9e8GXFJdY0IU6v"
+                          },
+                          {
+                            "id": "selNwSBGXfnfWxm1z"
+                          },
+                          {
+                            "id": "selQBqCkhud9RGZJE"
+                          },
+                          {
+                            "id": "selFKcdrAxzOOnOfk"
+                          },
+                          {
+                            "id": "sel2rLjfaqZRaGMPa"
+                          },
+                          {
+                            "id": "selcHpKNxTEuU7rC8"
+                          },
+                          {
+                            "id": "selFjZqmRDcOCdL2w"
+                          },
+                          {
+                            "id": "selD5XYRgmvbe26EI"
+                          },
+                          {
+                            "id": "sel9f5AkVtn623koO"
+                          },
+                          {
+                            "id": "selc31MbCg5o0I5eP"
+                          },
+                          {
+                            "id": "selJrf0sEMGCfD3hX"
+                          },
+                          {
+                            "id": "selSNnIq9HUrg2G4R"
+                          },
+                          {
+                            "id": "selxSfpRI6jwbyFPT"
+                          },
+                          {
+                            "id": "selpE2tzm8Ifmq7XH"
+                          },
+                          {
+                            "id": "sel3EinPhu5T1fz1n"
+                          },
+                          {
+                            "id": "selbQa17bcDgnmjp3"
+                          },
+                          {
+                            "id": "selxaF9Ye7S6SeJuz"
+                          },
+                          {
+                            "id": "seltJQdnhVL3K9PtH"
+                          },
+                          {
+                            "id": "selpE1qruTl5JqkOT"
+                          },
+                          {
+                            "id": "selSGS8PdQWbug0AT"
+                          },
+                          {
+                            "id": "sellHxFt62rg0PVti"
+                          },
+                          {
+                            "id": "selhH1LmFR3ygZmU9"
+                          },
+                          {
+                            "id": "selIbWB6IuaMjGwvC"
+                          },
+                          {
+                            "id": "selGOnJZlhbzDTXvy"
+                          }
+                        ],
+                        "foreignKey": "f_key",
+                        "withColorCode": true
+                      },
+                      "isBroken": false,
+                      "fieldType": "select",
+                      "returnType": "json",
+                      "description": "",
+                      "canBeUpdated": true,
+                      "isCalculated": false,
+                      "isAutoGenerated": false,
+                      "canBeAPrimaryField": false
+                    },
+                    "isCalculated": false,
+                    "isAutoGenerated": false
+                  },
+                  "_title_fld3pu8InihPEraIv": {
+                    "id": 2,
+                    "slug": "_title_fld3pu8InihPEraIv",
+                    "type": "singleLineText",
+                    "title": "Title",
+                    "filters": [
+                      "=",
+                      "!=",
+                      "caseEqual",
+                      "isAnyOf",
+                      "contains",
+                      "doesNotContain",
+                      "isNull",
+                      "isNotNull"
+                    ],
+                    "options": {},
+                    "isBroken": false,
+                    "fieldType": "singleLineText",
+                    "isPrimary": true,
+                    "returnType": "string",
+                    "description": "",
+                    "returnField": {
+                      "name": "_title_fld3pu8InihPEraIv",
+                      "type": "singleLineText",
+                      "filters": [
+                        "=",
+                        "!=",
+                        "caseEqual",
+                        "isAnyOf",
+                        "contains",
+                        "doesNotContain",
+                        "isNull",
+                        "isNotNull"
+                      ],
+                      "options": {},
+                      "isBroken": false,
+                      "fieldType": "singleLineText",
+                      "returnType": "string",
+                      "description": "",
+                      "canBeUpdated": true,
+                      "isCalculated": false,
+                      "isAutoGenerated": false,
+                      "canBeAPrimaryField": true
+                    },
+                    "isCalculated": false,
+                    "isAutoGenerated": false
+                  },
+                  "_sprint_fldlwUPCUiLSJ8Btb": {
+                    "id": 103,
+                    "slug": "_sprint_fldlwUPCUiLSJ8Btb",
+                    "type": "link",
+                    "title": "Sprint",
+                    "filters": [
+                      "hasAnyOf",
+                      "hasAllOf",
+                      "isExactly",
+                      "isNoneOf",
+                      "contains",
+                      "doesNotContain",
+                      "isEmpty",
+                      "isNotEmpty"
+                    ],
+                    "options": {
+                      "on": "_sprints_tblpqNBlrUYE9gEdW",
+                      "type": "manyToMany",
+                      "alias": "cePTjJgerNtvMe",
+                      "onDelete": "cascade",
+                      "foreignKey": "f_key",
+                      "oppositeLink": "_backlog_fldKW4EChaI0UO7Gm"
+                    },
+                    "isBroken": false,
+                    "fieldType": "link",
+                    "returnType": "json",
+                    "description": "",
+                    "returnField": {
+                      "name": "_sprint_fldlwUPCUiLSJ8Btb",
+                      "type": "link",
+                      "filters": [
+                        "hasAnyOf",
+                        "hasAllOf",
+                        "isExactly",
+                        "isNoneOf",
+                        "contains",
+                        "doesNotContain",
+                        "isEmpty",
+                        "isNotEmpty"
+                      ],
+                      "options": {
+                        "on": "_sprints_tblpqNBlrUYE9gEdW",
+                        "type": "manyToMany",
+                        "alias": "cePTjJgerNtvMe",
+                        "onDelete": "cascade",
+                        "foreignKey": "f_key",
+                        "oppositeLink": "_backlog_fldKW4EChaI0UO7Gm"
+                      },
+                      "isBroken": false,
+                      "fieldType": "link",
+                      "returnType": "json",
+                      "description": "",
+                      "canBeUpdated": true,
+                      "isCalculated": false,
+                      "isAutoGenerated": false,
+                      "canBeAPrimaryField": false
+                    },
+                    "isCalculated": false,
+                    "isAutoGenerated": false
+                  },
+                  "_status_fldiw9iaUA0tkdpsB": {
+                    "id": 5,
+                    "slug": "_status_fldiw9iaUA0tkdpsB",
+                    "type": "select",
+                    "title": "Status",
+                    "filters": [
+                      "hasAnyOf",
+                      "hasAllOf",
+                      "isExactly",
+                      "isNoneOf",
+                      "contains",
+                      "doesNotContain",
+                      "isEmpty",
+                      "isNotEmpty"
+                    ],
+                    "options": {
+                      "on": "_hDExeUWqyAviBgOptions",
+                      "alias": "hDExeUWqyAviBg",
+                      "choices": [
+                        {
+                          "id": 1,
+                          "name": "In progress 👩‍💻",
+                          "color": "orange1"
+                        },
+                        {
+                          "id": 2,
+                          "name": "Done  🎉",
+                          "color": "green1"
+                        },
+                        {
+                          "id": 3,
+                          "name": "Trash 🗑",
+                          "color": "grey2"
+                        },
+                        {
+                          "id": 4,
+                          "name": "Doing today 🌞",
+                          "color": "pink2"
+                        },
+                        {
+                          "id": 5,
+                          "name": "Needs improvement 🤔",
+                          "color": "blue3"
+                        },
+                        {
+                          "id": 6,
+                          "name": "Blocked",
+                          "color": "red5"
+                        },
+                        {
+                          "id": 7,
+                          "name": "Code review",
+                          "color": "grey5"
+                        },
+                        {
+                          "id": 8,
+                          "name": "Investigating 🔎",
+                          "color": "orange3"
+                        },
+                        {
+                          "id": 9,
+                          "name": "In Testing 💪",
+                          "color": "violet4"
+                        },
+                        {
+                          "id": 10,
+                          "name": "Irreproducible 🙅‍♂️",
+                          "color": "violet5"
+                        },
+                        {
+                          "id": 11,
+                          "name": "Reopen",
+                          "color": "violet2"
+                        },
+                        {
+                          "id": 12,
+                          "name": "On Hold",
+                          "color": "pink5"
+                        },
+                        {
+                          "id": 13,
+                          "name": "dev testing",
+                          "color": "orange4"
+                        },
+                        {
+                          "id": 14,
+                          "name": "Delegate 🌟🤝",
+                          "color": "violet2"
+                        },
+                        {
+                          "id": 15,
+                          "name": "🌈 Brainstorming",
+                          "color": "red3"
+                        },
+                        {
+                          "id": 16,
+                          "name": "Ice Box",
+                          "color": "blue2"
+                        },
+                        {
+                          "id": 17,
+                          "name": "Backlog",
+                          "color": "blue1"
+                        },
+                        {
+                          "id": 18,
+                          "name": "Iteration 🔄",
+                          "color": "orange2"
+                        },
+                        {
+                          "id": 1698666230996,
+                          "name": "add operation number there",
+                          "color": "violet3"
+                        }
+                      ],
+                      "isSingle": true,
+                      "onDelete": "cascade",
+                      "choiceIds": [
+                        {
+                          "id": "selYnm35OKeSDNYdb"
+                        },
+                        {
+                          "id": "selZzkNAuMx1KQQ6W"
+                        },
+                        {
+                          "id": "selpteJDLBA2DCvDQ"
+                        },
+                        {
+                          "id": "sel7G7kAAoGZkINzn"
+                        },
+                        {
+                          "id": "sel1xwsTVbZQJbaTU"
+                        },
+                        {
+                          "id": "sel2wn0UypzJyTzHJ"
+                        },
+                        {
+                          "id": "selN97LYltpJN1WME"
+                        },
+                        {
+                          "id": "selVlaMpiyHpH96wj"
+                        },
+                        {
+                          "id": "selbGhoYenMQvGyDh"
+                        },
+                        {
+                          "id": "seluXXSnAtNvVmrUa"
+                        },
+                        {
+                          "id": "sel6071KQ1Q4v90Rg"
+                        },
+                        {
+                          "id": "selxtrTygM55exCu0"
+                        },
+                        {
+                          "id": "seldDOXgb7zn8KspI"
+                        },
+                        {
+                          "id": "selufeVf0wRAHLMXq"
+                        },
+                        {
+                          "id": "selIUlf2UtsPdViGl"
+                        },
+                        {
+                          "id": "selZxzZdoDLoBRql9"
+                        },
+                        {
+                          "id": "selElaYyKrb0jaitZ"
+                        },
+                        {
+                          "id": "sel07TGUS3aXgdEgx"
+                        },
+                        {
+                          "id": "selU6NVdCiybegxkp"
+                        }
+                      ],
+                      "foreignKey": "f_key",
+                      "withColorCode": true
+                    },
+                    "isBroken": false,
+                    "fieldType": "select",
+                    "returnType": "json",
+                    "description": "",
+                    "returnField": {
+                      "name": "_status_fldiw9iaUA0tkdpsB",
+                      "type": "select",
+                      "filters": [
+                        "hasAnyOf",
+                        "hasAllOf",
+                        "isExactly",
+                        "isNoneOf",
+                        "contains",
+                        "doesNotContain",
+                        "isEmpty",
+                        "isNotEmpty"
+                      ],
+                      "options": {
+                        "on": "_hDExeUWqyAviBgOptions",
+                        "alias": "hDExeUWqyAviBg",
+                        "choices": [
+                          {
+                            "id": 1,
+                            "name": "In progress 👩‍💻",
+                            "color": "orange1"
+                          },
+                          {
+                            "id": 2,
+                            "name": "Done  🎉",
+                            "color": "green1"
+                          },
+                          {
+                            "id": 3,
+                            "name": "Trash 🗑",
+                            "color": "grey2"
+                          },
+                          {
+                            "id": 4,
+                            "name": "Doing today 🌞",
+                            "color": "pink2"
+                          },
+                          {
+                            "id": 5,
+                            "name": "Needs improvement 🤔",
+                            "color": "blue3"
+                          },
+                          {
+                            "id": 6,
+                            "name": "Blocked",
+                            "color": "red5"
+                          },
+                          {
+                            "id": 7,
+                            "name": "Code review",
+                            "color": "grey5"
+                          },
+                          {
+                            "id": 8,
+                            "name": "Investigating 🔎",
+                            "color": "orange3"
+                          },
+                          {
+                            "id": 9,
+                            "name": "In Testing 💪",
+                            "color": "violet4"
+                          },
+                          {
+                            "id": 10,
+                            "name": "Irreproducible 🙅‍♂️",
+                            "color": "violet5"
+                          },
+                          {
+                            "id": 11,
+                            "name": "Reopen",
+                            "color": "violet2"
+                          },
+                          {
+                            "id": 12,
+                            "name": "On Hold",
+                            "color": "pink5"
+                          },
+                          {
+                            "id": 13,
+                            "name": "dev testing",
+                            "color": "orange4"
+                          },
+                          {
+                            "id": 14,
+                            "name": "Delegate 🌟🤝",
+                            "color": "violet2"
+                          },
+                          {
+                            "id": 15,
+                            "name": "🌈 Brainstorming",
+                            "color": "red3"
+                          },
+                          {
+                            "id": 16,
+                            "name": "Ice Box",
+                            "color": "blue2"
+                          },
+                          {
+                            "id": 17,
+                            "name": "Backlog",
+                            "color": "blue1"
+                          },
+                          {
+                            "id": 18,
+                            "name": "Iteration 🔄",
+                            "color": "orange2"
+                          },
+                          {
+                            "id": 1698666230996,
+                            "name": "add operation number there",
+                            "color": "violet3"
+                          }
+                        ],
+                        "isSingle": true,
+                        "onDelete": "cascade",
+                        "choiceIds": [
+                          {
+                            "id": "selYnm35OKeSDNYdb"
+                          },
+                          {
+                            "id": "selZzkNAuMx1KQQ6W"
+                          },
+                          {
+                            "id": "selpteJDLBA2DCvDQ"
+                          },
+                          {
+                            "id": "sel7G7kAAoGZkINzn"
+                          },
+                          {
+                            "id": "sel1xwsTVbZQJbaTU"
+                          },
+                          {
+                            "id": "sel2wn0UypzJyTzHJ"
+                          },
+                          {
+                            "id": "selN97LYltpJN1WME"
+                          },
+                          {
+                            "id": "selVlaMpiyHpH96wj"
+                          },
+                          {
+                            "id": "selbGhoYenMQvGyDh"
+                          },
+                          {
+                            "id": "seluXXSnAtNvVmrUa"
+                          },
+                          {
+                            "id": "sel6071KQ1Q4v90Rg"
+                          },
+                          {
+                            "id": "selxtrTygM55exCu0"
+                          },
+                          {
+                            "id": "seldDOXgb7zn8KspI"
+                          },
+                          {
+                            "id": "selufeVf0wRAHLMXq"
+                          },
+                          {
+                            "id": "selIUlf2UtsPdViGl"
+                          },
+                          {
+                            "id": "selZxzZdoDLoBRql9"
+                          },
+                          {
+                            "id": "selElaYyKrb0jaitZ"
+                          },
+                          {
+                            "id": "sel07TGUS3aXgdEgx"
+                          },
+                          {
+                            "id": "selU6NVdCiybegxkp"
+                          }
+                        ],
+                        "foreignKey": "f_key",
+                        "withColorCode": true
+                      },
+                      "isBroken": false,
+                      "fieldType": "select",
+                      "returnType": "json",
+                      "description": "",
+                      "canBeUpdated": true,
+                      "isCalculated": false,
+                      "isAutoGenerated": false,
+                      "canBeAPrimaryField": false
+                    },
+                    "isCalculated": false,
+                    "isAutoGenerated": false
+                  },
+                  "_createdBy_fldJUT7cOMPEI2HRm": {
+                    "id": 21,
+                    "slug": "_createdBy_fldJUT7cOMPEI2HRm",
+                    "type": "createdBy",
+                    "title": "Created By",
+                    "filters": [
+                      "hasAnyOf",
+                      "hasAllOf",
+                      "isExactly",
+                      "isNoneOf",
+                      "contains",
+                      "doesNotContain",
+                      "isEmpty",
+                      "isNotEmpty"
+                    ],
+                    "options": {
+                      "on": "bambooCollaborators",
+                      "alias": "defaultCreatedByDciegbZjtwubIr",
+                      "onDelete": "set null",
+                      "foreignKey": "f_key"
+                    },
+                    "isBroken": false,
+                    "fieldType": "createdBy",
+                    "returnType": "json",
+                    "description": "",
+                    "returnField": {
+                      "name": "_createdBy_fldJUT7cOMPEI2HRm",
+                      "type": "createdBy",
+                      "filters": [
+                        "hasAnyOf",
+                        "hasAllOf",
+                        "isExactly",
+                        "isNoneOf",
+                        "contains",
+                        "doesNotContain",
+                        "isEmpty",
+                        "isNotEmpty"
+                      ],
+                      "options": {
+                        "on": "bambooCollaborators",
+                        "alias": "defaultCreatedByDciegbZjtwubIr",
+                        "onDelete": "set null",
+                        "foreignKey": "f_key"
+                      },
+                      "isBroken": false,
+                      "fieldType": "createdBy",
+                      "returnType": "json",
+                      "description": "",
+                      "canBeUpdated": true,
+                      "isCalculated": false,
+                      "isAutoGenerated": false,
+                      "canBeAPrimaryField": false
+                    },
+                    "isCalculated": false,
+                    "isAutoGenerated": false
+                  },
+                  "_attachments_fldVYEQG8m1HYpICp": {
+                    "id": 16,
+                    "slug": "_attachments_fldVYEQG8m1HYpICp",
+                    "type": "attachment",
+                    "title": "Attachments",
+                    "filters": [
+                      "isEmpty",
+                      "isNotEmpty",
+                      "fileType",
+                      "fileNameContains"
+                    ],
+                    "options": {
+                      "on": "_attachmentsAttachmentsNpSwHhfLuxrrVn",
+                      "alias": "DgfbCXJwFrmVFz",
+                      "onDelete": "cascade",
+                      "foreignKey": "foreignTableId"
+                    },
+                    "isBroken": false,
+                    "fieldType": "attachment",
+                    "returnType": "json",
+                    "description": "",
+                    "returnField": {
+                      "name": "_attachments_fldVYEQG8m1HYpICp",
+                      "type": "attachment",
+                      "filters": [
+                        "isEmpty",
+                        "isNotEmpty",
+                        "fileType",
+                        "fileNameContains"
+                      ],
+                      "options": {
+                        "on": "_attachmentsAttachmentsNpSwHhfLuxrrVn",
+                        "alias": "DgfbCXJwFrmVFz",
+                        "onDelete": "cascade",
+                        "foreignKey": "foreignTableId"
+                      },
+                      "isBroken": false,
+                      "fieldType": "attachment",
+                      "returnType": "json",
+                      "description": "",
+                      "canBeUpdated": true,
+                      "isCalculated": false,
+                      "isAutoGenerated": false,
+                      "canBeAPrimaryField": false
+                    },
+                    "isCalculated": false,
+                    "isAutoGenerated": false
+                  },
+                  "_description_fldtSUeYjritv7r8m": {
+                    "id": 20,
+                    "slug": "_description_fldtSUeYjritv7r8m",
+                    "type": "longText",
+                    "title": "description",
+                    "filters": [
+                      "=",
+                      "!=",
+                      "caseEqual",
+                      "isAnyOf",
+                      "contains",
+                      "doesNotContain",
+                      "isNull",
+                      "isNotNull"
+                    ],
+                    "options": {
+                      "enableRichText": true
+                    },
+                    "isBroken": false,
+                    "fieldType": "longText",
+                    "returnType": "string",
+                    "description": "",
+                    "returnField": {
+                      "name": "_description_fldtSUeYjritv7r8m",
+                      "type": "longText",
+                      "filters": [
+                        "=",
+                        "!=",
+                        "caseEqual",
+                        "isAnyOf",
+                        "contains",
+                        "doesNotContain",
+                        "isNull",
+                        "isNotNull"
+                      ],
+                      "options": {
+                        "enableRichText": true
+                      },
+                      "isBroken": false,
+                      "fieldType": "longText",
+                      "returnType": "string",
+                      "description": "",
+                      "canBeUpdated": true,
+                      "isCalculated": false,
+                      "isAutoGenerated": false,
+                      "canBeAPrimaryField": true
+                    },
+                    "isCalculated": false,
+                    "isAutoGenerated": false
+                  },
+                  "_responsible_fldx3WU0sqbcfcxcF": {
+                    "id": 10,
+                    "slug": "_responsible_fldx3WU0sqbcfcxcF",
+                    "type": "collaborators",
+                    "title": "Responsible",
+                    "filters": [
+                      "hasAnyOf",
+                      "hasAllOf",
+                      "isExactly",
+                      "isNoneOf",
+                      "contains",
+                      "doesNotContain",
+                      "isEmpty",
+                      "isNotEmpty"
+                    ],
+                    "options": {
+                      "on": "bambooCollaborators",
+                      "alias": "responsibleFldx3Wu0SqbcfcxcF1697443616853",
+                      "isSingle": true,
+                      "onDelete": "set null",
+                      "foreignKey": "f_key"
+                    },
+                    "isBroken": false,
+                    "fieldType": "collaborators",
+                    "returnType": "json",
+                    "description": "",
+                    "returnField": {
+                      "name": "_responsible_fldx3WU0sqbcfcxcF",
+                      "type": "collaborators",
+                      "filters": [
+                        "hasAnyOf",
+                        "hasAllOf",
+                        "isExactly",
+                        "isNoneOf",
+                        "contains",
+                        "doesNotContain",
+                        "isEmpty",
+                        "isNotEmpty"
+                      ],
+                      "options": {
+                        "on": "bambooCollaborators",
+                        "alias": "responsibleFldx3Wu0SqbcfcxcF1697443616853",
+                        "isSingle": true,
+                        "onDelete": "set null",
+                        "foreignKey": "f_key"
+                      },
+                      "isBroken": false,
+                      "fieldType": "collaborators",
+                      "returnType": "json",
+                      "description": "",
+                      "canBeUpdated": true,
+                      "isCalculated": false,
+                      "isAutoGenerated": false,
+                      "canBeAPrimaryField": false
+                    },
+                    "isCalculated": false,
+                    "isAutoGenerated": false
+                  },
+                  "_coResponsible_fldzxQotcigtEbcMw": {
+                    "id": 29,
+                    "slug": "_coResponsible_fldzxQotcigtEbcMw",
+                    "type": "collaborators",
+                    "title": "Co-Responsible",
+                    "filters": [
+                      "hasAnyOf",
+                      "hasAllOf",
+                      "isExactly",
+                      "isNoneOf",
+                      "contains",
+                      "doesNotContain",
+                      "isEmpty",
+                      "isNotEmpty"
+                    ],
+                    "options": {
+                      "on": "bambooCollaborators",
+                      "alias": "coResponsibleFldzxQotcigtEbcMw1697443617068",
+                      "isSingle": false,
+                      "onDelete": "set null",
+                      "foreignKey": "f_key"
+                    },
+                    "isBroken": false,
+                    "fieldType": "collaborators",
+                    "returnType": "json",
+                    "description": "",
+                    "returnField": {
+                      "name": "_coResponsible_fldzxQotcigtEbcMw",
+                      "type": "collaborators",
+                      "filters": [
+                        "hasAnyOf",
+                        "hasAllOf",
+                        "isExactly",
+                        "isNoneOf",
+                        "contains",
+                        "doesNotContain",
+                        "isEmpty",
+                        "isNotEmpty"
+                      ],
+                      "options": {
+                        "on": "bambooCollaborators",
+                        "alias": "coResponsibleFldzxQotcigtEbcMw1697443617068",
+                        "isSingle": false,
+                        "onDelete": "set null",
+                        "foreignKey": "f_key"
+                      },
+                      "isBroken": false,
+                      "fieldType": "collaborators",
+                      "returnType": "json",
+                      "description": "",
+                      "canBeUpdated": true,
+                      "isCalculated": false,
+                      "isAutoGenerated": false,
+                      "canBeAPrimaryField": false
+                    },
+                    "isCalculated": false,
+                    "isAutoGenerated": false
+                  }
+                },
+                "listensTo": []
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 67,
+              "name": "descForNeedsImprovement",
+              "slug": "_descForNeedsImprovement",
+              "title": "desc for \"needs improvement\"",
+              "type": "longText",
+              "options": {
+                "astFieldName": "descForNeedsImprovementAst",
+                "enableRichText": true,
+                "markdownFieldName": "_descForNeedsImprovement",
+                "plainTextFieldName": "descForNeedsImprovementPlain"
+              },
+              "returnType": "string"
+            },
+            {
+              "id": 72,
+              "name": "types",
+              "slug": "_types",
+              "title": "types",
+              "type": "select",
+              "options": {
+                "on": "_dyeqqseaquytmqOptions",
+                "alias": "dyeqqseaquytmq",
+                "choices": [],
+                "isSingle": false,
+                "onDelete": "cascade",
+                "choiceIds": [],
+                "foreignKey": "f_key",
+                "oppositeLink": "reverseLink",
+                "withColorCode": false
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 74,
+              "name": "lywrt",
+              "slug": "_lywrt",
+              "title": "lywrt",
+              "type": "longText",
+              "options": {
+                "astFieldName": "lywrtAst",
+                "enableRichText": false,
+                "markdownFieldName": "_lywrt",
+                "plainTextFieldName": "lywrtPlain"
+              },
+              "returnType": "string"
+            },
+            {
+              "id": 119,
+              "name": "sprintStatus",
+              "slug": "_sprintStatus_fldQGXpEGwjtAxsy1",
+              "title": "Sprint Status",
+              "type": "lookup",
+              "options": {
+                "linkField": "_sprint_fldlwUPCUiLSJ8Btb",
+                "returnType": "select",
+                "foreignField": "_status_fldVLpg56vp0Og1K7"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 120,
+              "name": "statusFromEpics",
+              "slug": "_statusFromEpics_fldwOXzgWL3M3mwEn",
+              "title": "Status (from Epics)",
+              "type": "lookup",
+              "options": {
+                "linkField": "_epic_fld2vzBPStYfyR5X1",
+                "returnType": "select",
+                "foreignField": "_status_fldT7YAvrNZ9QeB0p"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 121,
+              "name": "areaFromEpics",
+              "slug": "_areaFromEpics_flddKtimXACKB9gKz",
+              "title": "Area (from Epics)",
+              "type": "lookup",
+              "options": {
+                "linkField": "_epic_fld2vzBPStYfyR5X1",
+                "returnType": "select",
+                "foreignField": "_area_fldtvsgHrvGCE9NLM"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 356,
+              "name": "loggedTime",
+              "slug": "_loggedTime",
+              "title": "Logged time",
+              "type": "duration",
+              "options": {
+                "format": "h:mm"
+              },
+              "returnType": "number"
+            },
+            {
+              "id": 358,
+              "name": "nr",
+              "slug": "_nr_fldkkFEaoJOVcKxZv",
+              "title": "NR",
+              "type": "autoNumber",
+              "options": {
+                "precision": 0,
+                "allowNegativeNumber": false
+              },
+              "returnType": "number"
+            },
+            {
+              "id": 360,
+              "name": "autoNumber",
+              "slug": "_autoNumber",
+              "title": "AutoNumber",
+              "type": "autoNumber",
+              "options": {
+                "precision": 0,
+                "allowNegativeNumber": false
+              },
+              "returnType": "number"
+            },
+            {
+              "id": 775,
+              "name": "date",
+              "slug": "_date",
+              "title": "Date",
+              "type": "date",
+              "options": {
+                "dateFormat": "yyyy-MM-dd",
+                "timeFormat": "hh:mmaaa",
+                "includeTime": true,
+                "displayTimeZone": false
+              },
+              "returnType": "date"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "name": "sprints",
+          "slug": "_sprints_tblpqNBlrUYE9gEdW",
+          "title": "Sprints",
+          "fields": [
+            {
+              "id": 55,
+              "name": "backlog",
+              "slug": "_backlog_fldKW4EChaI0UO7Gm",
+              "title": "Backlog",
+              "type": "link",
+              "options": {
+                "on": "_backlog_tbl7XZK80aGQXr92h",
+                "type": "manyToMany",
+                "alias": "wchxiqgmyocqpy",
+                "onDelete": "cascade",
+                "foreignKey": "s_key",
+                "oppositeLink": "_sprint_fldlwUPCUiLSJ8Btb"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 76,
+              "name": "name",
+              "slug": "_name_fldBrZlPXBHpZhi3U",
+              "title": "Name",
+              "type": "singleLineText",
+              "options": {},
+              "returnType": "string"
+            },
+            {
+              "id": 77,
+              "name": "beschreibung",
+              "slug": "_beschreibung_fldvdy51aqboW9waJ",
+              "title": "Beschreibung",
+              "type": "longText",
+              "options": {
+                "astFieldName": "beschreibungFldvdy51AqboW9WaJAst",
+                "markdownFieldName": "_beschreibung_fldvdy51aqboW9waJ",
+                "plainTextFieldName": "beschreibungFldvdy51AqboW9WaJPlain"
+              },
+              "returnType": "string"
+            },
+            {
+              "id": 83,
+              "name": "status",
+              "slug": "_status_fldVLpg56vp0Og1K7",
+              "title": "Status",
+              "type": "select",
+              "options": {
+                "on": "_jbwlutfqnkyoxpOptions",
+                "alias": "jbwlutfqnkyoxp",
+                "choices": [
+                  {
+                    "id": 1721738301,
+                    "name": "Started",
+                    "color": "orange3",
+                    "position": 1
+                  },
+                  {
+                    "id": 1721738302,
+                    "name": "Done",
+                    "color": "green5",
+                    "position": 2
+                  },
+                  {
+                    "id": 1721738303,
+                    "name": "Planned",
+                    "color": "blue1",
+                    "position": 3
+                  },
+                  {
+                    "id": 1721738304,
+                    "name": "Review",
+                    "color": "mint3",
+                    "position": 4
+                  },
+                  {
+                    "id": 1721738305,
+                    "name": "Test",
+                    "color": "violet3",
+                    "position": 5
+                  }
+                ],
+                "isSingle": true,
+                "onDelete": "cascade",
+                "choiceIds": [
+                  {
+                    "id": 1
+                  },
+                  {
+                    "id": 2
+                  },
+                  {
+                    "id": 3
+                  },
+                  {
+                    "id": 4
+                  },
+                  {
+                    "id": 1710527782958
+                  }
+                ],
+                "foreignKey": "f_key",
+                "oppositeLink": "reverseLink",
+                "withColorCode": true
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 85,
+              "name": "epics",
+              "slug": "_epics_fldHMx2YMCHkN0Pgr",
+              "title": "Epics",
+              "type": "singleLineText",
+              "options": {},
+              "returnType": "string"
+            },
+            {
+              "id": 86,
+              "name": "table7",
+              "slug": "_table7_fldW6YsUNdn79Xfmd",
+              "title": "Table 7",
+              "type": "singleLineText",
+              "options": {},
+              "returnType": "string"
+            },
+            {
+              "id": 181,
+              "name": "end",
+              "slug": "_end_fldChdFLroBq1IjXV",
+              "title": "End",
+              "type": "date",
+              "options": {
+                "dateFormat": "MM/dd/yyyy",
+                "timeFormat": "HH:mm",
+                "includeTime": false,
+                "displayTimeZone": false
+              },
+              "returnType": "date"
+            },
+            {
+              "id": 183,
+              "name": "start",
+              "slug": "_start_fldSJlB88A8BRwCpt",
+              "title": "Start",
+              "type": "date",
+              "options": {
+                "dateFormat": "MM/dd/yyyy",
+                "timeFormat": "HH:mm",
+                "includeTime": false,
+                "displayTimeZone": false
+              },
+              "returnType": "date"
+            },
+            {
+              "id": 348,
+              "name": "sprintStatus",
+              "slug": "_sprintStatus",
+              "title": "Sprint status",
+              "type": "select",
+              "options": {
+                "on": "_cnblsnlzzpzugbOptions",
+                "alias": "cnblsnlzzpzugb",
+                "choices": [],
+                "isSingle": true,
+                "onDelete": "cascade",
+                "foreignKey": "f_key",
+                "oppositeLink": "reverseLink",
+                "withColorCode": true
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 350,
+              "name": "calendarWeek",
+              "slug": "_calendarWeek",
+              "title": "Calendar week",
+              "type": "formula",
+              "options": {
+                "formula": "DATETIME_FORMAT({_start_fldSJlB88A8BRwCpt}, 'WW')",
+                "uiFormula": "DATETIME_FORMAT({Start}, 'WW')"
+              },
+              "returnType": "string"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "name": "epics",
+          "slug": "_epics_tblJueXY5EqXZtRih",
+          "title": "Epics",
+          "fields": [
+            {
+              "id": 57,
+              "name": "backlog",
+              "slug": "_backlog_fld0cDH0WBj0SqP6i",
+              "title": "Backlog",
+              "type": "link",
+              "options": {
+                "on": "_backlog_tbl7XZK80aGQXr92h",
+                "type": "manyToMany",
+                "alias": "pzjcrnmbvpenqf",
+                "onDelete": "cascade",
+                "foreignKey": "s_key",
+                "oppositeLink": "_epic_fld2vzBPStYfyR5X1"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 87,
+              "name": "name",
+              "slug": "_name_fldghdYZDIDkGa5CA",
+              "title": "Name",
+              "type": "singleLineText",
+              "options": {},
+              "returnType": "string"
+            },
+            {
+              "id": 92,
+              "name": "status",
+              "slug": "_status_fldT7YAvrNZ9QeB0p",
+              "title": "Status",
+              "type": "select",
+              "options": {
+                "on": "_xinxsruwiyhyqmOptions",
+                "alias": "xinxsruwiyhyqm",
+                "choices": [
+                  {
+                    "id": 1721738307,
+                    "name": "Planned",
+                    "color": "grey5",
+                    "position": 1
+                  },
+                  {
+                    "id": 1721738308,
+                    "name": "In progress",
+                    "color": "orange1",
+                    "position": 2
+                  },
+                  {
+                    "id": 1721738309,
+                    "name": "Done",
+                    "color": "green1",
+                    "position": 3
+                  },
+                  {
+                    "id": 1721738310,
+                    "name": "Archive",
+                    "color": "pink3",
+                    "position": 4
+                  }
+                ],
+                "isSingle": true,
+                "onDelete": "cascade",
+                "choiceIds": [
+                  {
+                    "id": 1
+                  },
+                  {
+                    "id": 2
+                  },
+                  {
+                    "id": 3
+                  },
+                  {
+                    "id": 4
+                  }
+                ],
+                "foreignKey": "f_key",
+                "oppositeLink": "reverseLink",
+                "withColorCode": true
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 94,
+              "name": "collaborator",
+              "slug": "_collaborator_fld8KTs5ChH6s8QF1",
+              "title": "Collaborator",
+              "type": "collaborators",
+              "options": {
+                "on": "bambooCollaborators",
+                "alias": "collaboratorFld8KTs5ChH6S8Qf11721725163703",
+                "isSingle": false,
+                "onDelete": "set null",
+                "foreignKey": "f_key",
+                "oppositeLink": "collaboratorFld8KTs5ChH6S8Qf11721725163703Reverse"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 95,
+              "name": "description",
+              "slug": "_description_fldPqNNJxul72vtNP",
+              "title": "Description",
+              "type": "longText",
+              "options": {
+                "astFieldName": "descriptionFldPqNnJxul72VtNpAst",
+                "markdownFieldName": "_description_fldPqNNJxul72vtNP",
+                "plainTextFieldName": "descriptionFldPqNnJxul72VtNpPlain"
+              },
+              "returnType": "string"
+            },
+            {
+              "id": 102,
+              "name": "area",
+              "slug": "_area_fldtvsgHrvGCE9NLM",
+              "title": "Area",
+              "type": "select",
+              "options": {
+                "on": "_roromkomgpaywzOptions",
+                "alias": "roromkomgpaywz",
+                "choices": [
+                  {
+                    "id": 1721738311,
+                    "name": "Frontend - Screens",
+                    "color": "violet2",
+                    "position": 1
+                  },
+                  {
+                    "id": 1721738312,
+                    "name": "Frontend - Components",
+                    "color": "blue2",
+                    "position": 2
+                  },
+                  {
+                    "id": 1721738313,
+                    "name": "Frontend",
+                    "color": "blue1",
+                    "position": 3
+                  },
+                  {
+                    "id": 1721738314,
+                    "name": "Backend",
+                    "color": "red4",
+                    "position": 4
+                  },
+                  {
+                    "id": 1721738315,
+                    "name": "DB Lib Components",
+                    "color": "orange1",
+                    "position": 5
+                  },
+                  {
+                    "id": 1721738316,
+                    "name": "Design",
+                    "color": "orange4",
+                    "position": 6
+                  },
+                  {
+                    "id": 1721738317,
+                    "name": "Machine learning",
+                    "color": "red3",
+                    "position": 7
+                  },
+                  {
+                    "id": 1721738318,
+                    "name": "Chat",
+                    "color": "green1",
+                    "position": 8
+                  },
+                  {
+                    "id": 1721738319,
+                    "name": "Bamboo",
+                    "color": "violet3",
+                    "position": 9
+                  },
+                  {
+                    "id": 1721738320,
+                    "name": "Butlerapp",
+                    "color": "red4",
+                    "position": 10
+                  }
+                ],
+                "isSingle": true,
+                "onDelete": "cascade",
+                "choiceIds": [
+                  {
+                    "id": 1
+                  },
+                  {
+                    "id": 2
+                  },
+                  {
+                    "id": 3
+                  },
+                  {
+                    "id": 4
+                  },
+                  {
+                    "id": 5
+                  },
+                  {
+                    "id": 6
+                  },
+                  {
+                    "id": 7
+                  },
+                  {
+                    "id": 8
+                  },
+                  {
+                    "id": 1700510692809
+                  },
+                  {
+                    "id": 1706638620181
+                  }
+                ],
+                "foreignKey": "f_key",
+                "oppositeLink": "reverseLink",
+                "withColorCode": true
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 103,
+              "name": "blocks",
+              "slug": "_blocks_fldVCg2QhuvHskw9F",
+              "title": "Blocks",
+              "type": "link",
+              "options": {
+                "on": "_epics_tblJueXY5EqXZtRih",
+                "type": "manyToMany",
+                "alias": "xhyrehzstjhpoa",
+                "onDelete": "cascade",
+                "foreignKey": "f_key",
+                "oppositeLink": "_blocks_fldVCg2QhuvHskw9F"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 104,
+              "name": "order",
+              "slug": "_order_fld2Ea12gyl4exhKU",
+              "title": "Order",
+              "type": "number",
+              "options": {
+                "precision": 1,
+                "allowNegativeNumber": true
+              },
+              "returnType": "number"
+            },
+            {
+              "id": 109,
+              "name": "priority",
+              "slug": "_priority_fld6f2SSqcRIgrD63",
+              "title": "Priority",
+              "type": "select",
+              "options": {
+                "on": "_cpszgwxtciijzlOptions",
+                "alias": "cpszgwxtciijzl",
+                "choices": [
+                  {
+                    "id": 1721738321,
+                    "name": "☄️ Must Have",
+                    "color": "red5",
+                    "position": 1
+                  },
+                  {
+                    "id": 1721738322,
+                    "name": " 🧁 Nice To Have",
+                    "color": "blue5",
+                    "position": 2
+                  }
+                ],
+                "isSingle": true,
+                "onDelete": "cascade",
+                "choiceIds": [
+                  {
+                    "id": 1
+                  },
+                  {
+                    "id": 2
+                  }
+                ],
+                "foreignKey": "f_key",
+                "oppositeLink": "reverseLink",
+                "withColorCode": true
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 114,
+              "name": "label",
+              "slug": "_label_fld0Jo5AXj04GlN7c",
+              "title": "Label",
+              "type": "select",
+              "options": {
+                "on": "_rudowmzadeumcqOptions",
+                "alias": "rudowmzadeumcq",
+                "choices": [
+                  {
+                    "id": 1721738323,
+                    "name": "UX Development",
+                    "color": "green5",
+                    "position": 1
+                  },
+                  {
+                    "id": 1721738324,
+                    "name": "UI Design",
+                    "color": "blue5",
+                    "position": 2
+                  },
+                  {
+                    "id": 1721738325,
+                    "name": "API",
+                    "color": "violet5",
+                    "position": 3
+                  },
+                  {
+                    "id": 1721738326,
+                    "name": "Architecture",
+                    "color": "red5",
+                    "position": 4
+                  },
+                  {
+                    "id": 1721738327,
+                    "name": "Server",
+                    "color": "grey4",
+                    "position": 5
+                  }
+                ],
+                "isSingle": false,
+                "onDelete": "cascade",
+                "choiceIds": [
+                  {
+                    "id": 1
+                  },
+                  {
+                    "id": 2
+                  },
+                  {
+                    "id": 3
+                  },
+                  {
+                    "id": 4
+                  },
+                  {
+                    "id": 5
+                  }
+                ],
+                "foreignKey": "f_key",
+                "oppositeLink": "reverseLink",
+                "withColorCode": true
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 115,
+              "name": "statusModifiedAt",
+              "slug": "_statusmodifiedat_fld5UaCWydaw1dg34",
+              "title": "StatusModifiedAt",
+              "type": "modifiedAt",
+              "options": {
+                "listensTo": [
+                  "_status_fldT7YAvrNZ9QeB0p"
+                ],
+                "dateFormat": "MM/dd/yyyy",
+                "timeFormat": "HH:mm",
+                "includeTime": true,
+                "displayTimeZone": false
+              },
+              "returnType": "date"
+            },
+            {
+              "id": 116,
+              "name": "created",
+              "slug": "_created_fld0Y0oQ9CYbDKowI",
+              "title": "Created",
+              "type": "createdAt",
+              "options": {
+                "dateFormat": "yyyy-MM-dd",
+                "timeFormat": "HH:mm",
+                "includeTime": true,
+                "displayTimeZone": false
+              },
+              "returnType": "date"
+            },
+            {
+              "id": 117,
+              "name": "prd",
+              "slug": "_prd_fldl726v9VKOxgrjf",
+              "title": "PRD",
+              "type": "url",
+              "options": {},
+              "returnType": "string"
+            },
+            {
+              "id": 118,
+              "name": "countBacklog",
+              "slug": "_countBacklog_fld8tU3ymo0RCHfom",
+              "title": "Count (Backlog)",
+              "type": "count",
+              "options": {
+                "linkField": "_backlog_fld0cDH0WBj0SqP6i",
+                "precision": 0,
+                "allowNegativeNumber": false
+              },
+              "returnType": "number"
+            },
+            {
+              "id": 185,
+              "name": "start",
+              "slug": "_start_fld7fAP7gYLyv3Jij",
+              "title": "Start",
+              "type": "date",
+              "options": {
+                "dateFormat": "MM/dd/yyyy",
+                "timeFormat": "HH:mm",
+                "includeTime": false,
+                "displayTimeZone": true
+              },
+              "returnType": "date"
+            },
+            {
+              "id": 187,
+              "name": "end",
+              "slug": "_end_fld2EfGrwJutJUs8J",
+              "title": "End",
+              "type": "date",
+              "options": {
+                "dateFormat": "MM/dd/yyyy",
+                "timeFormat": "HH:mm",
+                "includeTime": false,
+                "displayTimeZone": false
+              },
+              "returnType": "date"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -256,15 +256,21 @@ export type LinkColumnType<
   R
 >;
 
-export type AttachmentColumnType<R extends boolean> = ALinkColumnType<
-  'attachmentTable',
-  Attachment[],
+export type AttachmentColumnType<R extends boolean> = ColumnType<
+  string[],
   Attachment[] | { newIds: number[]; deletedIds: number[] } | number[],
   Attachment[] | number[],
-  R
+  R,
+  LinkFilters,
+  LinkAggregations
 >;
 
 export type SingleSelectColumnType<
+  O extends readonly string[],
+  R extends boolean,
+> = ColumnType<O[number], O[number], O[number], R, SelectFilters<O>>;
+
+export type MultiSelectColumnType<
   O extends readonly string[],
   R extends boolean,
 > = ColumnType<O[number][], O[number][], O[number][], R, SelectFilters<O>>;

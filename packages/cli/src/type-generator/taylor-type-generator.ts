@@ -49,7 +49,7 @@ export class TaylorTypeGenerator {
 
     this.schema.bambooModels.records.forEach(table => {
       table.fields
-        .filter(field => field.type === 'select' && field.options['isSingle'])
+        .filter(field => field.type === 'select')
         .forEach(field => {
           const options = optionsMap.get(field.options.on);
           if (options) {
@@ -116,22 +116,26 @@ export class TaylorTypeGenerator {
   private async _fetchSingleSelectOptions() {
     const singleSelectFields = flatten(
       this.schema.bambooModels.records.map(table =>
-        table.fields.filter(
-          field => field.type === 'select' && field.options['isSingle'],
-        ),
+        table.fields.filter(field => field.type === 'select'),
       ),
-    );
-
-    const optionTableNames = uniq(
-      singleSelectFields.map(field => field.options.on),
     );
 
     const optionsMap = new Map<string, { id: number; name: string }[]>();
 
-    for (const tableName of optionTableNames) {
-      if (!tableName) {
-        continue;
+    // First, check if fields already have choices in their options
+    singleSelectFields.forEach(field => {
+      if (field.options?.choices) {
+        optionsMap.set(field.options.on, field.options.choices);
       }
+    });
+
+    const optionTableNames = uniq(
+      singleSelectFields
+        .map(field => field.options.on)
+        .filter(tableName => tableName && !optionsMap.has(tableName)),
+    );
+
+    for (const tableName of optionTableNames) {
       const query = {
         query: {
           [tableName]: {

@@ -15,6 +15,8 @@
     "clean": "rm -rf dist",
     "copy-templates": "cp -r src/templates dist/templates",
     "build": "pnpm run clean && tsc -p tsconfig.json && pnpm run copy-templates",
+    "generate:test-types": "ts-node src/__tests__/generate-test-types.ts",
+    "postbuild": "npm run generate:test-types",
     "dev": "tsc",
     "start:dev": "ts-node src/index.ts",
     "prepublish": "npm run build"

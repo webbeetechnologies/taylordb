@@ -1,12 +1,12 @@
 import { createQueryBuilder } from '@taylordb/query-builder';
-import { useState } from 'react';
-import { ChatList } from './components/ChatList';
-import { ChatPanel } from './components/ChatPanel';
-import { CreateChatModal } from './components/CreateChatModal';
+import { useEffect, useState } from 'react';
+// import { ChatList } from './components/ChatList';
+// import { ChatPanel } from './components/ChatPanel';
+// import { CreateChatModal } from './components/CreateChatModal';
 import { UserSelectionModal } from './components/UserSelectionModal';
 import {
   AttachmentColumnValue,
-  TableRaws,
+  // TableRaws,
   TaylorDatabase,
 } from './taylor.types';
 
@@ -18,8 +18,8 @@ type User = {
 
 const qb = createQueryBuilder<TaylorDatabase>({
   baseUrl: 'http://localhost:8090',
-  baseId: '2afc6865-e139-42b1-bf63-5b783bb4736d',
-  apiKey: 'f18pcwq2lrifc54wmxsegel1zwravswom9j0nxqe2rys1jpsvtc9ut8bh39i8hmc',
+  baseId: 'dcefcf76-f477-4b0b-8a5c-643184374ff3',
+  apiKey: 'eckc5qlyqjvlozpnpdxsq8fy7ysctow4lyrzry0nnjmyf973y7scw3292ke17wlv',
 });
 
 function App() {
@@ -36,18 +36,27 @@ function App() {
     }
   };
 
-  if (!currentUser) {
-    return (
-      <UserSelectionModal
-        qb={qb}
-        onUserSelect={user => setCurrentUser(user as User)}
-      />
-    );
-  }
+  // if (!currentUser) {
+  //   return (
+  //     <UserSelectionModal
+  //       qb={qb}
+  //       onUserSelect={user => setCurrentUser(user as User)}
+  //     />
+  //   );
+  // }
+
+  useEffect(() => {
+    qb.selectFrom('expenses')
+      .select(['receipt'])
+      .execute()
+      .then(res => {
+        console.log({ res });
+      });
+  }, []);
 
   return (
     <div className={`app-container ${currentChat ? 'chat-active' : ''}`}>
-      {isCreateChatModalOpen && (
+      {/* {isCreateChatModalOpen && (
         <CreateChatModal
           qb={qb}
           currentUser={currentUser as TableRaws<'users'>}
@@ -71,7 +80,7 @@ function App() {
         currentUser={currentUser}
         currentChat={currentChat}
         onBack={() => setCurrentChat(null)}
-      />
+      /> */}
     </div>
   );
 }

@@ -45,25 +45,30 @@ export class TypeMapper {
       case 'attachment':
         return `AttachmentColumnType<${isRequired ? 'true' : 'false'}>`;
 
-      case 'select':
-        if (column.options['isSingle']) {
-          const options = this.optionsMap.get(column.options.on);
-          if (options) {
-            const tableName = this.taylorTypeGenerator.tablesSchema.find(
-              table => table.fields.some(field => field.id === column.id),
-            )!.name;
-            const constName = this.taylorTypeGenerator.getSingleSelectConstName(
-              tableName,
-              column.name,
-            );
-            return `SingleSelectColumnType<typeof ${constName}, ${
-              isRequired ? 'true' : 'false'
-            }>`;
-          }
+      case 'select': {
+        const options = this.optionsMap.get(column.options.on);
+
+        if (options) {
+          const tableName = this.taylorTypeGenerator.tablesSchema.find(table =>
+            table.fields.some(field => field.id === column.id),
+          )!.name;
+
+          const constName = this.taylorTypeGenerator.getSingleSelectConstName(
+            tableName,
+            column.name,
+          );
+          const typeName = column.options['isSingle']
+            ? 'SingleSelectColumnType'
+            : 'MultiSelectColumnType';
+          return `${typeName}<typeof ${constName}, ${
+            isRequired ? 'true' : 'false'
+          }>`;
         }
+
         return `LinkColumnType<'selectTable', ${
           isRequired ? 'true' : 'false'
         }>`;
+      }
 
       case 'createdAt':
       case 'updatedAt':

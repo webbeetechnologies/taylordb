@@ -267,6 +267,11 @@ export type AttachmentColumnType<R extends boolean> = ALinkColumnType<
 export type SingleSelectColumnType<
   O extends readonly string[],
   R extends boolean,
+> = ColumnType<O[number], O[number], O[number], R, SelectFilters<O>>;
+
+export type MultiSelectColumnType<
+  O extends readonly string[],
+  R extends boolean,
 > = ColumnType<O[number][], O[number][], O[number][], R, SelectFilters<O>>;
 
 export type NumberColumnType<R extends boolean> = ColumnType<

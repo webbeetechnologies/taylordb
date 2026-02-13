@@ -28,7 +28,8 @@ import { SelectionBuilder } from './selection-builder.js';
 import { UpdateQueryBuilder } from './update-query-builder.js';
 import { FilterableQueryBuilder } from './where-query-builder.js';
 
-const MEDIA_UPLOAD_URL = 'https://media.taylordb.ai/media-collection';
+const MEDIA_UPLOADER_HOST = 'https://media.taylordb.ai';
+const MEDIA_UPLOAD_PATH = '/collections/default/files';
 
 /**
  * The main query builder class for constructing and executing select queries.
@@ -371,7 +372,7 @@ export class QueryBuilder<
   async execute(): Promise<Selection[]> {
     const response = await this._executor.execute<Selection>(this);
 
-    return response[0];
+    return this._transformResponse(response[0]);
   }
 
   /**
@@ -390,7 +391,54 @@ export class QueryBuilder<
   async executeTakeFirst(): Promise<Selection | null> {
     const response = await this._executor.execute<Selection[]>(this);
 
-    return response[0]?.[0] ?? null;
+    const first = response[0]?.[0] ?? null;
+    if (first === null) return null;
+
+    const transformed = this._transformResponse([first]);
+    return transformed[0] ?? null;
+  }
+
+  /**
+   * Transforms the response by converting attachment objects to absolute URL strings.
+   * @private
+   */
+  private _transformResponse(data: any): any {
+    if (Array.isArray(data)) {
+      return data.map(item => this._transformResponse(item));
+    }
+
+    if (data && typeof data === 'object') {
+      // Check if this looks like an attachment object
+      if (this._isAttachmentObject(data)) {
+        return `${MEDIA_UPLOADER_HOST}/${data.url}`;
+      }
+
+      // Recursively transform nested objects
+      const transformed: any = {};
+      for (const [key, value] of Object.entries(data)) {
+        transformed[key] = this._transformResponse(value);
+      }
+      return transformed;
+    }
+
+    return data;
+  }
+
+  /**
+   * Checks if an object looks like an attachment object.
+   * @private
+   */
+  private _isAttachmentObject(obj: any): boolean {
+    return (
+      obj &&
+      typeof obj === 'object' &&
+      'id' in obj &&
+      'url' in obj &&
+      'fileType' in obj &&
+      'size' in obj &&
+      typeof obj.url === 'string' &&
+      obj.url.startsWith('files/')
+    );
   }
 
   subscribe(callback: (result: Selection[]) => void) {
@@ -658,7 +706,7 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
       formData.append('files', file, name);
     });
 
-    const response = await fetch(MEDIA_UPLOAD_URL, {
+    const response = await fetch(`${MEDIA_UPLOADER_HOST}${MEDIA_UPLOAD_PATH}`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this._executor.getApiKey()}`,
