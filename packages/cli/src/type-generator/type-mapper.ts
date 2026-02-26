@@ -40,7 +40,7 @@ export class TypeMapper {
 
       case 'modifiedBy':
       case 'collaborators':
-        return `LinkColumnType<'collaboratorsTable', ${isRequired ? 'true' : 'false'}>`;
+        return `LinkColumnType<'collaborators', ${isRequired ? 'true' : 'false'}>`;
 
       case 'attachment':
         return `AttachmentColumnType<${isRequired ? 'true' : 'false'}>`;

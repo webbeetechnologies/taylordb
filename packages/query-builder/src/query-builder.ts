@@ -524,12 +524,30 @@ export class QueryBuilder<
 /**
  * The root query builder class that provides entry points for all query types.
  */
+export type ReadBlacklistTable = 'attachmentTable';
+export type MutationBlacklistTable = 'attachmentTable' | 'collaborators';
+
 export class BaseRootQueryBuilder<DB extends AnyDB> {
   protected _executor: Executor;
 
   constructor(executor: Executor) {
     this._executor = executor;
   }
+
+  private validateCanRead(tableName: string) {
+    if (tableName === 'attachmentTable') {
+      throw new Error(`Cannot read from ${tableName}`);
+    }
+  }
+
+  private validateCanMutate(tableName: string) {
+    const blacklist = ['attachmentTable', 'collaborators'];
+
+    if (blacklist.includes(tableName)) {
+      throw new Error(`Cannot mutate ${tableName}`);
+    }
+  }
+
   /**
    * Creates a new select query builder for the specified table.
    * @param from - The name of the table to select from.
@@ -541,18 +559,29 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
    * const userQuery = qb.selectFrom('users');
    * ```
    */
-  selectFrom<
-    TableName extends keyof Omit<
-      DB,
-      'selectTable' | 'attachmentTable' | 'collaboratorsTable'
-    > &
-      string,
-  >(from: TableName): QueryBuilder<DB, TableName> {
+  selectFrom<TableName extends keyof Omit<DB, ReadBlacklistTable> & string>(
+    from: TableName,
+  ): QueryBuilder<DB, TableName> {
+    this.validateCanRead(from);
+
+    const actualTableName =
+      from === 'collaborators' ? 'bambooCollaborators' : from;
+
+    const initialFilters = [];
+
+    if (actualTableName === 'bambooCollaborators') {
+      initialFilters.push({
+        field: 'status',
+        operator: '=',
+        value: 'ACTIVE',
+      });
+    }
+
     return new QueryBuilder<DB, TableName>(
       {
-        tableName: from,
+        tableName: actualTableName,
         fields: [],
-        filtersSet: { conjunction: 'and', filtersSet: [] },
+        filtersSet: { conjunction: 'and', filtersSet: initialFilters },
         type: 'select',
         queryType: 'root',
       },
@@ -571,13 +600,10 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
    * const insertQuery = qb.insertInto('users');
    * ```
    */
-  insertInto<
-    TableName extends keyof Omit<
-      DB,
-      'selectTable' | 'attachmentTable' | 'collaboratorsTable'
-    > &
-      string,
-  >(into: TableName): InsertQueryBuilder<DB, TableName> {
+  insertInto<TableName extends keyof Omit<DB, MutationBlacklistTable> & string>(
+    into: TableName,
+  ): InsertQueryBuilder<DB, TableName> {
+    this.validateCanMutate(into);
     return new InsertQueryBuilder<DB, TableName>(
       {
         tableName: into,
@@ -600,13 +626,10 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
    * const updateQuery = qb.update('users');
    * ```
    */
-  update<
-    TableName extends keyof Omit<
-      DB,
-      'selectTable' | 'attachmentTable' | 'collaboratorsTable'
-    > &
-      string,
-  >(tableName: TableName): UpdateQueryBuilder<DB, TableName> {
+  update<TableName extends keyof Omit<DB, MutationBlacklistTable> & string>(
+    tableName: TableName,
+  ): UpdateQueryBuilder<DB, TableName> {
+    this.validateCanMutate(tableName);
     return new UpdateQueryBuilder<DB, TableName>(
       {
         tableName: tableName,
@@ -629,13 +652,11 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
    * const deleteQuery = qb.deleteFrom('users');
    * ```
    */
-  deleteFrom<
-    TableName extends keyof Omit<
-      DB,
-      'selectTable' | 'attachmentTable' | 'collaboratorsTable'
-    > &
-      string,
-  >(tableName: TableName): DeleteQueryBuilder<DB, TableName> {
+  deleteFrom<TableName extends keyof Omit<DB, MutationBlacklistTable> & string>(
+    tableName: TableName,
+  ): DeleteQueryBuilder<DB, TableName> {
+    this.validateCanMutate(tableName);
+
     return new DeleteQueryBuilder<DB, TableName>(
       {
         tableName: tableName,
@@ -681,17 +702,27 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
    * const aggregateQuery = qb.aggregateFrom('users');
    * ```
    */
-  aggregateFrom<
-    TableName extends keyof Omit<
-      DB,
-      'selectTable' | 'attachmentTable' | 'collaboratorsTable'
-    > &
-      string,
-  >(tableName: TableName): AggregationQueryBuilder<DB, TableName> {
+  aggregateFrom<TableName extends keyof Omit<DB, ReadBlacklistTable> & string>(
+    tableName: TableName,
+  ): AggregationQueryBuilder<DB, TableName> {
+    this.validateCanRead(tableName);
+
+    const actualTableName =
+      tableName === 'collaborators' ? 'bambooCollaborators' : tableName;
+
+    const initialFilters = [];
+    if (actualTableName === 'bambooCollaborators') {
+      initialFilters.push({
+        field: 'status',
+        operator: '=',
+        value: 'ACTIVE',
+      });
+    }
+
     const node: AggregateNode = {
-      tableName: tableName,
+      tableName: actualTableName,
       type: 'aggregation',
-      filtersSet: { conjunction: 'and', filtersSet: [] },
+      filtersSet: { conjunction: 'and', filtersSet: initialFilters },
       groupings: [],
       aggregations: {},
     };
@@ -721,6 +752,59 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
 
     const responseData = await response.json();
     return responseData.map((data: any) => new Attachment(data));
+  }
+
+  public get auth() {
+    return {
+      getUser: async () => {
+        const userId = await this._executor.getCurrentUserId();
+
+        if (!userId) {
+          throw new Error('User ID not available from the connection');
+        }
+
+        const query =
+          'mutation ($metadata: JSON) { execute(metadata: $metadata) }';
+
+        const userRecord: any = await this._executor.rawRequest(query, {
+          metadata: [
+            {
+              type: 'select',
+              tableName: 'bambooCollaborators',
+              fields: ['id', 'name', 'emailAddress', 'avatar'],
+              filtersSet: {
+                conjunction: 'and',
+                filtersSet: [
+                  {
+                    field: 'status',
+                    operator: '=',
+                    value: 'ACTIVE',
+                  },
+                  {
+                    field: 'externalId',
+                    operator: '=',
+                    value: userId.toString(),
+                  },
+                ],
+              },
+            },
+          ],
+        });
+
+        const profile = Array.isArray(userRecord) ? userRecord[0][0] : null;
+
+        if (!profile) {
+          return null;
+        }
+
+        return {
+          id: profile.id,
+          name: profile.name,
+          email: profile.emailAddress,
+          avatar: profile.avatar,
+        };
+      },
+    };
   }
 }
 

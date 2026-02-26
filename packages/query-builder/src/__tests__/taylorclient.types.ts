@@ -338,7 +338,6 @@ export interface TaylorDatabase {
    * Internal tables, these tables can not be queried directly.
    *
    */
-  selectTable: SelectTable;
   attachmentTable: AttachmentTable;
-  collaboratorsTable: CollaboratorsTable;
+  collaborators: CollaboratorsTable;
 }

@@ -60,6 +60,9 @@ describe('QueryBuilder', () => {
   beforeEach(() => {
     mockRawRequest = jest.fn().mockResolvedValue({ execute: [] });
     SocketConnection.prototype.rawRequest = mockRawRequest;
+    SocketConnection.prototype.getCurrentUserId = jest
+      .fn()
+      .mockResolvedValue('test-user-id');
   });
 
   // @ts-ignore
@@ -746,5 +749,148 @@ describe('QueryBuilder', () => {
         },
       ],
     });
+  });
+
+  it('should map collaborators to bambooCollaborators for select queries', async () => {
+    await qb.selectFrom('collaborators').select(['id', 'name']).execute();
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'select',
+      tableName: 'bambooCollaborators',
+      fields: ['id', 'name'],
+      filtersSet: {
+        conjunction: 'and',
+        filtersSet: [
+          {
+            field: 'status',
+            operator: '=',
+            value: 'ACTIVE',
+          },
+        ],
+      },
+    });
+  });
+
+  it('should map collaborators to bambooCollaborators for aggregate queries', async () => {
+    mockRawRequest.mockResolvedValueOnce([
+      [
+        {
+          count: 5,
+          aggregates: { id: { sum: 15 } },
+        },
+      ],
+    ]);
+
+    await qb
+      .aggregateFrom('collaborators')
+      .metrics({ idSum: sum('id') })
+      .execute();
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'aggregation',
+      tableName: 'bambooCollaborators',
+      aggregations: {
+        id: ['sum'],
+      },
+      filtersSet: {
+        conjunction: 'and',
+        filtersSet: [
+          {
+            field: 'status',
+            operator: '=',
+            value: 'ACTIVE',
+          },
+        ],
+      },
+    });
+  });
+
+  it('should preserve the default ACTIVE status filter when adding additional filters', async () => {
+    await qb
+      .selectFrom('collaborators')
+      .select(['id', 'name'])
+      .where('name', '=', 'John')
+      .execute();
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'select',
+      tableName: 'bambooCollaborators',
+      fields: ['id', 'name'],
+      filtersSet: {
+        conjunction: 'and',
+        filtersSet: [
+          {
+            field: 'status',
+            operator: '=',
+            value: 'ACTIVE',
+          },
+          {
+            field: 'name',
+            operator: '=',
+            value: 'John',
+          },
+        ],
+      },
+    });
+  });
+
+  it('should fetch the current user profile using auth.getUser', async () => {
+    mockRawRequest.mockResolvedValueOnce([
+      {
+        id: 1,
+        name: 'Test User',
+        emailAddress: 'test@example.com',
+        avatar: 'avatar.png',
+      },
+    ]);
+
+    const user = await qb.auth.getUser();
+
+    expect(user).toEqual({
+      id: 1,
+      name: 'Test User',
+      email: 'test@example.com',
+      avatar: 'avatar.png',
+    });
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'select',
+      tableName: 'bambooCollaborators',
+      fields: ['id', 'name', 'emailAddress', 'avatar'],
+      filtersSet: {
+        conjunction: 'and',
+        filtersSet: [
+          {
+            field: 'status',
+            operator: '=',
+            value: 'ACTIVE',
+          },
+          {
+            field: 'externalId',
+            operator: '=',
+            value: 'test-user-id',
+          },
+        ],
+      },
+    });
+  });
+
+  it('should throw an error if user id is not available when calling auth.getUser', async () => {
+    SocketConnection.prototype.getCurrentUserId = jest
+      .fn()
+      .mockResolvedValueOnce(null);
+
+    await expect(qb.auth.getUser()).rejects.toThrow(
+      'User ID not available from the connection',
+    );
   });
 });

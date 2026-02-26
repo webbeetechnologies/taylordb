@@ -31,6 +31,7 @@ export class SocketConnection extends EventEmitter {
   #socket: Socket | null = null;
   #subscriptions = new Map<string, Subscription>();
   #connectionPromise: Promise<void> | null = null;
+  #currentUserId: string | null = null;
 
   constructor(
     private config: {
@@ -66,7 +67,10 @@ export class SocketConnection extends EventEmitter {
           query: {},
         });
 
-        this.#socket.on('successful', () => {
+        this.#socket.on('successful', (data?: { userId?: string }) => {
+          if (data?.userId) {
+            this.#currentUserId = data.userId;
+          }
           this.#socket?.on('patch', this.#handlePatch.bind(this));
 
           this.#socket?.on('query-response', (response: any) => {
@@ -150,6 +154,11 @@ export class SocketConnection extends EventEmitter {
     }
 
     return response.data;
+  }
+
+  public async getCurrentUserId(): Promise<string | null> {
+    await this.#connect();
+    return this.#currentUserId;
   }
 
   public async subscribe<TResult>(

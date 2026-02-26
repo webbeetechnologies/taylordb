@@ -85,6 +85,10 @@ export class Executor {
     );
   }
 
+  async getCurrentUserId(): Promise<string | null> {
+    return this.#socketConnection.getCurrentUserId();
+  }
+
   subscribe<TResult>(
     builders: AnySubscribableQueryBuilder[],
     callback: (result: TResult) => void,
