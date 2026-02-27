@@ -25,4 +25,12 @@ export const defaultFields: BambooField[] = [
     title: 'Updated At',
     returnType: 'date',
   },
+  {
+    id: 4,
+    name: 'searchText',
+    type: 'search',
+    options: { isRequired: true },
+    title: 'Search Text',
+    returnType: 'string',
+  },
 ];

@@ -1,6 +1,6 @@
 {
   "name": "@taylordb",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "TaylorDb library is a helper library to simplify the use of the TaylorDb database.",
   "private": true,
   "type": "module",

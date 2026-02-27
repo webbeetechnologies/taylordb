@@ -45,6 +45,9 @@ export class TypeMapper {
       case 'attachment':
         return `AttachmentColumnType<${isRequired ? 'true' : 'false'}>`;
 
+      case 'search':
+        return `SearchColumnType<${isRequired ? 'true' : 'false'}>`;
+
       case 'select': {
         const options = this.optionsMap.get(column.options.on);
 

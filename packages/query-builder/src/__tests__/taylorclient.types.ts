@@ -174,6 +174,14 @@ type NumberFilters = {
   isNotEmpty: never;
 };
 
+type SearchTextFilters = {
+  search: string;
+  contains: string;
+  containsStrict: string;
+  isEmpty: never;
+  isNotEmpty: never;
+};
+
 type NumberAggregations = {
   sum: number;
   average: number;
@@ -231,6 +239,14 @@ export type TextColumnType<R extends boolean> = ColumnType<
   string,
   R,
   TextFilters
+>;
+
+export type SearchColumnType<R extends boolean> = ColumnType<
+  string,
+  string,
+  string,
+  R,
+  SearchTextFilters
 >;
 
 export type ALinkColumnType<

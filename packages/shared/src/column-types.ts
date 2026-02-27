@@ -130,6 +130,14 @@ type TextFilters = {
   isNotEmpty: never;
 };
 
+export type SearchTextFilters = {
+  search: string;
+  contains: string;
+  containsStrict: string;
+  isEmpty: never;
+  isNotEmpty: never;
+};
+
 type LinkFilters = {
   hasAnyOf: number[];
   hasAllOf: number[];
@@ -231,6 +239,14 @@ export type TextColumnType<R extends boolean> = ColumnType<
   string,
   R,
   TextFilters
+>;
+
+export type SearchColumnType<R extends boolean> = ColumnType<
+  string,
+  string,
+  string,
+  R,
+  SearchTextFilters
 >;
 
 export type ALinkColumnType<
