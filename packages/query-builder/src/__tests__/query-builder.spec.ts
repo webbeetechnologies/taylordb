@@ -844,12 +844,14 @@ describe('QueryBuilder', () => {
 
   it('should fetch the current user profile using auth.getUser', async () => {
     mockRawRequest.mockResolvedValueOnce([
-      {
-        id: 1,
-        name: 'Test User',
-        emailAddress: 'test@example.com',
-        avatar: 'avatar.png',
-      },
+      [
+        {
+          id: 1,
+          name: 'Test User',
+          emailAddress: 'test@example.com',
+          avatar: 'avatar.png',
+        },
+      ],
     ]);
 
     const user = await qb.auth.getUser();

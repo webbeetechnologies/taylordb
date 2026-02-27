@@ -338,6 +338,7 @@ export type AttachmentTable = {
   size: NumberColumnType<true>;
   fileType: TextColumnType<true>;
   url: TextColumnType<true>;
+  searchText: SearchColumnType<false>;
 };
 
 export type CollaboratorsTable = {
@@ -345,6 +346,7 @@ export type CollaboratorsTable = {
   name: TextColumnType<true>;
   emailAddress: TextColumnType<true>;
   avatar: TextColumnType<true>;
+  searchText: SearchColumnType<false>;
 };
 
 export interface TaylorDatabase {
