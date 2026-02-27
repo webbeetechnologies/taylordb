@@ -176,6 +176,31 @@ usersWithPublishedPosts.forEach(user => {
 });
 ```
 
+#### Searching
+
+Every table includes a `searchText` column by default, supporting powerful full-text search operators.
+
+```typescript
+// Perform a search on the searchText column
+const searchResults = await qb
+  .selectFrom('products')
+  .selectAll()
+  .where('searchText', 'search', 'modern desk')
+  .execute();
+
+// Use "contains" for partial matches
+const partialMatches = await qb
+  .selectFrom('products')
+  .where('searchText', 'contains', 'desk')
+  .execute();
+```
+
+Available search operators:
+- `search`: Full-text search (optimized for natural language).
+- `contains`: Returns records where the search term is a substring.
+- `containsStrict`: Case-sensitive substring search.
+- `isEmpty` / `isNotEmpty`: Check if the search vector is empty.
+
 #### Sorting and Pagination
 
 ```typescript
@@ -470,6 +495,33 @@ const unsubscribe = qb
 
 // Clean up when done
 unsubscribe();
+```
+
+### Authentication & User Profile
+
+The query builder includes built-in support for fetching the current authenticated user.
+
+```typescript
+const user = await qb.auth.getUser();
+
+if (user) {
+  console.log(`Authenticated as ${user.name} (${user.email})`);
+}
+```
+
+### Collaborators
+
+You can easily fetch a list of collaborators (active users in the system).
+
+```typescript
+const collaborators = await qb
+  .selectFrom('collaborators')
+  .select(['id', 'name', 'avatar'])
+  .execute();
+
+collaborators.forEach(c => {
+  console.log(`Collaborator: ${c.name}`);
+});
 ```
 
 ## Practical Examples
