@@ -1,6 +1,6 @@
 {
   "name": "@taylordb/cli",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "CLI for TaylorDB",
   "private": false,
   "main": "./dist/index.js",
@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.17.0",
-    "@types/node": "^18.0.0"
+    "@types/node": "^18.0.0",
+    "json-schema-to-typescript": "^15.0.4"
   }
 }

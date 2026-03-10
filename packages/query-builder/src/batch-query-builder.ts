@@ -4,6 +4,7 @@ import { Executor } from './executor.js';
 import { InsertQueryBuilder } from './insert-query-builder.js';
 import { QueryBuilder } from './query-builder.js';
 import { UpdateQueryBuilder } from './update-query-builder.js';
+import { PluginActionBuilder } from './plugin-action-builder.js';
 
 export type AnySubscribableQueryBuilder =
   | QueryBuilder<any, any, any, any>
@@ -13,7 +14,8 @@ export type AnyQueryBuilder =
   | AnySubscribableQueryBuilder
   | InsertQueryBuilder<any, any, any>
   | UpdateQueryBuilder<any, any>
-  | DeleteQueryBuilder<any, any>;
+  | DeleteQueryBuilder<any, any>
+  | PluginActionBuilder<any, any, any, any, any>;
 
 type InferExecuteResult<TBuilder> = TBuilder extends {
   execute: () => Promise<any>;

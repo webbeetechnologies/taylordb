@@ -28,3 +28,23 @@ export interface BambooModelsResponse {
     records: BambooModel[];
   };
 }
+
+export interface PluginAction {
+  name: string;
+  description: string;
+  inputSchema?: any;
+  outputSchema?: any;
+}
+
+export interface BambooPlugin {
+  id: string;
+  name: string;
+  type: string;
+  actions: PluginAction[];
+}
+
+export interface BambooPluginsResponse {
+  bambooPlugins: {
+    records: BambooPlugin[];
+  };
+}

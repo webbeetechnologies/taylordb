@@ -43,6 +43,18 @@ interface CustomersTable {
 interface TaylorDatabase extends TaylorDatabaseOriginal {
   orders: OrdersTable;
   customers: CustomersTable;
+  _plugins: {
+    email: {
+      send: {
+        input: { recordId?: number; scheduledAt?: string };
+        result: { success: boolean; data?: any };
+      };
+      archive: {
+        input: Record<string, any>;
+        result: any;
+      };
+    };
+  };
 }
 
 jest.mock('socket.io-client', () => {
@@ -896,5 +908,103 @@ describe('QueryBuilder', () => {
     await expect(qb.auth.getUser()).rejects.toThrow(
       'User ID not available from the connection',
     );
+  });
+
+  it('should compile a plugin action without input and execute', async () => {
+    await qb.plugin('email').action('archive').execute();
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'plugin-action',
+      plugin: 'email',
+      action: 'archive',
+      input: {},
+    });
+  });
+
+  it('should compile a plugin action with input and execute', async () => {
+    mockRawRequest.mockResolvedValueOnce([{ success: true }]);
+
+    const result = await qb
+      .plugin('email')
+      .action('send')
+      .input({ recordId: 10, scheduledAt: 'tomorrow' })
+      .execute();
+
+    expect(result).toEqual({ success: true });
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'plugin-action',
+      plugin: 'email',
+      action: 'send',
+      input: {
+        recordId: 10,
+        scheduledAt: 'tomorrow',
+      },
+    });
+  });
+
+  it('should compile a plugin action inside a batch query', async () => {
+    await qb
+      .batch([
+        qb.selectFrom('customers').select(['firstName']),
+        qb.plugin('email').action('send').input({ recordId: 12 }),
+      ])
+      .execute();
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+    expect(variables.metadata).toHaveLength(2);
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'select',
+      tableName: 'customers',
+    });
+    expect(variables.metadata[1]).toMatchObject({
+      type: 'plugin-action',
+      plugin: 'email',
+      action: 'send',
+      input: { recordId: 12 },
+    });
+  });
+
+  it('should compile a plugin action inside a transaction', async () => {
+    const mockRawRequest = jest
+      .fn()
+      .mockResolvedValueOnce({
+        startTransaction: 'plugin-tx-id',
+      })
+      .mockResolvedValueOnce({ execute: [] })
+      .mockResolvedValueOnce({ commitTransaction: true });
+
+    SocketConnection.prototype.rawRequest = mockRawRequest;
+
+    // @ts-ignore
+    const qbTx = createQueryBuilder<TaylorDatabase>({
+      baseUrl: 'http://localhost',
+      baseId: 'test-base-id',
+      apiKey: 'test',
+    });
+
+    await qbTx.transaction(txQb => {
+      return txQb
+        .plugin('email')
+        .action('send')
+        .input({ recordId: 5 })
+        .execute();
+    });
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(3);
+
+    const executeCall = mockRawRequest.mock.calls[1];
+    expect(executeCall[3]).toBe('plugin-tx-id'); // transactionId check
+    const variables = executeCall[1];
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'plugin-action',
+      plugin: 'email',
+      action: 'send',
+      input: { recordId: 5 },
+    });
   });
 });

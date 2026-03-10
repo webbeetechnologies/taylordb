@@ -1,6 +1,5 @@
 import {
   ALinkColumnType,
-  ColumnType,
   Filters,
   MetadataWithTableName,
   ObjConfigurationVisibleField,
@@ -8,9 +7,11 @@ import {
 } from '@taylordb/shared';
 
 export type AnyDB = {
-  [key in keyof any]: {
-    [key in keyof any]: ColumnType<any, any, any, any, any, any>;
-  };
+  [K in keyof any]:
+    | {
+        [K in keyof any]: any;
+      }
+    | any;
 };
 
 export type SelectionQueryNode = ObjConfigurationVisibleField<string> & {
@@ -23,6 +24,13 @@ export type RootQueryNode = Omit<
 > & {
   fields?: ('*' | string | SelectionQueryNode)[];
   queryType: 'root';
+};
+
+export type PluginActionNode = {
+  type: 'plugin-action';
+  plugin: string;
+  action: string;
+  input: Record<string, any>;
 };
 
 export type QueryNode = SelectionQueryNode | RootQueryNode;

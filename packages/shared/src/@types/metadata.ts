@@ -34,13 +34,21 @@ export type CreateMutationMetaData = {
   createdRecords: any[];
 };
 
+export type PluginActionMetaData = {
+  type: 'plugin-action';
+  plugin: string;
+  action: string;
+  input: Record<string, any>;
+};
+
 export type AvailableMetaData =
   | UpdateMutationMetaData
   | DeleteMutationMetaData
   | CreateMutationMetaData
   | SelectQueryMetaData
   | PaginationQueryMetaData
-  | AggregationQueryMetaData;
+  | AggregationQueryMetaData
+  | PluginActionMetaData;
 
 export type QueryMetadata =
   | SelectQueryMetaData

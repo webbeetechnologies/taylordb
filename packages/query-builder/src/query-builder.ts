@@ -24,6 +24,7 @@ import {
 import { DeleteQueryBuilder } from './delete-query-builder.js';
 import { Executor } from './executor.js';
 import { InsertQueryBuilder } from './insert-query-builder.js';
+import { PluginBuilder } from './plugin-action-builder.js';
 import { SelectionBuilder } from './selection-builder.js';
 import { UpdateQueryBuilder } from './update-query-builder.js';
 import { FilterableQueryBuilder } from './where-query-builder.js';
@@ -639,6 +640,25 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
       },
       this._executor,
     );
+  }
+
+  /**
+   * Creates a builder scoped to a specific plugin for executing plugin actions.
+   * @param pluginName - The name of the plugin.
+   * @returns A `PluginBuilder` instance.
+   *
+   * @example
+   * ```typescript
+   * const qb = createQueryBuilder<MyDatabase>({ ... });
+   * const result = await qb.plugin('email').action('send').input({ recordId: 123 }).execute();
+   * ```
+   */
+  plugin<
+    PluginName extends DB extends { _plugins: infer P }
+      ? keyof P & string
+      : string,
+  >(pluginName: PluginName): PluginBuilder<DB, PluginName> {
+    return new PluginBuilder<DB, PluginName>(pluginName, this._executor);
   }
 
   /**

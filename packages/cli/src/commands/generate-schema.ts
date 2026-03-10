@@ -3,8 +3,13 @@ import { Command } from 'commander';
 import { EnumType, jsonToGraphQLQuery } from 'json-to-graphql-query';
 import * as path from 'path';
 import { taylorApi, umsApi } from '../lib/api';
-import { AppGetResponse, BambooModelsResponse } from '../lib/types';
+import {
+  AppGetResponse,
+  BambooModelsResponse,
+  BambooPluginsResponse,
+} from '../lib/types';
 import { TaylorTypeGenerator } from '../type-generator/taylor-type-generator';
+import { has } from 'lodash';
 
 const UUID_REGEX =
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
@@ -91,20 +96,36 @@ export const generateSchemaCommand = new Command('generate-schema')
               },
             },
           },
+          bambooPlugins: {
+            records: {
+              id: true,
+              name: true,
+              type: true,
+              actions: true,
+            },
+          },
         },
       };
       const bambooQueryString = jsonToGraphQLQuery(bambooQuery, {
         pretty: true,
       });
       const bambooResponse = await taylorApi.post<{
-        data: BambooModelsResponse;
+        data: BambooModelsResponse & BambooPluginsResponse;
       }>('api/' + appDbId, {
         query: bambooQueryString,
       });
 
+      if (has(bambooResponse.data, 'errors')) {
+        throw new AggregateError(
+          (bambooResponse.data as any).errors.map(
+            error => new Error(error.message),
+          ),
+        );
+      }
+
       const schemaData = bambooResponse.data.data;
 
-      if (!schemaData) {
+      if (!schemaData || !schemaData.bambooModels) {
         throw new Error('No schema data found in the response');
       }
 

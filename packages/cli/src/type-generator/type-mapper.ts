@@ -35,8 +35,13 @@ export class TypeMapper {
       case 'checkbox':
         return `CheckboxColumnType<${isRequired ? 'true' : 'false'}>`;
 
-      case 'link':
-        return `LinkColumnType<'${this.findNameBySlug(column.options.on)}', ${isRequired ? 'true' : 'false'}>`;
+      case 'link': {
+        if (this.doesTableExist(column.options.on)) {
+          return `LinkColumnType<'${this.findNameBySlug(column.options.on)}', ${isRequired ? 'true' : 'false'}>`;
+        }
+
+        return null;
+      }
 
       case 'modifiedBy':
       case 'collaborators':
@@ -112,5 +117,11 @@ export class TypeMapper {
     }
 
     return table.name;
+  }
+
+  private doesTableExist(tableName: string) {
+    return this.taylorTypeGenerator.tablesSchema.some(
+      table => table.name === tableName,
+    );
   }
 }

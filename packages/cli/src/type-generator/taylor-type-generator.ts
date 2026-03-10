@@ -10,15 +10,16 @@ import {
 } from 'ts-morph';
 import { taylorApi } from '../lib/api';
 import { defaultFields } from '../lib/constants';
-import { BambooModelsResponse } from '../lib/types';
+import { BambooModelsResponse, BambooPluginsResponse } from '../lib/types';
 import { TypeMapper } from './type-mapper';
+import { PluginTypeGenerator } from './plugin-type-generator';
 
 export class TaylorTypeGenerator {
   private readonly sourceFile: SourceFile;
   private typeMapper: TypeMapper;
 
   constructor(
-    private readonly schema: BambooModelsResponse,
+    private readonly schema: BambooModelsResponse & BambooPluginsResponse,
     private readonly output: string,
     private readonly templateFile: string,
     private readonly appDbId: string,
@@ -99,6 +100,12 @@ export class TaylorTypeGenerator {
         type: this.getTableName(table.name),
       });
     }
+
+    const pluginGenerator = new PluginTypeGenerator(
+      this.sourceFile,
+      this.schema,
+    );
+    await pluginGenerator.generate();
 
     await this.sourceFile.save();
   }

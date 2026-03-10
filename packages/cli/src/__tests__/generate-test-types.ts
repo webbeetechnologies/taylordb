@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { TaylorTypeGenerator } from '../type-generator/taylor-type-generator';
-import { BambooModelsResponse } from '../lib/types';
+import { BambooModelsResponse, BambooPluginsResponse } from '../lib/types';
 import { taylorApi } from '../lib/api';
 
 async function generate() {
@@ -14,7 +14,10 @@ async function generate() {
 
   console.log(`Loading schema from ${schemaPath}...`);
   const schemaRaw = fs.readFileSync(schemaPath, 'utf-8');
-  const schemaData: BambooModelsResponse = JSON.parse(schemaRaw).data;
+  const parsedData = JSON.parse(schemaRaw).data;
+  const schemaData: BambooModelsResponse & BambooPluginsResponse = {
+    ...parsedData,
+  };
 
   // Mock taylorApi so we don't try to make real network requests to the API during test generation
   // @ts-ignore
