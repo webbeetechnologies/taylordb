@@ -3,13 +3,17 @@ import { QueryBuilder } from '../query-builder.js';
 import { AnyDB } from './internal-types.js';
 import { LinkColumnNames, NonLinkColumnNames } from './query-builder.js';
 
-export type InferDataType<TColumn extends ColumnType<any, any, any, any, any>> =
-  TColumn['isRequired'] extends true
-    ? TColumn['raw']
-    : TColumn['raw'] | undefined;
+export type InferDataType<TColumn> =
+  TColumn extends ColumnType<any, any, any, any, any>
+    ? TColumn['isRequired'] extends true
+      ? TColumn['raw']
+      : TColumn['raw'] | undefined
+    : never;
 
 export type TableShape<TTable extends AnyDB[string]> = {
-  [K in keyof TTable]: InferDataType<TTable[K]>;
+  [K in keyof TTable as TTable[K] extends ColumnType<any, any, any, any, any>
+    ? K
+    : never]: InferDataType<TTable[K]>;
 };
 
 type InferSubqueryResult<TSubquery> =
