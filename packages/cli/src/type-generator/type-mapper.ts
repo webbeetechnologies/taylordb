@@ -119,9 +119,9 @@ export class TypeMapper {
     return table.name;
   }
 
-  private doesTableExist(tableName: string) {
+  private doesTableExist(tableSlug: string) {
     return this.taylorTypeGenerator.tablesSchema.some(
-      table => table.name === tableName,
+      table => table.slug === tableSlug,
     );
   }
 }
