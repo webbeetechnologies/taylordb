@@ -11,6 +11,7 @@ import {
 import { taylorApi } from '../lib/api';
 import { defaultFields } from '../lib/constants';
 import { BambooModelsResponse, BambooPluginsResponse } from '../lib/types';
+import { GeneratedFileFormatter } from './generated-file-formatter';
 import { TypeMapper } from './type-mapper';
 import { PluginTypeGenerator } from './plugin-type-generator';
 
@@ -47,6 +48,12 @@ export class TaylorTypeGenerator {
   async build() {
     const optionsMap = await this._fetchSingleSelectOptions();
     this.typeMapper = new TypeMapper(this, optionsMap);
+
+    const pluginGenerator = new PluginTypeGenerator(
+      this.sourceFile,
+      this.schema,
+    );
+    await pluginGenerator.generate();
 
     this.schema.bambooModels.records.forEach(table => {
       table.fields
@@ -101,12 +108,10 @@ export class TaylorTypeGenerator {
       });
     }
 
-    const pluginGenerator = new PluginTypeGenerator(
-      this.sourceFile,
-      this.schema,
-    );
-    await pluginGenerator.generate();
-
+    const formattedOutput = await new GeneratedFileFormatter(
+      this.output,
+    ).format(this.sourceFile.getFullText());
+    this.sourceFile.replaceWithText(formattedOutput);
     await this.sourceFile.save();
   }
 
