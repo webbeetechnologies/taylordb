@@ -147,5 +147,6 @@ export const generateSchemaCommand = new Command('generate-schema')
       );
     } catch (error: any) {
       console.error(chalk.red(`Failed to generate schema: ${error.message}`));
+      throw error;
     }
   });
