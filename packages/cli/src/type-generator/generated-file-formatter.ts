@@ -53,38 +53,46 @@ export class GeneratedFileFormatter {
       PRETTIER_CONFIG_FILES,
     );
     if (prettierConfigPath) {
-      const prettier = this.loadProjectModule<PrettierModule>(
-        'prettier',
-        prettierConfigPath,
-      );
-      if (prettier) {
-        const prettierConfig =
-          (await prettier.resolveConfig(this.outputPath)) ?? {};
-        return await prettier.format(sourceText, {
-          ...prettierConfig,
-          filepath: this.outputPath,
-          parser: 'typescript',
-        });
+      try {
+        const prettier = this.loadProjectModule<PrettierModule>(
+          'prettier',
+          prettierConfigPath,
+        );
+        if (prettier) {
+          const prettierConfig =
+            (await prettier.resolveConfig(this.outputPath)) ?? {};
+          return await prettier.format(sourceText, {
+            ...prettierConfig,
+            filepath: this.outputPath,
+            parser: 'typescript',
+          });
+        }
+      } catch {
+        // Ignore formatter setup issues in the target repo and try the next option.
       }
     }
 
     const eslintConfigPath = this.findNearestToolConfig(ESLINT_CONFIG_FILES);
     if (eslintConfigPath) {
-      const eslintModule = this.loadProjectModule<ESLintModule>(
-        'eslint',
-        eslintConfigPath,
-      );
-      if (eslintModule) {
-        const eslint = new eslintModule.ESLint({
-          cwd: path.dirname(eslintConfigPath),
-          fix: true,
-        });
-        const [result] = await eslint.lintText(sourceText, {
-          filePath: this.outputPath,
-        });
-        if (typeof result?.output === 'string') {
-          return result.output;
+      try {
+        const eslintModule = this.loadProjectModule<ESLintModule>(
+          'eslint',
+          eslintConfigPath,
+        );
+        if (eslintModule && this.canRunEslint(eslintConfigPath)) {
+          const eslint = new eslintModule.ESLint({
+            cwd: path.dirname(eslintConfigPath),
+            fix: true,
+          });
+          const [result] = await eslint.lintText(sourceText, {
+            filePath: this.outputPath,
+          });
+          if (typeof result?.output === 'string') {
+            return result.output;
+          }
         }
+      } catch {
+        // Ignore formatter setup issues in the target repo and keep the generated output.
       }
     }
 
@@ -139,6 +147,73 @@ export class GeneratedFileFormatter {
     try {
       const projectRequire = createRequire(fromFilePath);
       return projectRequire(moduleName) as T;
+    } catch {
+      return null;
+    }
+  }
+
+  private canRunEslint(eslintConfigPath: string) {
+    if (path.basename(eslintConfigPath) === 'package.json') {
+      return true;
+    }
+
+    const projectRequire = this.createProjectRequire(eslintConfigPath);
+    if (!projectRequire) {
+      return false;
+    }
+
+    for (const packageName of this.getImportedPackageNames(eslintConfigPath)) {
+      try {
+        projectRequire.resolve(packageName);
+      } catch {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private getImportedPackageNames(configPath: string) {
+    const configContent = fs.readFileSync(configPath, 'utf-8');
+    const packageNames = new Set<string>();
+    const importPatterns = [
+      /import\s+(?:[^'"]+?\s+from\s+)?['"]([^'"]+)['"]/g,
+      /require\(\s*['"]([^'"]+)['"]\s*\)/g,
+    ];
+
+    for (const pattern of importPatterns) {
+      for (const match of configContent.matchAll(pattern)) {
+        const packageName = this.getBarePackageName(match[1]);
+        if (packageName) {
+          packageNames.add(packageName);
+        }
+      }
+    }
+
+    return packageNames;
+  }
+
+  private getBarePackageName(specifier: string) {
+    if (
+      !specifier ||
+      specifier.startsWith('.') ||
+      specifier.startsWith('/') ||
+      specifier.startsWith('node:')
+    ) {
+      return null;
+    }
+
+    if (specifier.startsWith('@')) {
+      const [scope, name] = specifier.split('/');
+      return scope && name ? `${scope}/${name}` : specifier;
+    }
+
+    return specifier.split('/')[0];
+  }
+
+  private createProjectRequire(fromFilePath: string) {
+    try {
+      return createRequire(fromFilePath);
     } catch {
       return null;
     }
