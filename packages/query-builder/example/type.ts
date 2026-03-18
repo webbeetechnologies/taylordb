@@ -424,7 +424,7 @@ export type TaylorDatabase = {
       };
     };
   };
-}
+};
 
 export const BacklogStatusOptions = ['Option 1', 'Option 2'] as const;
 export const BacklogPrioOptions = ['Option 1', 'Option 2'] as const;
