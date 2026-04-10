@@ -59,7 +59,7 @@ export class TaylorTypeGenerator {
       table.fields
         .filter(field => field.type === 'select')
         .forEach(field => {
-          const options = optionsMap.get(field.options.on);
+          const options = optionsMap.get(field.options.on).filter(o => o.name);
           if (options) {
             this.sourceFile.addVariableStatement({
               isExported: true,
