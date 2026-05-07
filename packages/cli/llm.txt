@@ -1,0 +1,8 @@
+# @taylordb/cli — LLM Documentation Index
+
+This package is the command-line interface for TaylorDB. Its primary purpose for developers is generating TypeScript types from a live TaylorDB app so they can be used with the query builder.
+
+## Documentation
+
+- [Type Generation](./docs/type-generation.md)
+  How to run `taylordb generate-schema`, what arguments it accepts, what TypeScript types are produced (table types, column types, select-option constants, plugin types), and what the output file looks like.
