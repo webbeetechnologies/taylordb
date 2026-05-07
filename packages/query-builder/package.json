@@ -1,6 +1,6 @@
 {
     "name": "@taylordb/query-builder",
-    "version": "0.16.4",
+    "version": "0.16.5",
     "description": "A type-safe query builder for TaylorDB",
     "private": false,
     "main": "./dist/cjs/index.js",
@@ -14,7 +14,9 @@
         }
     },
     "files": [
-        "dist"
+        "dist",
+        "docs",
+        "llm.txt"
     ],
     "scripts": {
         "clean": "rm -rf dist",

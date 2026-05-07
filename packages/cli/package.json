@@ -1,6 +1,6 @@
 {
   "name": "@taylordb/cli",
-  "version": "0.16.4",
+  "version": "0.16.5",
   "description": "CLI for TaylorDB",
   "private": false,
   "main": "./dist/index.js",
@@ -9,7 +9,9 @@
   },
   "files": [
     "dist",
-    "src/templates"
+    "src/templates",
+    "docs",
+    "llm.txt"
   ],
   "scripts": {
     "clean": "rm -rf dist",
