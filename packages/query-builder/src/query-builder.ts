@@ -408,13 +408,11 @@ export class QueryBuilder<
       return data.map(item => this._transformResponse(item));
     }
 
-    if (data && typeof data === 'object') {
-      // Check if this looks like an attachment object
-      if (this._isAttachmentObject(data)) {
-        return `${MEDIA_UPLOADER_HOST}/${data.url}`;
-      }
+    if (typeof data === 'string' && data.startsWith('files/')) {
+      return `${MEDIA_UPLOADER_HOST}/${data}`;
+    }
 
-      // Recursively transform nested objects
+    if (data && typeof data === 'object') {
       const transformed: any = {};
       for (const [key, value] of Object.entries(data)) {
         transformed[key] = this._transformResponse(value);
@@ -423,23 +421,6 @@ export class QueryBuilder<
     }
 
     return data;
-  }
-
-  /**
-   * Checks if an object looks like an attachment object.
-   * @private
-   */
-  private _isAttachmentObject(obj: any): boolean {
-    return (
-      obj &&
-      typeof obj === 'object' &&
-      'id' in obj &&
-      'url' in obj &&
-      'fileType' in obj &&
-      'size' in obj &&
-      typeof obj.url === 'string' &&
-      obj.url.startsWith('files/')
-    );
   }
 
   subscribe(callback: (result: Selection[]) => void) {

@@ -785,6 +785,100 @@ describe('QueryBuilder', () => {
     });
   });
 
+  it('should transform attachment path strings to absolute URLs in select response', async () => {
+    mockRawRequest.mockResolvedValueOnce([
+      [
+        {
+          id: 1,
+          firstName: 'Jane',
+          avatar: [
+            'files/bucket/31529ce5.png',
+            'files/bucket/another-file.jpg',
+          ],
+        },
+      ],
+    ]);
+
+    const result = await qb
+      .selectFrom('customers')
+      .select(['firstName', 'avatar'])
+      .executeTakeFirst();
+
+    expect(result).toEqual({
+      id: 1,
+      firstName: 'Jane',
+      avatar: [
+        'https://media.taylordb.ai/files/bucket/31529ce5.png',
+        'https://media.taylordb.ai/files/bucket/another-file.jpg',
+      ],
+    });
+  });
+
+  it('should not transform non-attachment strings in select response', async () => {
+    mockRawRequest.mockResolvedValueOnce([
+      [
+        {
+          id: 1,
+          firstName: 'Jane',
+          lastName: 'Doe',
+        },
+      ],
+    ]);
+
+    const result = await qb
+      .selectFrom('customers')
+      .select(['firstName', 'lastName'])
+      .executeTakeFirst();
+
+    expect(result).toEqual({ id: 1, firstName: 'Jane', lastName: 'Doe' });
+  });
+
+  it('should return empty array for empty attachment field in select response', async () => {
+    mockRawRequest.mockResolvedValueOnce([
+      [
+        {
+          id: 1,
+          firstName: 'Jane',
+          avatar: [],
+        },
+      ],
+    ]);
+
+    const result = await qb
+      .selectFrom('customers')
+      .select(['firstName', 'avatar'])
+      .executeTakeFirst();
+
+    expect(result).toEqual({ id: 1, firstName: 'Jane', avatar: [] });
+  });
+
+  it('should transform attachment paths in a list of records', async () => {
+    mockRawRequest.mockResolvedValueOnce([
+      [
+        { id: 1, firstName: 'Jane', avatar: ['files/bucket/a.png'] },
+        { id: 2, firstName: 'John', avatar: ['files/bucket/b.png'] },
+      ],
+    ]);
+
+    const result = await qb
+      .selectFrom('customers')
+      .select(['firstName', 'avatar'])
+      .execute();
+
+    expect(result).toEqual([
+      {
+        id: 1,
+        firstName: 'Jane',
+        avatar: ['https://media.taylordb.ai/files/bucket/a.png'],
+      },
+      {
+        id: 2,
+        firstName: 'John',
+        avatar: ['https://media.taylordb.ai/files/bucket/b.png'],
+      },
+    ]);
+  });
+
   it('should compile an insert query with multi-select array and execute', async () => {
     await qb
       .insertInto('orders')
