@@ -189,7 +189,7 @@ Cross-table filtering is also supported — see [conditions.md](./conditions.md)
 
 - **Select**: `string[]` — array of absolute URLs (automatically resolved by the query builder)
 - **Insert**: `Attachment[] | number[]`
-- **Update**: `Attachment[] | number[] | { newIds: number[]; deletedIds: number[] }`
+- **Update**: `Attachment[] | number[] | { newAttachments: Attachment[]; deletedUrls: string[] }`
 
 For how to produce `Attachment` instances, see [file-upload.md](./file-upload.md).
 

@@ -678,6 +678,51 @@ describe('QueryBuilder', () => {
     });
   });
 
+  it('should compile an attachment update with newAttachments and deletedUrls', async () => {
+    const mockAttachment = new Attachment({
+      collectionName: 'string',
+      fileInformation: {
+        path: 'test-path.png',
+        mimetype: 'image/png',
+        size: 12345,
+      },
+    } as any);
+    // @ts-ignore
+    qb.uploadAttachments = jest.fn().mockResolvedValue([mockAttachment]);
+
+    await qb
+      .update('customers')
+      .set({
+        avatar: {
+          newAttachments: await qb.uploadAttachments([
+            { file: new Blob(['']), name: 'test.png' },
+          ]),
+          deletedUrls: ['https://media.taylordb.ai/files/old.png'],
+        },
+      })
+      .where('id', '=', 1)
+      .execute();
+
+    expect(mockRawRequest).toHaveBeenCalledTimes(1);
+    const variables = mockRawRequest.mock.calls[0][1];
+    expect(variables.metadata[0]).toMatchObject({
+      type: 'update',
+      tableName: 'customers',
+      values: {
+        avatar: {
+          newAttachments: [
+            {
+              url: 'test-path.png',
+              fileType: 'image/png',
+              size: 12345,
+            },
+          ],
+          deletedUrls: ['files/old.png'],
+        },
+      },
+    });
+  });
+
   it('should upload attachments and return Attachment instances', async () => {
     const mockUploadResponse = [
       {

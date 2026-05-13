@@ -55,15 +55,19 @@ await qb
   .execute();
 ```
 
-To replace some attachments while keeping others, use the `{ newIds, deletedIds }` form that `AttachmentColumnType` update accepts:
+To replace some attachments while keeping others, use the `{ newAttachments, deletedUrls }` form that `AttachmentColumnType` update accepts:
 
 ```ts
+const uploadedAttachments = await qb.uploadAttachments([
+  { file: replacementBlob, name: 'replacement.jpg' },
+]);
+
 await qb
   .update('expenses')
   .set({
     receipt: {
-      newIds: [uploadedAttachment._id],   // IDs of newly uploaded files
-      deletedIds: [123],                  // DB IDs of files to remove
+      newAttachments: uploadedAttachments,
+      deletedUrls: ['https://media.taylordb.ai/files/something.jpg'],
     },
   })
   .where('id', '=', 42)

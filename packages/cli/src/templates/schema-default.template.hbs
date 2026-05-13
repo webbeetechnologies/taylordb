@@ -38,6 +38,11 @@ export interface AttachmentColumnValue {
   size: number;
 }
 
+export interface AttachmentUpdateValue {
+  newAttachments: Attachment[];
+  deletedUrls: string[];
+}
+
 export class Attachment {
   public readonly collectionName: string;
   public readonly fileInformation: FileInformation;
@@ -274,7 +279,7 @@ export type LinkColumnType<
 
 export type AttachmentColumnType<R extends boolean> = ColumnType<
   string[],
-  Attachment[] | { newIds: number[]; deletedIds: number[] } | number[],
+  Attachment[] | AttachmentUpdateValue | number[],
   Attachment[] | number[],
   R,
   LinkFilters,
