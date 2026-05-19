@@ -77,6 +77,8 @@ export class TaylorTypeGenerator {
       });
     });
 
+    this.removeUnusedRuntimeImports(taylorSchemaObject);
+
     const formattedOutput = await new GeneratedFileFormatter(
       this.output,
     ).format(this.sourceFile.getFullText());
@@ -97,6 +99,34 @@ export class TaylorTypeGenerator {
     }
 
     return schemaArgument;
+  }
+
+  private removeUnusedRuntimeImports(taylorSchemaObject: ObjectLiteralExpression) {
+    const runtimeImport = this.sourceFile
+      .getImportDeclarations()
+      .find(
+        declaration =>
+          declaration.getModuleSpecifierValue() === '@taylordb/query-builder' &&
+          !declaration.isTypeOnly(),
+      );
+
+    if (!runtimeImport) return;
+
+    const schemaText = taylorSchemaObject.getText();
+    const usedRuntimeImports = new Set(['defineTaylorSchema']);
+
+    for (const namedImport of runtimeImport.getNamedImports()) {
+      const name = namedImport.getName();
+      if (schemaText.includes(`${name}(`)) {
+        usedRuntimeImports.add(name);
+      }
+    }
+
+    for (const namedImport of runtimeImport.getNamedImports()) {
+      if (!usedRuntimeImports.has(namedImport.getName())) {
+        namedImport.remove();
+      }
+    }
   }
 
   private async _fetchSingleSelectOptions() {
