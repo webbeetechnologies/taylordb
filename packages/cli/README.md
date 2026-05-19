@@ -19,7 +19,12 @@ pnpm taylordb --help
 ### Commands
 
 - `login`: Authenticate with TaylorDB.
+- `generate-schema <appUrl> <output>`: Generate a runtime `taylorSchema` object and inferred `TaylorDatabase` type for `@taylordb/query-builder`.
 
 ```bash
 pnpm taylordb login
+```
+
+```bash
+pnpm taylordb generate-schema https://app.taylordb.ai/workspaces/demo/databases/42 ./src/taylorclient.types.ts
 ```

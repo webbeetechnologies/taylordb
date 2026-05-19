@@ -95,10 +95,9 @@ export class PluginTypeGenerator {
     }
     pluginsInterfaceString += '}';
 
-    const taylorDatabaseInterface =
-      this.sourceFile.getTypeAlias('TaylorDatabase');
+    const taylorDatabaseType = this.sourceFile.getTypeAlias('TaylorDatabase');
 
-    if (!taylorDatabaseInterface) {
+    if (!taylorDatabaseType) {
       throw new Error('TaylorDatabase type not found');
     }
 
@@ -106,11 +105,13 @@ export class PluginTypeGenerator {
       this.sourceFile.insertStatements(insertionIndex, pluginTypeStatements);
     }
 
-    // @ts-ignore
-    taylorDatabaseInterface.getTypeNodeOrThrow().addProperty({
-      name: '_plugin',
-      type: pluginsInterfaceString,
-    });
+    const currentTaylorDatabaseType = taylorDatabaseType
+      .getTypeNodeOrThrow()
+      .getText();
+
+    taylorDatabaseType.setType(`${currentTaylorDatabaseType} & {
+  _plugins: ${pluginsInterfaceString};
+}`);
   }
 
   private async compileSchemaDeclarations(

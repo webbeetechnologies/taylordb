@@ -112,7 +112,7 @@ describe('PluginTypeGenerator', () => {
 
     const output = sourceFile.getFullText();
 
-    expect(output).toContain('_plugin: {');
+    expect(output).toContain('_plugins: {');
     expect(output).toContain(
       "'synchronizeEmails': PluginActionType<PluginTypesMailcalSynchronizeEmailsInput, PluginTypesMailcalSynchronizeEmailsOutput>;",
     );
@@ -136,13 +136,13 @@ describe('PluginTypeGenerator', () => {
       'folder: PluginTypesMailcalSynchronizeEmailsOutputFolder;',
     );
     expect(output.indexOf('export type PluginActionType<I, O>')).toBeLessThan(
-      output.indexOf('export type TaylorDatabase = {'),
+      output.indexOf('export type TaylorDatabase ='),
     );
     expect(
       output.indexOf(
         'export interface PluginTypesMailcalSynchronizeEmailsInput {',
       ),
-    ).toBeLessThan(output.indexOf('export type TaylorDatabase = {'));
+    ).toBeLessThan(output.indexOf('export type TaylorDatabase ='));
     expect(
       output.indexOf(
         'export interface PluginTypesMailcalSynchronizeEmailsOutput {',

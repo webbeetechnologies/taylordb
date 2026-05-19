@@ -7,6 +7,7 @@ This package contains the official TypeScript query builder for TaylorDB. It pro
 ## Features
 
 - **Type-Safe Queries**: Leverage your database schema to get full type safety and autocompletion for your queries.
+- **Runtime Schema Metadata**: Generated schemas are real JavaScript objects, so applications can inspect field types, required flags, select options, and link targets at runtime.
 - **Fluent API**: Chain methods together to build complex queries with ease.
 - **CRUD Operations**: Full support for `select`, `insert`, `update`, and `delete` operations.
 - **Advanced Filtering**: Filter your data with a rich set of operators and logical conjunctions.
@@ -24,17 +25,53 @@ First, you'll need to generate a `taylorclient.types.ts` file from your TaylorDB
 npx @taylordb/cli generate-schema
 ```
 
-Once you have your types file, you can create a new query builder instance:
+The generated file exports both a runtime schema object and the inferred `TaylorDatabase` type:
 
 ```typescript
 import { createQueryBuilder } from '@taylordb/query-builder';
-import { TaylorDatabase } from './taylorclient.types';
+import { TaylorDatabase, taylorSchema } from './taylorclient.types';
 
 const qb = createQueryBuilder<TaylorDatabase>({
   baseUrl: 'YOUR_TAYLORDB_BASE_URL',
   apiKey: 'YOUR_TAYLORDB_API_KEY',
+  baseId: 'YOUR_TAYLORDB_BASE_ID',
 });
+
+// Runtime metadata is available to your app for validation/UI.
+const statusOptions = taylorSchema.backlog.status.options;
 ```
+
+`TaylorDatabase` is inferred from `typeof taylorSchema`, so query-builder type safety and runtime validation metadata stay in sync.
+
+### Runtime Schema Helpers
+
+The CLI emits `taylorSchema` using helpers exported from `@taylordb/query-builder`:
+
+```typescript
+import {
+  defineTaylorSchema,
+  textField,
+  selectField,
+  linkField,
+} from '@taylordb/query-builder';
+import type { InferTaylorDatabase } from '@taylordb/query-builder';
+
+export const taylorSchema = defineTaylorSchema({
+  backlog: {
+    title: textField({ required: false }),
+    status: selectField({
+      required: false,
+      mode: 'single',
+      options: ['Todo', 'Done'] as const,
+    }),
+    sprint: linkField({ required: false, linkedTo: 'sprints' }),
+  },
+});
+
+export type TaylorDatabase = InferTaylorDatabase<typeof taylorSchema>;
+```
+
+Available field helpers are `textField`, `numberField`, `checkboxField`, `dateField`, `searchField`, `linkField`, `attachmentField`, `selectField`, `autoNumberField`, and `autoDateField`.
 
 ## Usage
 

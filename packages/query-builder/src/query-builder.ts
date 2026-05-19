@@ -8,7 +8,11 @@ import {
   RootQueryNode,
   SelectionQueryNode,
 } from './@types/internal-types.js';
-import { LinkColumnNames, NonLinkColumnNames } from './@types/query-builder.js';
+import {
+  LinkColumnNames,
+  NonLinkColumnNames,
+  TableNames,
+} from './@types/query-builder.js';
 import {
   InferDataType,
   ResolveSelection,
@@ -508,6 +512,10 @@ export class QueryBuilder<
  */
 export type ReadBlacklistTable = 'attachmentTable';
 export type MutationBlacklistTable = 'attachmentTable' | 'collaborators';
+type ReadableTableNames<DB> = Exclude<TableNames<DB>, ReadBlacklistTable> &
+  string;
+type MutableTableNames<DB> = Exclude<TableNames<DB>, MutationBlacklistTable> &
+  string;
 
 export class BaseRootQueryBuilder<DB extends AnyDB> {
   protected _executor: Executor;
@@ -541,7 +549,7 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
    * const userQuery = qb.selectFrom('users');
    * ```
    */
-  selectFrom<TableName extends keyof Omit<DB, ReadBlacklistTable> & string>(
+  selectFrom<TableName extends ReadableTableNames<DB>>(
     from: TableName,
   ): QueryBuilder<DB, TableName> {
     this.validateCanRead(from);
@@ -582,7 +590,7 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
    * const insertQuery = qb.insertInto('users');
    * ```
    */
-  insertInto<TableName extends keyof Omit<DB, MutationBlacklistTable> & string>(
+  insertInto<TableName extends MutableTableNames<DB>>(
     into: TableName,
   ): InsertQueryBuilder<DB, TableName> {
     this.validateCanMutate(into);
@@ -608,7 +616,7 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
    * const updateQuery = qb.update('users');
    * ```
    */
-  update<TableName extends keyof Omit<DB, MutationBlacklistTable> & string>(
+  update<TableName extends MutableTableNames<DB>>(
     tableName: TableName,
   ): UpdateQueryBuilder<DB, TableName> {
     this.validateCanMutate(tableName);
@@ -653,7 +661,7 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
    * const deleteQuery = qb.deleteFrom('users');
    * ```
    */
-  deleteFrom<TableName extends keyof Omit<DB, MutationBlacklistTable> & string>(
+  deleteFrom<TableName extends MutableTableNames<DB>>(
     tableName: TableName,
   ): DeleteQueryBuilder<DB, TableName> {
     this.validateCanMutate(tableName);
@@ -703,7 +711,7 @@ export class BaseRootQueryBuilder<DB extends AnyDB> {
    * const aggregateQuery = qb.aggregateFrom('users');
    * ```
    */
-  aggregateFrom<TableName extends keyof Omit<DB, ReadBlacklistTable> & string>(
+  aggregateFrom<TableName extends ReadableTableNames<DB>>(
     tableName: TableName,
   ): AggregationQueryBuilder<DB, TableName> {
     this.validateCanRead(tableName);

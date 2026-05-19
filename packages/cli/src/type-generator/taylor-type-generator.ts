@@ -1,12 +1,13 @@
 import * as fs from 'fs';
 import { jsonToGraphQLQuery } from 'json-to-graphql-query';
-import { camelCase, flatten, uniq, uniqBy, upperFirst } from 'lodash';
+import { flatten, uniq, uniqBy } from 'lodash';
 import {
   IndentationText,
+  ObjectLiteralExpression,
   Project,
   QuoteKind,
   SourceFile,
-  VariableDeclarationKind,
+  SyntaxKind,
 } from 'ts-morph';
 import { taylorApi } from '../lib/api';
 import { defaultFields } from '../lib/constants';
@@ -17,7 +18,7 @@ import { PluginTypeGenerator } from './plugin-type-generator';
 
 export class TaylorTypeGenerator {
   private readonly sourceFile: SourceFile;
-  private typeMapper: TypeMapper;
+  private typeMapper!: TypeMapper;
 
   constructor(
     private readonly schema: BambooModelsResponse & BambooPluginsResponse,
@@ -55,27 +56,9 @@ export class TaylorTypeGenerator {
     );
     await pluginGenerator.generate();
 
-    this.schema.bambooModels.records.forEach(table => {
-      table.fields
-        .filter(field => field.type === 'select')
-        .forEach(field => {
-          const options = optionsMap.get(field.options.on).filter(o => o.name);
-          if (options) {
-            this.sourceFile.addVariableStatement({
-              isExported: true,
-              declarationKind: VariableDeclarationKind.Const,
-              declarations: [
-                {
-                  name: this.getSingleSelectConstName(table.name, field.name),
-                  initializer: `[${options
-                    .map(o => `'${o.name.replace(/'/g, "\\'")}'`)
-                    .join(', ')}] as const`,
-                },
-              ],
-            });
-          }
-        });
+    const taylorSchemaObject = this.getTaylorSchemaObjectLiteral();
 
+    this.schema.bambooModels.records.forEach(table => {
       const properties = uniqBy(
         [...defaultFields, ...table.fields],
         field => field.name,
@@ -85,28 +68,14 @@ export class TaylorTypeGenerator {
           type: this.typeMapper.map(column),
         }))
         .filter(p => p.type)
-        .map(p => `${p.name}: ${p.type};`)
-        .join('\n');
+        .map(p => `${JSON.stringify(p.name)}: ${p.type}`)
+        .join(',\n');
 
-      this.sourceFile.addTypeAlias({
-        name: this.getTableName(table.name),
-        type: `{\n${properties}\n}`,
+      taylorSchemaObject.addPropertyAssignment({
+        name: JSON.stringify(table.name),
+        initializer: `{\n${properties}\n}`,
       });
     });
-
-    const taylorDatabaseInterface =
-      this.sourceFile.getTypeAlias('TaylorDatabase');
-
-    if (!taylorDatabaseInterface)
-      throw new Error('TaylorDatabase type not found');
-
-    for (const table of this.schema.bambooModels.records) {
-      // @ts-ignore
-      taylorDatabaseInterface.getTypeNodeOrThrow().addProperty({
-        name: table.name,
-        type: this.getTableName(table.name),
-      });
-    }
 
     const formattedOutput = await new GeneratedFileFormatter(
       this.output,
@@ -115,14 +84,19 @@ export class TaylorTypeGenerator {
     await this.sourceFile.save();
   }
 
-  getTableName(name: string) {
-    return upperFirst(camelCase(name + ' table'));
-  }
+  private getTaylorSchemaObjectLiteral(): ObjectLiteralExpression {
+    const declaration = this.sourceFile.getVariableDeclaration('taylorSchema');
+    const initializer = declaration?.getInitializer();
+    const callExpression = initializer?.asKind(SyntaxKind.CallExpression);
+    const schemaArgument = callExpression
+      ?.getArguments()[0]
+      ?.asKind(SyntaxKind.ObjectLiteralExpression);
 
-  getSingleSelectConstName(tableName: string, fieldName: string) {
-    return `${upperFirst(camelCase(tableName))}${upperFirst(
-      camelCase(fieldName),
-    )}Options`;
+    if (!schemaArgument) {
+      throw new Error('taylorSchema object not found');
+    }
+
+    return schemaArgument;
   }
 
   private async _fetchSingleSelectOptions() {

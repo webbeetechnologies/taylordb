@@ -5,518 +5,184 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-interface FileInformation {
-  fieldname: string;
-  originalname: string;
-  encoding: string;
-  mimetype: string;
-  destination: string;
-  filename: string;
-  path: string;
-  size: number;
-  format: string;
-  width: number;
-  height: number;
+import {
+  autoDateField,
+  autoNumberField,
+  attachmentField,
+  checkboxField,
+  dateField,
+  defineTaylorSchema,
+  linkField,
+  numberField,
+  searchField,
+  selectField,
+  textField,
+} from '@taylordb/query-builder';
+import type { InferTaylorDatabase } from '@taylordb/query-builder';
+
+export const taylorSchema = defineTaylorSchema({
+  attachmentTable: {
+    id: autoNumberField(),
+    name: textField({ required: true }),
+    metadata: textField({ required: true }),
+    size: numberField({ required: true }),
+    fileType: textField({ required: true }),
+    url: textField({ required: true }),
+    searchText: searchField(),
+  },
+  collaborators: {
+    id: autoNumberField(),
+    name: textField({ required: true }),
+    emailAddress: textField({ required: true }),
+    avatar: textField({ required: true }),
+    searchText: searchField(),
+  },
+  backlog: {
+    id: autoNumberField(),
+    createdAt: autoDateField(),
+    updatedAt: autoDateField(),
+    searchText: searchField(),
+    title: textField({ required: false }),
+    status: selectField({
+      required: false,
+      mode: 'single',
+      options: ['Option 1', 'Option 2'] as const,
+    }),
+    prio: selectField({
+      required: false,
+      mode: 'single',
+      options: ['Option 1', 'Option 2'] as const,
+    }),
+    est: numberField({ required: false }),
+    responsible: linkField({ required: false, linkedTo: 'collaborators' }),
+    modifiedAt: autoDateField(),
+    description: textField({ required: false }),
+    null: autoDateField(),
+    isToday: numberField({ required: false }),
+    isTodayyesterday: numberField({ required: false }),
+    lastModified: autoDateField(),
+    type: selectField({
+      required: false,
+      mode: 'single',
+      options: ['Option 1', 'Option 2'] as const,
+    }),
+    coResponsible: linkField({ required: false, linkedTo: 'collaborators' }),
+    sprint: linkField({ required: false, linkedTo: 'sprints' }),
+    epic: linkField({ required: false, linkedTo: 'epics' }),
+    attachment: attachmentField({ required: false }),
+    modifiedBy: linkField({ required: false, linkedTo: 'collaborators' }),
+    descForNeedsImprovement: textField({ required: false }),
+    types: selectField({
+      required: false,
+      mode: 'multi',
+      options: [] as const,
+    }),
+    lywrt: textField({ required: false }),
+    loggedTime: numberField({ required: false }),
+    nr: autoNumberField(),
+    autoNumber: autoNumberField(),
+    date: dateField({ required: false }),
+  },
+  sprints: {
+    id: autoNumberField(),
+    createdAt: autoDateField(),
+    updatedAt: autoDateField(),
+    searchText: searchField(),
+    backlog: linkField({ required: false, linkedTo: 'backlog' }),
+    name: textField({ required: false }),
+    beschreibung: textField({ required: false }),
+    status: selectField({
+      required: false,
+      mode: 'single',
+      options: ['Option 1', 'Option 2'] as const,
+    }),
+    epics: textField({ required: false }),
+    table7: textField({ required: false }),
+    end: dateField({ required: false }),
+    start: dateField({ required: false }),
+    sprintStatus: selectField({
+      required: false,
+      mode: 'single',
+      options: [] as const,
+    }),
+    calendarWeek: textField({ required: false }),
+  },
+  epics: {
+    id: autoNumberField(),
+    createdAt: autoDateField(),
+    updatedAt: autoDateField(),
+    searchText: searchField(),
+    backlog: linkField({ required: false, linkedTo: 'backlog' }),
+    name: textField({ required: false }),
+    status: selectField({
+      required: false,
+      mode: 'single',
+      options: ['Option 1', 'Option 2'] as const,
+    }),
+    collaborator: linkField({ required: false, linkedTo: 'collaborators' }),
+    description: textField({ required: false }),
+    area: selectField({
+      required: false,
+      mode: 'single',
+      options: ['Option 1', 'Option 2'] as const,
+    }),
+    blocks: linkField({ required: false, linkedTo: 'epics' }),
+    order: numberField({ required: false }),
+    priority: selectField({
+      required: false,
+      mode: 'single',
+      options: ['☄️ Must Have', ' 🧁 Nice To Have'] as const,
+    }),
+    label: selectField({
+      required: false,
+      mode: 'multi',
+      options: ['Option 1', 'Option 2'] as const,
+    }),
+    statusModifiedAt: autoDateField(),
+    created: autoDateField(),
+    prd: textField({ required: false }),
+    countBacklog: numberField({ required: false }),
+    start: dateField({ required: false }),
+    end: dateField({ required: false }),
+  },
+});
+
+/** Generic type for plugin actions */
+export type PluginActionType<I, O> = { input: I; result: O };
+export interface PluginTypesEmailSendInput {
+  to?: string;
+  subject?: string;
+  body?: string;
 }
 
-interface UploadResponse {
-  collectionName: string;
-  fileInformation: FileInformation;
-  metadata: {
-    thumbnails: any[];
-    clips: any[];
-  };
-  baseId: string;
-  storageAdaptor: string;
-  _id: string;
-  __v: number;
+export interface PluginTypesEmailSendOutput {
+  success?: boolean;
 }
 
-export type AttachmentColumnValue = {
-  url: string;
-  fileType: string;
-  size: number;
-};
-
-export type AttachmentUpdateValue = {
-  newAttachments: Attachment[];
-  deletedUrls: string[];
-};
-
-export class Attachment {
-  public readonly collectionName: string;
-  public readonly fileInformation: FileInformation;
-  public readonly metadata: { thumbnails: any[]; clips: any[] };
-  public readonly baseId: string;
-  public readonly storageAdaptor: string;
-  public readonly _id: string;
-
-  constructor(data: UploadResponse) {
-    this.collectionName = data.collectionName;
-    this.fileInformation = data.fileInformation;
-    this.metadata = data.metadata;
-    this.baseId = data.baseId;
-    this.storageAdaptor = data.storageAdaptor;
-    this._id = data._id;
-  }
-
-  toColumnValue(): AttachmentColumnValue {
-    return {
-      url: this.fileInformation.path,
-      fileType: this.fileInformation.mimetype,
-      size: this.fileInformation.size,
-    };
-  }
+export interface PluginTypesSmsSendInput {
+  to?: string;
+  body?: string;
 }
 
-type IsWithinOperatorValue =
-  | 'pastWeek'
-  | 'pastMonth'
-  | 'pastYear'
-  | 'nextWeek'
-  | 'nextMonth'
-  | 'nextYear'
-  | 'daysFromNow'
-  | 'daysAgo'
-  | 'currentWeek'
-  | 'currentMonth'
-  | 'currentYear';
-
-type DefaultDateFilterValue =
-  | (
-      | 'today'
-      | 'tomorrow'
-      | 'yesterday'
-      | 'oneWeekAgo'
-      | 'oneWeekFromNow'
-      | 'oneMonthAgo'
-      | 'oneMonthFromNow'
-    )
-  | ['exactDay' | 'exactTimestamp', string]
-  | ['daysAgo' | 'daysFromNow', number];
-
-type DateFilters = {
-  '=': DefaultDateFilterValue;
-  '!=': DefaultDateFilterValue;
-  '<': DefaultDateFilterValue;
-  '>': DefaultDateFilterValue;
-  '<=': DefaultDateFilterValue;
-  '>=': DefaultDateFilterValue;
-  isWithIn:
-    | IsWithinOperatorValue
-    | { value: 'daysAgo' | 'daysFromNow'; date: number };
-  isEmpty: boolean;
-  isNotEmpty: boolean;
-};
-
-type DateAggregations = {
-  empty: number;
-  filled: number;
-  unique: number;
-  percentEmpty: number;
-  percentFilled: number;
-  percentUnique: number;
-  min: number | null;
-  max: number | null;
-  daysRange: number | null;
-  monthRange: number | null;
-};
-
-type TextFilters = {
-  '=': string;
-  '!=': string;
-  caseEqual: string;
-  hasAnyOf: string[];
-  contains: string;
-  startsWith: string;
-  endsWith: string;
-  doesNotContain: string;
-  isEmpty: never;
-  isNotEmpty: never;
-};
-
-export type SearchTextFilters = {
-  search: string;
-  contains: string;
-  containsStrict: string;
-  isEmpty: never;
-  isNotEmpty: never;
-};
-
-type LinkFilters = {
-  hasAnyOf: number[];
-  hasAllOf: number[];
-  isExactly: number[];
-  '=': number;
-  hasNoneOf: number[];
-  contains: string;
-  doesNotContain: string;
-  isEmpty: never;
-  isNotEmpty: never;
-};
-
-type SelectFilters<O extends readonly string[]> = {
-  hasAnyOf: O[number][];
-  hasAllOf: O[number][];
-  isExactly: O[number][];
-  '=': O[number];
-  hasNoneOf: O[number][];
-  contains: string;
-  doesNotContain: string;
-  isEmpty: never;
-  isNotEmpty: never;
-};
-
-type LinkAggregations = {
-  empty: number;
-  filled: number;
-  percentEmpty: number;
-  percentFilled: number;
-};
-
-type NumberFilters = {
-  '=': number;
-  '!=': number;
-  '>': number;
-  '>=': number;
-  '<': number;
-  '<=': number;
-  hasAnyOf: number[];
-  hasNoneOf: number[];
-  isEmpty: never;
-  isNotEmpty: never;
-};
-
-type NumberAggregations = {
-  sum: number;
-  average: number;
-  median: number;
-  min: number | null;
-  max: number | null;
-  range: number;
-  standardDeviation: number;
-  histogram: Record<string, number>;
-  empty: number;
-  filled: number;
-  unique: number;
-  percentEmpty: number;
-  percentFilled: number;
-  percentUnique: number;
-};
-
-type CheckboxFilters = {
-  '=': number;
-};
-
-/**
- *
- * Column types
- *
- */
-export type ColumnType<
-  S,
-  U,
-  I,
-  R extends boolean,
-  F extends { [key: string]: any } = object,
-  A extends { [key: string]: any } = object,
-> = {
-  raw: S;
-  insert: I;
-  update: U;
-  filters: F;
-  aggregations: A;
-  isRequired: R;
-};
-
-export type DateColumnType<R extends boolean> = ColumnType<
-  string,
-  string,
-  string,
-  R,
-  DateFilters,
-  DateAggregations
->;
-
-export type TextColumnType<R extends boolean> = ColumnType<
-  string,
-  string,
-  string,
-  R,
-  TextFilters
->;
-
-export type SearchColumnType = ColumnType<
-  string,
-  string,
-  string,
-  false,
-  SearchTextFilters
->;
-
-export type ALinkColumnType<
-  T extends string,
-  S,
-  U,
-  I,
-  R extends boolean,
-  F extends { [key: string]: any } = LinkFilters,
-  A extends LinkAggregations = LinkAggregations,
-> = ColumnType<S, U, I, R, F, A> & {
-  linkedTo: T;
-};
-
-export type LinkColumnType<
-  T extends string,
-  R extends boolean,
-> = ALinkColumnType<
-  T,
-  object,
-  number[] | { newIds: number[]; deletedIds: number[] },
-  number[],
-  R
->;
-
-export type AttachmentColumnType<R extends boolean> = ColumnType<
-  string[],
-  Attachment[] | AttachmentUpdateValue | number[],
-  Attachment[] | number[],
-  R,
-  LinkFilters,
-  LinkAggregations
->;
-
-export type SingleSelectColumnType<
-  O extends readonly string[],
-  R extends boolean,
-> = ColumnType<O[number], O[number], O[number], R, SelectFilters<O>>;
-
-export type MultiSelectColumnType<
-  O extends readonly string[],
-  R extends boolean,
-> = ColumnType<O[number][], O[number][], O[number][], R, SelectFilters<O>>;
-
-export type NumberColumnType<R extends boolean> = ColumnType<
-  number,
-  number,
-  number,
-  R,
-  NumberFilters,
-  NumberAggregations
->;
-
-export type CheckboxColumnType<R extends boolean> = ColumnType<
-  boolean,
-  boolean,
-  boolean,
-  R,
-  CheckboxFilters
->;
-
-export type AutoGeneratedNumberColumnType = ColumnType<
-  number,
-  never,
-  never,
-  false,
-  NumberFilters,
-  NumberAggregations
->;
-
-export type AutoGeneratedDateColumnType = ColumnType<
-  string,
-  never,
-  never,
-  false,
-  DateFilters,
-  DateAggregations
->;
-
-export type TableRaws<T extends keyof TaylorDatabase> = {
-  [K in keyof TaylorDatabase[T]]: TaylorDatabase[T][K] extends ColumnType<
-    infer S,
-    any,
-    any,
-    infer R,
-    any,
-    any
-  >
-    ? R extends true
-      ? S
-      : S | undefined
-    : never;
-};
-
-export type TableInserts<T extends keyof TaylorDatabase> = {
-  [K in keyof TaylorDatabase[T]]: TaylorDatabase[T][K] extends ColumnType<
-    any,
-    infer I,
-    any,
-    infer R,
-    any,
-    any
-  >
-    ? R extends true
-      ? I
-      : I | undefined
-    : never;
-};
-
-export type TableUpdates<T extends keyof TaylorDatabase> = {
-  [K in keyof TaylorDatabase[T]]: TaylorDatabase[T][K] extends ColumnType<
-    any,
-    any,
-    infer U,
-    any,
-    any,
-    any
-  >
-    ? U
-    : never;
-};
-
-export type AttachmentTable = {
-  id: AutoGeneratedNumberColumnType;
-  name: TextColumnType<true>;
-  metadata: TextColumnType<true>;
-  size: NumberColumnType<true>;
-  fileType: TextColumnType<true>;
-  url: TextColumnType<true>;
-  searchText: SearchColumnType;
-};
-
-export type CollaboratorsTable = {
-  id: AutoGeneratedNumberColumnType;
-  name: TextColumnType<true>;
-  emailAddress: TextColumnType<true>;
-  avatar: TextColumnType<true>;
-  searchText: SearchColumnType;
-};
-
-export type TaylorDatabase = {
-  /**
-   *
-   *
-   * Internal tables, these tables can not be queried directly.
-   *
-   */
-  attachmentTable: AttachmentTable;
-  collaborators: CollaboratorsTable;
-  backlog: BacklogTable;
-  sprints: SprintsTable;
-  epics: EpicsTable;
+export interface PluginTypesSmsSendOutput {
+  success?: boolean;
+}
+export type TaylorDatabase = InferTaylorDatabase<typeof taylorSchema> & {
   _plugins: {
     email: {
-      send: {
-        input: {
-          to?: string;
-          subject?: string;
-          body?: string;
-        };
-        result: {
-          success?: boolean;
-        };
-      };
+      /**
+       * Send an email
+       */
+      send: PluginActionType<
+        PluginTypesEmailSendInput,
+        PluginTypesEmailSendOutput
+      >;
     };
     sms: {
-      send: {
-        input: {
-          to?: string;
-          body?: string;
-        };
-        result: {
-          success?: boolean;
-        };
-      };
+      /**
+       * Send an SMS
+       */
+      send: PluginActionType<PluginTypesSmsSendInput, PluginTypesSmsSendOutput>;
     };
   };
-};
-
-export const BacklogStatusOptions = ['Option 1', 'Option 2'] as const;
-export const BacklogPrioOptions = ['Option 1', 'Option 2'] as const;
-export const BacklogTypeOptions = ['Option 1', 'Option 2'] as const;
-export const BacklogTypesOptions = [] as const;
-
-type BacklogTable = {
-  id: NumberColumnType<false>;
-  createdAt: AutoGeneratedDateColumnType;
-  updatedAt: AutoGeneratedDateColumnType;
-  searchText: SearchColumnType;
-  title: TextColumnType<false>;
-  status: SingleSelectColumnType<typeof BacklogStatusOptions, false>;
-  prio: SingleSelectColumnType<typeof BacklogPrioOptions, false>;
-  est: NumberColumnType<false>;
-  responsible: LinkColumnType<'collaborators', false>;
-  modifiedAt: AutoGeneratedDateColumnType;
-  description: TextColumnType<false>;
-  null: AutoGeneratedDateColumnType;
-  isToday: NumberColumnType<false>;
-  isTodayyesterday: NumberColumnType<false>;
-  lastModified: AutoGeneratedDateColumnType;
-  type: SingleSelectColumnType<typeof BacklogTypeOptions, false>;
-  coResponsible: LinkColumnType<'collaborators', false>;
-  sprint: LinkColumnType<'sprints', false>;
-  epic: LinkColumnType<'epics', false>;
-  attachment: AttachmentColumnType<false>;
-  modifiedBy: LinkColumnType<'collaborators', false>;
-  descForNeedsImprovement: TextColumnType<false>;
-  types: MultiSelectColumnType<typeof BacklogTypesOptions, false>;
-  lywrt: TextColumnType<false>;
-  loggedTime: NumberColumnType<false>;
-  nr: AutoGeneratedNumberColumnType;
-  autoNumber: AutoGeneratedNumberColumnType;
-  date: DateColumnType<false>;
-};
-
-export const SprintsStatusOptions = ['Option 1', 'Option 2'] as const;
-export const SprintsSprintStatusOptions = [] as const;
-
-type SprintsTable = {
-  id: NumberColumnType<false>;
-  createdAt: AutoGeneratedDateColumnType;
-  updatedAt: AutoGeneratedDateColumnType;
-  searchText: SearchColumnType;
-  backlog: LinkColumnType<'backlog', false>;
-  name: TextColumnType<false>;
-  beschreibung: TextColumnType<false>;
-  status: SingleSelectColumnType<typeof SprintsStatusOptions, false>;
-  epics: TextColumnType<false>;
-  table7: TextColumnType<false>;
-  end: DateColumnType<false>;
-  start: DateColumnType<false>;
-  sprintStatus: SingleSelectColumnType<
-    typeof SprintsSprintStatusOptions,
-    false
-  >;
-  calendarWeek: TextColumnType<false>;
-};
-
-export const EpicsStatusOptions = ['Option 1', 'Option 2'] as const;
-export const EpicsAreaOptions = ['Option 1', 'Option 2'] as const;
-export const EpicsPriorityOptions = [
-  '☄️ Must Have',
-  ' 🧁 Nice To Have',
-] as const;
-export const EpicsLabelOptions = ['Option 1', 'Option 2'] as const;
-
-type EpicsTable = {
-  id: NumberColumnType<false>;
-  createdAt: AutoGeneratedDateColumnType;
-  updatedAt: AutoGeneratedDateColumnType;
-  searchText: SearchColumnType;
-  backlog: LinkColumnType<'backlog', false>;
-  name: TextColumnType<false>;
-  status: SingleSelectColumnType<typeof EpicsStatusOptions, false>;
-  collaborator: LinkColumnType<'collaborators', false>;
-  description: TextColumnType<false>;
-  area: SingleSelectColumnType<typeof EpicsAreaOptions, false>;
-  blocks: LinkColumnType<'epics', false>;
-  order: NumberColumnType<false>;
-  priority: SingleSelectColumnType<typeof EpicsPriorityOptions, false>;
-  label: MultiSelectColumnType<typeof EpicsLabelOptions, false>;
-  statusModifiedAt: AutoGeneratedDateColumnType;
-  created: AutoGeneratedDateColumnType;
-  prd: TextColumnType<false>;
-  countBacklog: NumberColumnType<false>;
-  start: DateColumnType<false>;
-  end: DateColumnType<false>;
 };
