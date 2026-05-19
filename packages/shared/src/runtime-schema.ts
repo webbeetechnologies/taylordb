@@ -40,8 +40,12 @@ export type CheckboxFieldDescriptor<R extends boolean = boolean> =
 export type DateFieldDescriptor<R extends boolean = boolean> =
   BaseFieldDescriptor<'date', R, true, true>;
 
-export type SearchFieldDescriptor =
-  BaseFieldDescriptor<'search', false, true, true>;
+export type SearchFieldDescriptor = BaseFieldDescriptor<
+  'search',
+  false,
+  true,
+  true
+>;
 
 export type LinkFieldDescriptor<
   TLinkedTo extends string = string,
@@ -64,11 +68,19 @@ export type SelectFieldDescriptor<
   options: TOptions;
 };
 
-export type AutoNumberFieldDescriptor =
-  BaseFieldDescriptor<'autoNumber', false, false, false>;
+export type AutoNumberFieldDescriptor = BaseFieldDescriptor<
+  'autoNumber',
+  false,
+  false,
+  false
+>;
 
-export type AutoDateFieldDescriptor =
-  BaseFieldDescriptor<'autoDate', false, false, false>;
+export type AutoDateFieldDescriptor = BaseFieldDescriptor<
+  'autoDate',
+  false,
+  false,
+  false
+>;
 
 export type TaylorFieldDescriptor =
   | TextFieldDescriptor

@@ -24,9 +24,7 @@ import {
 } from '../index.js';
 import type { InferTaylorDatabase } from '../index.js';
 import { SocketConnection } from '../socket-connection.js';
-import {
-  TaylorDatabase as TaylorDatabaseOriginal,
-} from './taylorclient.types.js';
+import { TaylorDatabase as TaylorDatabaseOriginal } from './taylorclient.types.js';
 
 export const CustomersStatusOptions = ['Pending', 'Active'] as const;
 export const TagsOptions = ['Urgent', 'Low Priority'] as const;

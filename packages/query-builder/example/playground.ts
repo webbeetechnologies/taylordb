@@ -58,9 +58,7 @@ const crossTableFilter = queryBuilder
   .selectFrom('backlog')
   .select(['id', 'title'])
   .where('sprint', 'hasAnyOf', sprint =>
-    sprint
-      .where('name', 'contains', 'Sprint')
-      .where('status', '=', 'Option 1'),
+    sprint.where('name', 'contains', 'Sprint').where('status', '=', 'Option 1'),
   )
   .where('epic', 'hasAnyOf', epic =>
     epic
@@ -265,8 +263,7 @@ const aggregateSubscriptionUnsubscribe = queryBuilder
   .metrics({ total: count('id') })
   .subscribe(records => {
     records.forEach(record => {
-      record.status;
-      record.total;
+      return record.status === 'Option 1' && record.total === 1;
     });
   });
 

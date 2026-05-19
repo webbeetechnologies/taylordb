@@ -9,7 +9,6 @@ import {
   autoDateField,
   autoNumberField,
   attachmentField,
-  checkboxField,
   dateField,
   defineTaylorSchema,
   linkField,
