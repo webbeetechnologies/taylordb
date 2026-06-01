@@ -114,6 +114,7 @@ describe('runtime schema helpers', () => {
       options: ['Pending', 'Active'],
       insertable: true,
       updatable: true,
+      systemType: 'select',
     });
     expect(runtimeSchema.projects.owner).toMatchObject({
       type: 'link',
@@ -140,6 +141,29 @@ describe('runtime schema helpers', () => {
       .where('tags', 'hasAnyOf', ['Urgent'])
       .where('owner', '=', 1)
       .where('budget', '>=', 100);
+
+    qb.selectFrom('projects').with({
+      owner: owner => owner.select(['id', 'name']),
+    });
+
+    // @ts-expect-error with object form must include at least one relation
+    qb.selectFrom('projects').with({});
+
+    qb.selectFrom('projects').with({
+      // @ts-expect-error unknown relation keys must be rejected
+      unknown: owner => owner.select(['id']),
+    });
+
+    qb.selectFrom('projects').with({
+      // @ts-expect-error non-link fields must not be accepted as relations
+      name: project => project.select(['id']),
+    });
+
+    qb.selectFrom('projects').with({
+      owner: owner =>
+        // @ts-expect-error relation callbacks must be scoped to the linked table
+        owner.select(['budget']),
+    });
 
     qb.insertInto('projects').values({
       name: 'Runtime schema',

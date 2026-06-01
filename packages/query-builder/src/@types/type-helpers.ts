@@ -33,6 +33,34 @@ type InferSubqueryShape<TFunc> = TFunc extends (
   ? { [K in LinkName & string]: SubSelection[] }
   : object;
 
+export type WithRelationObject<DB extends AnyDB, TName extends keyof DB> = {
+  [K in LinkColumnNames<DB[TName]> & string]?: (
+    qb: QueryBuilder<
+      DB,
+      DB[TName][K] extends ALinkColumnType<
+        infer L,
+        any,
+        any,
+        any,
+        boolean,
+        any,
+        any
+      >
+        ? L
+        : never,
+      object,
+      K
+    >,
+  ) => QueryBuilder<DB, any, any, any>;
+};
+
+export type RequireAtLeastOne<T> = {
+  [K in keyof T]-?: Required<Pick<T, K>> & Partial<Omit<T, K>>;
+}[keyof T];
+
+export type NoExtraRelationKeys<T, TShape> = T &
+  Record<Exclude<keyof T, keyof TShape>, never>;
+
 export type ResolveSelection<
   DB extends AnyDB,
   TName extends keyof DB,
@@ -80,13 +108,12 @@ export type ResolveWithPlain<
   >;
 
 export type ResolveWithObject<
-  TRelations extends Record<
-    string,
-    (qb: any) => QueryBuilder<any, any, any, any>
+  TRelations extends Partial<
+    Record<string, (qb: any) => QueryBuilder<any, any, any, any>>
   >,
   TCurrentSelection,
 > = TCurrentSelection & {
   -readonly [K in keyof TRelations]: InferSubqueryResult<
-    ReturnType<TRelations[K]>
+    ReturnType<NonNullable<TRelations[K]>>
   >;
 };

@@ -2,7 +2,6 @@ import { Attachment, FieldWithDirection } from '@taylordb/shared';
 import { z } from 'zod';
 import { AggregateNode } from './@types/aggregate.js';
 import {
-  AbstractLinkColumn,
   AnyDB,
   QueryNode,
   RootQueryNode,
@@ -15,9 +14,12 @@ import {
 } from './@types/query-builder.js';
 import {
   InferDataType,
+  NoExtraRelationKeys,
+  RequireAtLeastOne,
   ResolveSelection,
   ResolveWithObject,
   ResolveWithPlain,
+  WithRelationObject,
 } from './@types/type-helpers.js';
 import { AggregationQueryBuilder } from './aggregation-query-builder.js';
 import {
@@ -193,21 +195,8 @@ export class QueryBuilder<
     TableName,
     ResolveWithPlain<DB, TableName, TArg, Selection>
   >;
-  with<
-    const TArg extends {
-      [K in LinkColumnNames<DB[TableName]>]?: (
-        qb: QueryBuilder<
-          DB,
-          DB[TableName][K] extends AbstractLinkColumn
-            ? DB[TableName][K]['linkedTo']
-            : never,
-          object,
-          K
-        >,
-      ) => QueryBuilder<DB, any, any, any>;
-    },
-  >(
-    relations: TArg,
+  with<const TArg extends RequireAtLeastOne<WithRelationObject<DB, TableName>>>(
+    relations: NoExtraRelationKeys<TArg, WithRelationObject<DB, TableName>>,
   ): QueryBuilder<DB, TableName, ResolveWithObject<TArg, Selection>>;
   with(
     arg:

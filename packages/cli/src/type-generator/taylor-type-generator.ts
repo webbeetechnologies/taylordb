@@ -101,7 +101,9 @@ export class TaylorTypeGenerator {
     return schemaArgument;
   }
 
-  private removeUnusedRuntimeImports(taylorSchemaObject: ObjectLiteralExpression) {
+  private removeUnusedRuntimeImports(
+    taylorSchemaObject: ObjectLiteralExpression,
+  ) {
     const runtimeImport = this.sourceFile
       .getImportDeclarations()
       .find(

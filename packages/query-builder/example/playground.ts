@@ -77,6 +77,7 @@ const relationshipByObject = queryBuilder
   .selectFrom('backlog')
   .select(['id', 'title'])
   .with({
+
     sprint: sprint =>
       sprint
         .select(['id', 'name', 'status', 'start', 'end'])
