@@ -27,6 +27,8 @@ export const taylorSchema = defineTaylorSchema({
     name: textField({ required: true }),
     emailAddress: textField({ required: true }),
     avatar: textField({ required: true }),
+    // Collaborator lifecycle status. Expected values are ACTIVE or INACTIVE.
+    status: textField({ required: true }),
     searchText: searchField(),
   },
 });

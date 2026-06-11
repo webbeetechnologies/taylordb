@@ -2,6 +2,8 @@
 
 This package is the TypeScript query builder for TaylorDB. It provides a fluent, type-safe API for reading and writing data. Use `createQueryBuilder<TaylorDatabase>(config)` as the entry point. `@taylordb/cli` generates a runtime `taylorSchema` object and `export type TaylorDatabase = InferTaylorDatabase<typeof taylorSchema>`.
 
+The built-in `collaborators` table maps to TaylorDB's internal collaborator records and exposes `id`, `name`, `emailAddress`, `avatar`, `status`, and `searchText`. `status` is a text field whose expected values are `ACTIVE` and `INACTIVE`.
+
 ## Documentation
 
 - [Field Types](./docs/field-types.md)

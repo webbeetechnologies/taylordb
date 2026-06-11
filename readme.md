@@ -511,12 +511,12 @@ if (user) {
 
 ### Collaborators
 
-You can easily fetch a list of collaborators (active users in the system).
+You can easily fetch a list of collaborators. The `status` field is text and is expected to be either `ACTIVE` or `INACTIVE`.
 
 ```typescript
 const collaborators = await qb
   .selectFrom('collaborators')
-  .select(['id', 'name', 'avatar'])
+  .select(['id', 'name', 'avatar', 'status'])
   .execute();
 
 collaborators.forEach(c => {
