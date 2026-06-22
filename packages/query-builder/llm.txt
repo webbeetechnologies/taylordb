@@ -4,6 +4,8 @@ This package is the TypeScript query builder for TaylorDB. It provides a fluent,
 
 The built-in `collaborators` table maps to TaylorDB's internal collaborator records and exposes `id`, `name`, `emailAddress`, `avatar`, `status`, and `searchText`. `status` is a text field whose expected values are `ACTIVE` and `INACTIVE`.
 
+The package also exports the existing builder helper types from the root entry point. Use `Insertable<TaylorDatabase['table']>` for `insertInto().values()` payloads, `Updatable<TaylorDatabase['table']>` for `update().set()` payloads, `Filters` and `FiltersSet` for filter metadata, `FieldWithDirection` and `LimitOffset`/`PaginationRequest` for sorting and pagination metadata, `ColumnNames`/`NonLinkColumnNames`/`LinkColumnNames` for schema fields, `Aggregates`/`AggregateRecord`/`MetricsRecord` for aggregation result helpers, and `InferActionInput`/`InferActionResult` for plugin action types. See the README "Reusable Exported Types" section for import examples.
+
 ## Documentation
 
 - [Field Types](./docs/field-types.md)

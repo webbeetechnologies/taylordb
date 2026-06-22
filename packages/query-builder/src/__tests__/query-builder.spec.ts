@@ -22,7 +22,21 @@ import {
   createQueryBuilder,
   sum,
 } from '../index.js';
-import type { InferTaylorDatabase } from '../index.js';
+import type {
+  Aggregates,
+  ColumnNames,
+  FieldWithDirection,
+  Filters,
+  FiltersSet,
+  InferTaylorDatabase,
+  InferActionInput,
+  InferActionResult,
+  Insertable,
+  LinkColumnNames,
+  LimitOffset,
+  NonLinkColumnNames,
+  Updatable,
+} from '../index.js';
 import { SocketConnection } from '../socket-connection.js';
 import { TaylorDatabase as TaylorDatabaseOriginal } from './taylorclient.types.js';
 
@@ -79,6 +93,114 @@ jest.mock('socket.io-client', () => {
 });
 
 describe('runtime schema helpers', () => {
+  it('exports existing query-builder input and metadata types', () => {
+    const createPayload = {
+      firstName: 'Jane',
+      lastName: 'Doe',
+      orders: [1],
+    } satisfies Insertable<TaylorDatabase['customers']>;
+
+    const missingRequiredCreate =
+      // @ts-expect-error required create fields must be present
+      { lastName: 'Doe' } satisfies Insertable<TaylorDatabase['customers']>;
+
+    const nonInsertableCreateField = {
+      firstName: 'Jane',
+      // @ts-expect-error non-insertable fields must not be accepted
+      id: 1,
+    } satisfies Insertable<TaylorDatabase['customers']>;
+
+    const updatePayload = {
+      firstName: 'Janet',
+      orders: { newIds: [1], deletedIds: [] },
+    } satisfies Updatable<TaylorDatabase['customers']>;
+
+    const nonUpdatableUpdateField = {
+      // @ts-expect-error non-updatable fields must not be accepted
+      id: 1,
+    } satisfies Updatable<TaylorDatabase['customers']>;
+
+    const textFilter = {
+      field: 'firstName',
+      operator: 'contains',
+      value: 'Jan',
+    } satisfies Filters<ColumnNames<TaylorDatabase['customers']> & string>;
+
+    const omittedValueFilter = {
+      field: 'lastName',
+      operator: 'isEmpty',
+    } satisfies Filters<ColumnNames<TaylorDatabase['customers']> & string>;
+
+    const filtersSet = {
+      conjunction: 'and',
+      filtersSet: [
+        textFilter,
+        {
+          conjunction: 'or',
+          filtersSet: [omittedValueFilter],
+        },
+      ],
+    } satisfies FiltersSet<ColumnNames<TaylorDatabase['customers']> & string>;
+
+    const orderBy = {
+      field: 'lastName',
+      direction: 'asc',
+    } satisfies FieldWithDirection<
+      ColumnNames<TaylorDatabase['customers']> & string
+    >;
+
+    const pagination = {
+      limit: 10,
+      offset: 20,
+    } satisfies LimitOffset;
+
+    const columnField: ColumnNames<TaylorDatabase['customers']> = 'orders';
+    const selectFieldName: NonLinkColumnNames<TaylorDatabase['customers']> =
+      'firstName';
+    const linkFieldName: LinkColumnNames<TaylorDatabase['customers']> =
+      'orders';
+
+    // @ts-expect-error link fields are not selectable scalar fields
+    const invalidSelectField: NonLinkColumnNames<
+      TaylorDatabase['customers']
+    > =
+      'orders';
+
+    const aggregates = {
+      amount: {
+        sum: 100,
+      },
+    } satisfies Aggregates<
+      TaylorDatabase,
+      'orders',
+      { amount: readonly ['sum'] }
+    >;
+
+    const pluginInput = {
+      recordId: 1,
+    } satisfies InferActionInput<TaylorDatabase, 'email', 'send'>;
+
+    const pluginResult = {
+      success: true,
+    } satisfies InferActionResult<TaylorDatabase, 'email', 'send'>;
+
+    void createPayload;
+    void missingRequiredCreate;
+    void nonInsertableCreateField;
+    void updatePayload;
+    void nonUpdatableUpdateField;
+    void filtersSet;
+    void orderBy;
+    void pagination;
+    void columnField;
+    void selectFieldName;
+    void linkFieldName;
+    void invalidSelectField;
+    void aggregates;
+    void pluginInput;
+    void pluginResult;
+  });
+
   it('preserves runtime field metadata and infers query-builder types', () => {
     const runtimeSchema = defineTaylorSchema({
       projects: {

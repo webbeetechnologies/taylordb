@@ -1,7 +1,7 @@
 import { PluginActionNode } from './@types/internal-types.js';
 import { Executor } from './executor.js';
 
-type InferActionName<DB, PluginName extends string> = DB extends {
+export type InferActionName<DB, PluginName extends string> = DB extends {
   _plugins: infer P;
 }
   ? PluginName extends keyof P
@@ -9,7 +9,7 @@ type InferActionName<DB, PluginName extends string> = DB extends {
     : string
   : string;
 
-type InferActionInput<
+export type InferActionInput<
   DB,
   PluginName extends string,
   ActionName extends string,
@@ -25,7 +25,7 @@ type InferActionInput<
     : Record<string, any>
   : Record<string, any>;
 
-type InferActionResult<
+export type InferActionResult<
   DB,
   PluginName extends string,
   ActionName extends string,

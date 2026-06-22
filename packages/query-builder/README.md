@@ -73,6 +73,67 @@ export type TaylorDatabase = InferTaylorDatabase<typeof taylorSchema>;
 
 Available field helpers are `textField`, `numberField`, `checkboxField`, `dateField`, `searchField`, `linkField`, `attachmentField`, `selectField`, `autoNumberField`, and `autoDateField`.
 
+### Reusable Exported Types
+
+`@taylordb/query-builder` exports the same TypeScript helper types used by the builders, so application code can type values that pass through functions, forms, API handlers, or reusable components before calling the fluent API.
+
+```typescript
+import type {
+  ColumnNames,
+  FieldWithDirection,
+  Filters,
+  FiltersSet,
+  InferActionInput,
+  InferActionResult,
+  Insertable,
+  LimitOffset,
+  Updatable,
+} from '@taylordb/query-builder';
+import type { TaylorDatabase } from './taylorclient.types';
+
+type CustomerCreate = Insertable<TaylorDatabase['customers']>;
+type CustomerUpdate = Updatable<TaylorDatabase['customers']>;
+type CustomerField = ColumnNames<TaylorDatabase['customers']> & string;
+
+const newCustomer: CustomerCreate = {
+  firstName: 'Jane',
+  lastName: 'Doe',
+};
+
+const customerPatch: CustomerUpdate = {
+  lastName: 'Smith',
+};
+
+const activeCustomerFilter: Filters<CustomerField> = {
+  field: 'status',
+  operator: '=',
+  value: 'Active',
+};
+
+const customerFilters: FiltersSet<CustomerField> = {
+  conjunction: 'and',
+  filtersSet: [
+    activeCustomerFilter,
+    { field: 'lastName', operator: 'isNotEmpty' },
+  ],
+};
+
+const sort: FieldWithDirection<CustomerField> = {
+  field: 'lastName',
+  direction: 'asc',
+};
+
+const pagination: LimitOffset = {
+  limit: 25,
+  offset: 0,
+};
+
+type SendEmailInput = InferActionInput<TaylorDatabase, 'email', 'send'>;
+type SendEmailResult = InferActionResult<TaylorDatabase, 'email', 'send'>;
+```
+
+Related exported types include `TableNames`, `NonLinkColumnNames`, `LinkColumnNames`, `AggregateRecord`, `Aggregates`, `MetricsRecord`, `PaginationRequest`, `GroupingConfiguration`, `InsertNode`, `UpdateNode`, and `DeleteNode`.
+
 ## Usage
 
 ### Selecting Data
