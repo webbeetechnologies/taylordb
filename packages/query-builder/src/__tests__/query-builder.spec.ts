@@ -11,19 +11,45 @@ import {
   SearchColumnType,
 } from '@taylordb/shared';
 import {
+  attachmentField,
   autoNumberField,
+  buttonField,
+  checkboxField,
+  collaboratorsField,
+  countField,
+  createdAtField,
+  createdByField,
+  currencyField,
   dateField,
   defineTaylorSchema,
+  durationField,
+  emailField,
+  exposingFieldTypes,
+  formulaField,
+  jsonField,
   linkField,
+  longTextField,
+  lookupField,
+  modifiedAtField,
+  modifiedByField,
   numberField,
+  percentField,
+  phoneNumberField,
+  positionField,
+  ratingField,
+  rollupField,
   searchField,
   selectField,
+  singleLineTextField,
   textField,
   createQueryBuilder,
   sum,
+  updatedAtField,
+  urlField,
 } from '../index.js';
 import type {
   Aggregates,
+  BambooFieldsType,
   ColumnNames,
   FieldWithDirection,
   Filters,
@@ -201,6 +227,115 @@ describe('runtime schema helpers', () => {
     void pluginResult;
   });
 
+  it('preserves Bamboo field-specific runtime helpers and inference', () => {
+    const fieldTypes = exposingFieldTypes satisfies readonly BambooFieldsType[];
+    expect(fieldTypes).toContain('currency');
+    expect(fieldTypes).toContain('modifiedBy');
+    expect(fieldTypes).toContain('rollup');
+
+    const schema = defineTaylorSchema({
+      allFields: {
+        json: jsonField({ required: false }),
+        number: numberField({ required: false }),
+        date: dateField({ required: false }),
+        modifiedAt: modifiedAtField(),
+        link: linkField({ required: false, linkedTo: 'linked' }),
+        currency: currencyField({ required: false }),
+        percent: percentField({ required: false }),
+        url: urlField({ required: false }),
+        email: emailField({ required: false }),
+        phoneNumber: phoneNumberField({ required: false }),
+        checkbox: checkboxField({ required: false }),
+        select: selectField({
+          required: false,
+          mode: 'single',
+          options: ['One', 'Two'] as const,
+        }),
+        count: countField({ required: false }),
+        autoNumber: autoNumberField(),
+        formula: formulaField({ returnType: 'number' }),
+        position: positionField({ required: false }),
+        rating: ratingField({ required: false }),
+        createdAt: createdAtField(),
+        updatedAt: updatedAtField(),
+        singleLineText: singleLineTextField({ required: false }),
+        text: textField({ required: false }),
+        longText: longTextField({ required: false }),
+        lookup: lookupField({ returnType: 'json' }),
+        rollup: rollupField({ returnType: 'date' }),
+        collaborators: collaboratorsField({ required: false }),
+        modifiedBy: modifiedByField({ required: false }),
+        duration: durationField({ required: false }),
+        createdBy: createdByField({ required: false }),
+        attachment: attachmentField({ required: false }),
+        button: buttonField({ required: false }),
+      },
+      linked: {
+        id: autoNumberField(),
+      },
+    });
+
+    type FieldDatabase = InferTaylorDatabase<typeof schema>;
+
+    expect(schema.allFields.currency.type).toBe('currency');
+    expect(schema.allFields.modifiedAt.type).toBe('modifiedAt');
+    expect(schema.allFields.formula).toMatchObject({
+      type: 'formula',
+      returnType: 'number',
+      insertable: false,
+      updatable: false,
+    });
+    expect(schema.allFields.lookup.type).toBe('lookup');
+    expect(schema.allFields.rollup.type).toBe('rollup');
+    expect(schema.allFields.modifiedBy.linkedTo).toBe('collaborators');
+
+    const insertable = {
+      json: '{}',
+      number: 1,
+      date: '2026-06-22',
+      link: [1],
+      currency: 10,
+      percent: 50,
+      url: 'https://example.com',
+      email: 'hello@example.com',
+      phoneNumber: '+15555555555',
+      checkbox: true,
+      select: 'One',
+      count: 1,
+      position: 1,
+      rating: 5,
+      singleLineText: 'single',
+      text: 'text',
+      longText: 'long',
+      collaborators: [1],
+      modifiedBy: [1],
+      duration: 60,
+      createdBy: [1],
+      attachment: [],
+      button: 'run',
+    } satisfies Insertable<FieldDatabase['allFields']>;
+
+    const updatable = {
+      currency: 20,
+      modifiedBy: { newIds: [1], deletedIds: [] },
+    } satisfies Updatable<FieldDatabase['allFields']>;
+
+    const invalidSystemInsert = {
+      // @ts-expect-error system dates must not be insertable
+      createdAt: '2026-06-22',
+    } satisfies Insertable<FieldDatabase['allFields']>;
+
+    const invalidComputedInsert = {
+      // @ts-expect-error computed fields must not be insertable
+      formula: 1,
+    } satisfies Insertable<FieldDatabase['allFields']>;
+
+    void insertable;
+    void updatable;
+    void invalidSystemInsert;
+    void invalidComputedInsert;
+  });
+
   it('preserves runtime field metadata and infers query-builder types', () => {
     const runtimeSchema = defineTaylorSchema({
       projects: {
@@ -236,7 +371,6 @@ describe('runtime schema helpers', () => {
       options: ['Pending', 'Active'],
       insertable: true,
       updatable: true,
-      systemType: 'select',
     });
     expect(runtimeSchema.projects.owner).toMatchObject({
       type: 'link',

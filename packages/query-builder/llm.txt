@@ -9,7 +9,7 @@ The package also exports the existing builder helper types from the root entry p
 ## Documentation
 
 - [Field Types](./docs/field-types.md)
-  Runtime field helpers (`textField`, `numberField`, `checkboxField`, `dateField`, `searchField`, `linkField`, `attachmentField`, `selectField`, `autoNumberField`, `autoDateField`), how `InferTaylorDatabase` maps descriptors to column types, what value each type accepts on insert/update, what is returned on select, and which filter operators are available per type.
+  Runtime field helpers, including generic helpers (`textField`, `numberField`, `checkboxField`, `dateField`, `searchField`, `linkField`, `attachmentField`, `selectField`, `autoNumberField`, `autoDateField`) and Bamboo-specific helpers (`singleLineTextField`, `longTextField`, `jsonField`, `urlField`, `emailField`, `phoneNumberField`, `currencyField`, `percentField`, `countField`, `positionField`, `ratingField`, `durationField`, `createdAtField`, `updatedAtField`, `modifiedAtField`, `collaboratorsField`, `modifiedByField`, `createdByField`, `formulaField`, `lookupField`, `rollupField`, `buttonField`), how `InferTaylorDatabase` maps descriptors to column types, what value each type accepts on insert/update, what is returned on select, and which filter operators are available per type.
 
 - [Insert](./docs/insert.md)
   How to create records using `insertInto().values().returning().execute()`. Single and batch inserts, the default return value, how attachment and link fields are handled on insert, and which tables cannot be inserted into.

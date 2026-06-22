@@ -1541,6 +1541,293 @@
               "returnType": "date"
             }
           ]
+        },
+        {
+          "id": 999,
+          "name": "playgroundAllFields",
+          "slug": "_playground_all_fields_tbl",
+          "title": "Playground All Fields",
+          "fields": [
+            {
+              "id": 1001,
+              "name": "jsonValue",
+              "slug": "_jsonValue_fld",
+              "title": "JSON Value",
+              "type": "json",
+              "options": {},
+              "returnType": "json"
+            },
+            {
+              "id": 1002,
+              "name": "numberValue",
+              "slug": "_numberValue_fld",
+              "title": "Number Value",
+              "type": "number",
+              "options": {},
+              "returnType": "number"
+            },
+            {
+              "id": 1003,
+              "name": "dateValue",
+              "slug": "_dateValue_fld",
+              "title": "Date Value",
+              "type": "date",
+              "options": {},
+              "returnType": "date"
+            },
+            {
+              "id": 1004,
+              "name": "modifiedAtValue",
+              "slug": "_modifiedAtValue_fld",
+              "title": "Modified At Value",
+              "type": "modifiedAt",
+              "options": {},
+              "returnType": "date"
+            },
+            {
+              "id": 1005,
+              "name": "linkValue",
+              "slug": "_linkValue_fld",
+              "title": "Link Value",
+              "type": "link",
+              "options": {
+                "on": "_epics_tblJueXY5EqXZtRih"
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 1006,
+              "name": "currencyValue",
+              "slug": "_currencyValue_fld",
+              "title": "Currency Value",
+              "type": "currency",
+              "options": {},
+              "returnType": "number"
+            },
+            {
+              "id": 1007,
+              "name": "percentValue",
+              "slug": "_percentValue_fld",
+              "title": "Percent Value",
+              "type": "percent",
+              "options": {},
+              "returnType": "number"
+            },
+            {
+              "id": 1008,
+              "name": "urlValue",
+              "slug": "_urlValue_fld",
+              "title": "URL Value",
+              "type": "url",
+              "options": {},
+              "returnType": "string"
+            },
+            {
+              "id": 1009,
+              "name": "emailValue",
+              "slug": "_emailValue_fld",
+              "title": "Email Value",
+              "type": "email",
+              "options": {},
+              "returnType": "string"
+            },
+            {
+              "id": 1010,
+              "name": "phoneNumberValue",
+              "slug": "_phoneNumberValue_fld",
+              "title": "Phone Number Value",
+              "type": "phoneNumber",
+              "options": {},
+              "returnType": "string"
+            },
+            {
+              "id": 1011,
+              "name": "checkboxValue",
+              "slug": "_checkboxValue_fld",
+              "title": "Checkbox Value",
+              "type": "checkbox",
+              "options": {},
+              "returnType": "boolean"
+            },
+            {
+              "id": 1012,
+              "name": "selectValue",
+              "slug": "_selectValue_fld",
+              "title": "Select Value",
+              "type": "select",
+              "options": {
+                "on": "_playground_select_options",
+                "isSingle": true,
+                "choices": [
+                  { "id": 1, "name": "One" },
+                  { "id": 2, "name": "Two" }
+                ]
+              },
+              "returnType": "json"
+            },
+            {
+              "id": 1013,
+              "name": "countValue",
+              "slug": "_countValue_fld",
+              "title": "Count Value",
+              "type": "count",
+              "options": {},
+              "returnType": "number"
+            },
+            {
+              "id": 1014,
+              "name": "autoNumberValue",
+              "slug": "_autoNumberValue_fld",
+              "title": "Auto Number Value",
+              "type": "autoNumber",
+              "options": {},
+              "returnType": "number"
+            },
+            {
+              "id": 1015,
+              "name": "formulaValue",
+              "slug": "_formulaValue_fld",
+              "title": "Formula Value",
+              "type": "formula",
+              "options": {},
+              "returnType": "number"
+            },
+            {
+              "id": 1016,
+              "name": "positionValue",
+              "slug": "_positionValue_fld",
+              "title": "Position Value",
+              "type": "position",
+              "options": {},
+              "returnType": "number"
+            },
+            {
+              "id": 1017,
+              "name": "ratingValue",
+              "slug": "_ratingValue_fld",
+              "title": "Rating Value",
+              "type": "rating",
+              "options": {},
+              "returnType": "number"
+            },
+            {
+              "id": 1018,
+              "name": "createdAtValue",
+              "slug": "_createdAtValue_fld",
+              "title": "Created At Value",
+              "type": "createdAt",
+              "options": {},
+              "returnType": "date"
+            },
+            {
+              "id": 1019,
+              "name": "updatedAtValue",
+              "slug": "_updatedAtValue_fld",
+              "title": "Updated At Value",
+              "type": "updatedAt",
+              "options": {},
+              "returnType": "date"
+            },
+            {
+              "id": 1020,
+              "name": "singleLineTextValue",
+              "slug": "_singleLineTextValue_fld",
+              "title": "Single Line Text Value",
+              "type": "singleLineText",
+              "options": {},
+              "returnType": "string"
+            },
+            {
+              "id": 1021,
+              "name": "textValue",
+              "slug": "_textValue_fld",
+              "title": "Text Value",
+              "type": "text",
+              "options": {},
+              "returnType": "string"
+            },
+            {
+              "id": 1022,
+              "name": "longTextValue",
+              "slug": "_longTextValue_fld",
+              "title": "Long Text Value",
+              "type": "longText",
+              "options": {},
+              "returnType": "string"
+            },
+            {
+              "id": 1023,
+              "name": "lookupValue",
+              "slug": "_lookupValue_fld",
+              "title": "Lookup Value",
+              "type": "lookup",
+              "options": {},
+              "returnType": "json"
+            },
+            {
+              "id": 1024,
+              "name": "rollupValue",
+              "slug": "_rollupValue_fld",
+              "title": "Rollup Value",
+              "type": "rollup",
+              "options": {},
+              "returnType": "date"
+            },
+            {
+              "id": 1025,
+              "name": "collaboratorsValue",
+              "slug": "_collaboratorsValue_fld",
+              "title": "Collaborators Value",
+              "type": "collaborators",
+              "options": {},
+              "returnType": "json"
+            },
+            {
+              "id": 1026,
+              "name": "modifiedByValue",
+              "slug": "_modifiedByValue_fld",
+              "title": "Modified By Value",
+              "type": "modifiedBy",
+              "options": {},
+              "returnType": "json"
+            },
+            {
+              "id": 1027,
+              "name": "durationValue",
+              "slug": "_durationValue_fld",
+              "title": "Duration Value",
+              "type": "duration",
+              "options": {},
+              "returnType": "number"
+            },
+            {
+              "id": 1028,
+              "name": "createdByValue",
+              "slug": "_createdByValue_fld",
+              "title": "Created By Value",
+              "type": "createdBy",
+              "options": {},
+              "returnType": "json"
+            },
+            {
+              "id": 1029,
+              "name": "attachmentValue",
+              "slug": "_attachmentValue_fld",
+              "title": "Attachment Value",
+              "type": "attachment",
+              "options": {},
+              "returnType": "json"
+            },
+            {
+              "id": 1030,
+              "name": "buttonValue",
+              "slug": "_buttonValue_fld",
+              "title": "Button Value",
+              "type": "button",
+              "options": {},
+              "returnType": "string"
+            }
+          ]
         }
       ]
     },

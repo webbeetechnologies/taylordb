@@ -1,3 +1,5 @@
+import type { BambooFieldsType } from '@taylordb/query-builder';
+
 export interface AppGetResponse {
   server: {
     getBaseById: {
@@ -10,7 +12,7 @@ export interface BambooField {
   id: number;
   name: string;
   title: string;
-  type: string;
+  type: BambooFieldsType | string;
   options: any;
   returnType: string;
 }

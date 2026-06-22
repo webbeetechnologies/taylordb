@@ -50,7 +50,7 @@ The CLI emits `taylorSchema` using helpers exported from `@taylordb/query-builde
 ```typescript
 import {
   defineTaylorSchema,
-  textField,
+  singleLineTextField,
   selectField,
   linkField,
 } from '@taylordb/query-builder';
@@ -58,7 +58,7 @@ import type { InferTaylorDatabase } from '@taylordb/query-builder';
 
 export const taylorSchema = defineTaylorSchema({
   backlog: {
-    title: textField({ required: false }),
+    title: singleLineTextField({ required: false }),
     status: selectField({
       required: false,
       mode: 'single',
@@ -71,7 +71,7 @@ export const taylorSchema = defineTaylorSchema({
 export type TaylorDatabase = InferTaylorDatabase<typeof taylorSchema>;
 ```
 
-Available field helpers are `textField`, `numberField`, `checkboxField`, `dateField`, `searchField`, `linkField`, `attachmentField`, `selectField`, `autoNumberField`, and `autoDateField`.
+Available field helpers include the generic helpers (`textField`, `numberField`, `checkboxField`, `dateField`, `searchField`, `linkField`, `attachmentField`, `selectField`, `autoNumberField`, `autoDateField`) plus field-specific Bamboo helpers such as `singleLineTextField`, `longTextField`, `jsonField`, `urlField`, `emailField`, `phoneNumberField`, `currencyField`, `percentField`, `countField`, `positionField`, `ratingField`, `durationField`, `createdAtField`, `updatedAtField`, `modifiedAtField`, `collaboratorsField`, `modifiedByField`, `createdByField`, `formulaField`, `lookupField`, `rollupField`, and `buttonField`.
 
 ### Reusable Exported Types
 

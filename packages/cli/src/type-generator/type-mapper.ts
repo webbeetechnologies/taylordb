@@ -17,24 +17,55 @@ export class TypeMapper {
 
     switch (column.type) {
       case 'singleLineText':
+        return `singleLineTextField(${requiredOption})`;
+
       case 'text':
-      case 'json':
-      case 'url':
-      case 'email':
-      case 'phoneNumber':
-      case 'longText':
         return `textField(${requiredOption})`;
+
+      case 'json':
+        return `jsonField(${requiredOption})`;
+
+      case 'url':
+        return `urlField(${requiredOption})`;
+
+      case 'email':
+        return `emailField(${requiredOption})`;
+
+      case 'phoneNumber':
+        return `phoneNumberField(${requiredOption})`;
+
+      case 'longText':
+        return `longTextField(${requiredOption})`;
+
+      case 'button':
+        return `buttonField(${requiredOption})`;
 
       case 'autoNumber':
         return `autoNumberField()`;
 
       case 'number':
+        return `numberField(${requiredOption})`;
+
       case 'position':
+        return `positionField(${requiredOption})`;
+
       case 'percent':
+        return `percentField(${requiredOption})`;
+
       case 'duration':
+        return `durationField(${requiredOption})`;
+
+      case 'currency':
+        return `currencyField(${requiredOption})`;
+
+      case 'count':
+        return `countField(${requiredOption})`;
+
+      case 'rating':
+        return `ratingField(${requiredOption})`;
+
       case 'decimalSerial':
       case 'serial':
-      case 'currency':
         return `numberField(${requiredOption})`;
 
       case 'checkbox':
@@ -51,10 +82,13 @@ export class TypeMapper {
       }
 
       case 'modifiedBy':
+        return `modifiedByField(${requiredOption})`;
+
       case 'collaborators':
-        return `linkField({ required: ${
-          isRequired ? 'true' : 'false'
-        }, linkedTo: 'collaborators' })`;
+        return `collaboratorsField(${requiredOption})`;
+
+      case 'createdBy':
+        return `createdByField(${requiredOption})`;
 
       case 'attachment':
         return `attachmentField(${requiredOption})`;
@@ -82,12 +116,21 @@ export class TypeMapper {
       }
 
       case 'createdAt':
+        return `createdAtField()`;
+
       case 'updatedAt':
+        return `updatedAtField()`;
+
       case 'modifiedAt':
-        return `autoDateField()`;
+        return `modifiedAtField()`;
 
       case 'date':
         return `dateField(${requiredOption})`;
+
+      case 'formula':
+      case 'lookup':
+      case 'rollup':
+        return this.mapComputedField(column.type, column.returnType);
 
       default: {
         switch (column.returnType) {
@@ -126,5 +169,20 @@ export class TypeMapper {
     return this.taylorTypeGenerator.tablesSchema.some(
       table => table.slug === tableSlug,
     );
+  }
+
+  private mapComputedField(type: 'formula' | 'lookup' | 'rollup', returnType: string) {
+    switch (returnType) {
+      case 'string':
+      case 'json':
+      case 'select':
+      case 'number':
+      case 'boolean':
+      case 'date':
+        return `${type}Field({ returnType: '${returnType}' })`;
+
+      default:
+        return null;
+    }
   }
 }
