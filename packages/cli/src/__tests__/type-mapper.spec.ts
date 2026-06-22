@@ -87,9 +87,7 @@ describe('TypeMapper', () => {
     expect(mapper.map(makeField('percent'))).toBe(
       'percentField({ required: false })',
     );
-    expect(mapper.map(makeField('url'))).toBe(
-      'urlField({ required: false })',
-    );
+    expect(mapper.map(makeField('url'))).toBe('urlField({ required: false })');
     expect(mapper.map(makeField('email'))).toBe(
       'emailField({ required: false })',
     );
@@ -100,9 +98,7 @@ describe('TypeMapper', () => {
       'checkboxField({ required: false })',
     );
     expect(
-      mapper.map(
-        makeField('select', { on: 'select-options', isSingle: true }),
-      ),
+      mapper.map(makeField('select', { on: 'select-options', isSingle: true })),
     ).toBe(
       'selectField({ required: false, mode: \'single\', options: ["Open", "Closed"] as const })',
     );

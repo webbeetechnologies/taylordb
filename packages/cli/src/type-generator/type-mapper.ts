@@ -171,7 +171,10 @@ export class TypeMapper {
     );
   }
 
-  private mapComputedField(type: 'formula' | 'lookup' | 'rollup', returnType: string) {
+  private mapComputedField(
+    type: 'formula' | 'lookup' | 'rollup',
+    returnType: string,
+  ) {
     switch (returnType) {
       case 'string':
       case 'json':

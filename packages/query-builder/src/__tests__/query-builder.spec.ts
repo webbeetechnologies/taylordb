@@ -187,9 +187,7 @@ describe('runtime schema helpers', () => {
       'orders';
 
     // @ts-expect-error link fields are not selectable scalar fields
-    const invalidSelectField: NonLinkColumnNames<
-      TaylorDatabase['customers']
-    > =
+    const invalidSelectField: NonLinkColumnNames<TaylorDatabase['customers']> =
       'orders';
 
     const aggregates = {

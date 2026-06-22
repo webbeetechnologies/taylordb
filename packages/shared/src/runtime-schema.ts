@@ -82,7 +82,13 @@ type RequiredOption<R extends boolean = boolean> = {
   required: R;
 };
 
-type ComputedReturnType = 'string' | 'json' | 'select' | 'number' | 'boolean' | 'date';
+type ComputedReturnType =
+  | 'string'
+  | 'json'
+  | 'select'
+  | 'number'
+  | 'boolean'
+  | 'date';
 
 type BaseFieldDescriptor<
   TType extends string,
@@ -115,7 +121,11 @@ type NumberLikeFieldType =
   | 'rating'
   | 'duration';
 
-type SystemDateFieldType = 'createdAt' | 'updatedAt' | 'modifiedAt' | 'autoDate';
+type SystemDateFieldType =
+  | 'createdAt'
+  | 'updatedAt'
+  | 'modifiedAt'
+  | 'autoDate';
 type CollaboratorLinkFieldType = 'collaborators' | 'modifiedBy' | 'createdBy';
 type ComputedFieldType = 'formula' | 'lookup' | 'rollup';
 
@@ -173,12 +183,7 @@ export type AutoNumberFieldDescriptor = BaseFieldDescriptor<
 
 export type AutoDateFieldDescriptor<
   TType extends SystemDateFieldType = 'autoDate',
-> = BaseFieldDescriptor<
-  TType,
-  false,
-  false,
-  false
->;
+> = BaseFieldDescriptor<TType, false, false, false>;
 
 export type ComputedFieldDescriptor<
   TType extends ComputedFieldType = ComputedFieldType,
@@ -282,10 +287,10 @@ export function textField<const R extends boolean>({
   return { type: 'text', required, insertable: true, updatable: true };
 }
 
-function textLikeField<const TType extends TextLikeFieldType, const R extends boolean>(
-  type: TType,
-  { required }: RequiredOption<R>,
-): TextFieldDescriptor<R, TType> {
+function textLikeField<
+  const TType extends TextLikeFieldType,
+  const R extends boolean,
+>(type: TType, { required }: RequiredOption<R>): TextFieldDescriptor<R, TType> {
   return { type, required, insertable: true, updatable: true };
 }
 
@@ -340,7 +345,10 @@ export function numberField<const R extends boolean>({
 function numberLikeField<
   const TType extends NumberLikeFieldType,
   const R extends boolean,
->(type: TType, { required }: RequiredOption<R>): NumberFieldDescriptor<R, TType> {
+>(
+  type: TType,
+  { required }: RequiredOption<R>,
+): NumberFieldDescriptor<R, TType> {
   return { type, required, insertable: true, updatable: true };
 }
 
@@ -418,11 +426,10 @@ export function linkField<
 function collaboratorLinkField<
   const TType extends CollaboratorLinkFieldType,
   const R extends boolean,
->(type: TType, { required }: RequiredOption<R>): LinkFieldDescriptor<
-  'collaborators',
-  R,
-  TType
-> {
+>(
+  type: TType,
+  { required }: RequiredOption<R>,
+): LinkFieldDescriptor<'collaborators', R, TType> {
   return {
     type,
     required,
@@ -528,7 +535,10 @@ export function modifiedAtField(): ModifiedAtFieldDescriptor {
 function computedField<
   const TType extends ComputedFieldType,
   const TReturnType extends ComputedReturnType,
->(type: TType, returnType: TReturnType): ComputedFieldDescriptor<TType, TReturnType> {
+>(
+  type: TType,
+  returnType: TReturnType,
+): ComputedFieldDescriptor<TType, TReturnType> {
   return {
     type,
     returnType,
@@ -562,15 +572,16 @@ export function rollupField<const TReturnType extends ComputedReturnType>({
   return computedField('rollup', returnType);
 }
 
-type ReadonlyColumn<TColumn extends ColumnType<any, any, any, false, any, any>> =
-  ColumnType<
-    TColumn['raw'],
-    never,
-    never,
-    false,
-    TColumn['filters'],
-    TColumn['aggregations']
-  >;
+type ReadonlyColumn<
+  TColumn extends ColumnType<any, any, any, false, any, any>,
+> = ColumnType<
+  TColumn['raw'],
+  never,
+  never,
+  false,
+  TColumn['filters'],
+  TColumn['aggregations']
+>;
 
 type InferComputedField<TReturnType extends ComputedReturnType> =
   TReturnType extends 'number'
